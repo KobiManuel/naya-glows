@@ -166,7 +166,7 @@ export default function Navbar() {
   return (
     <>
       {/* Announcement bar */}
-      <div className="w-full bg-[#1a1a1a] text-white text-center text-xs tracking-[0.18em] uppercase py-2 font-light">
+      <div className="w-full bg-[#1a1a1a] text-white text-center text-xs max-[800px]:text-[9px] tracking-[0.18em] uppercase py-2 font-light">
         Free shipping on orders over $75 &nbsp;·&nbsp; Use code{" "}
         <span className="font-medium">GLOW15</span> for 15% off your first order
       </div>
@@ -197,7 +197,7 @@ export default function Navbar() {
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
-                <button className="flex items-center gap-1.5 text-white text-sm tracking-wide font-medium cursor-pointer">
+                <button className="flex items-center gap-1.5 text-black text-sm tracking-wide font-medium cursor-pointer">
                   <span className="border border-white/30 rounded-full px-4 py-1.5 flex items-center gap-1.5 bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-200">
                     All Products
                     <motion.span
@@ -218,7 +218,7 @@ export default function Navbar() {
                   <Link
                     key={link.label}
                     href={link.href}
-                    className={`text-sm tracking-wide transition-colors duration-150 px-3 py-1 rounded-full hover:bg-white/15 ${pathname === link.href ? "text-white font-semibold" : "text-white/80 hover:text-white"}`}
+                    className={`text-sm tracking-wide transition-colors duration-150 px-3 py-1 rounded-full hover:bg-white/15 ${pathname === link.href ? "text-black font-semibold" : "text-black/80 hover:text-black"}`}
                   >
                     {link.label}
                   </Link>
@@ -250,7 +250,7 @@ export default function Navbar() {
                 className="relative w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#1a1a1a] hover:scale-105 transition-transform duration-200 shadow-sm"
               >
                 <ShoppingBag size={16} />
-                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#c9a87c] text-white text-[9px] font-semibold rounded-full flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#c9a87c] text-black text-[9px] font-semibold rounded-full flex items-center justify-center">
                   0
                 </span>
               </Link>
@@ -336,7 +336,7 @@ export default function Navbar() {
                     </p>
                     <Link
                       href="/catalog"
-                      className="text-xs font-semibold text-black tracking-[0.1em] uppercase border border-black/20 px-5 py-2 rounded-full hover:bg-black hover:text-white transition-all duration-200"
+                      className="text-xs font-semibold text-black tracking-[0.1em] uppercase border border-black/20 px-5 py-2 rounded-full hover:bg-black hover:text-black transition-all duration-200"
                       onClick={() => setDropdownOpen(false)}
                     >
                       Shop All Products →
@@ -422,13 +422,13 @@ export default function Navbar() {
                       className="object-contain"
                     />
                   </div>
-                  <span className="text-white font-semibold tracking-wide text-sm">
+                  <span className="text-black font-semibold tracking-wide text-sm">
                     Naya Glows
                   </span>
                 </Link>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-white/60 active:scale-90 transition-transform"
+                  className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-black/60 active:scale-90 transition-transform"
                 >
                   <X size={16} />
                 </button>
@@ -457,7 +457,7 @@ export default function Navbar() {
                         <Link
                           href={link.href}
                           onClick={() => setMobileMenuOpen(false)}
-                          className={`flex items-center justify-between py-4 border-b border-white/[0.07] group ${isActive ? "text-[#c9a87c]" : "text-white/75"}`}
+                          className={`flex items-center justify-between py-4 border-b border-white/[0.07] group ${isActive ? "text-[#c9a87c]" : "text-black/75"}`}
                         >
                           <div className="flex items-center gap-4">
                             <div
@@ -466,7 +466,7 @@ export default function Navbar() {
                               <Icon
                                 size={15}
                                 className={
-                                  isActive ? "text-[#c9a87c]" : "text-white/50"
+                                  isActive ? "text-[#c9a87c]" : "text-black/50"
                                 }
                               />
                             </div>
@@ -475,7 +475,7 @@ export default function Navbar() {
                             </span>
                           </div>
                           <span
-                            className={`text-lg transition-colors ${isActive ? "text-[#c9a87c]" : "text-white/15 group-active:text-white/40"}`}
+                            className={`text-lg transition-colors ${isActive ? "text-[#c9a87c]" : "text-black/15 group-active:text-black/40"}`}
                           >
                             →
                           </span>
@@ -495,7 +495,7 @@ export default function Navbar() {
                   <Link
                     href="/catalog"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block w-full text-center bg-[#c9a87c] text-white font-semibold text-sm tracking-[0.15em] uppercase py-4 rounded-2xl active:scale-[0.98] transition-transform"
+                    className="block w-full text-center bg-[#c9a87c] text-black font-semibold text-sm tracking-[0.15em] uppercase py-4 rounded-2xl active:scale-[0.98] transition-transform"
                   >
                     Shop All Products
                   </Link>
@@ -516,8 +516,8 @@ export default function Navbar() {
                     onClick={() => setMobileMenuOpen(false)}
                     className="flex flex-col items-center gap-1.5 border border-white/10 rounded-2xl py-3.5 active:scale-95 transition-transform"
                   >
-                    <User size={18} className="text-white/50" />
-                    <span className="text-xs text-white/50 font-medium">
+                    <User size={18} className="text-black/50" />
+                    <span className="text-xs text-black/50 font-medium">
                       Account
                     </span>
                   </Link>
@@ -526,11 +526,11 @@ export default function Navbar() {
                     onClick={() => setMobileMenuOpen(false)}
                     className="relative flex flex-col items-center gap-1.5 border border-white/10 rounded-2xl py-3.5 active:scale-95 transition-transform"
                   >
-                    <ShoppingBag size={18} className="text-white/50" />
-                    <span className="text-xs text-white/50 font-medium">
+                    <ShoppingBag size={18} className="text-black/50" />
+                    <span className="text-xs text-black/50 font-medium">
                       Cart
                     </span>
-                    <span className="absolute top-2 right-4 w-4 h-4 bg-[#c9a87c] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                    <span className="absolute top-2 right-4 w-4 h-4 bg-[#c9a87c] text-black text-[9px] font-bold rounded-full flex items-center justify-center">
                       0
                     </span>
                   </Link>

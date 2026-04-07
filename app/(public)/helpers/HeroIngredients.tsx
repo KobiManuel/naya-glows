@@ -159,10 +159,10 @@ export default function HeroIngredients() {
           aria-hidden
         >
           <span
-            className="text-[22vw] font-black uppercase tracking-tighter leading-none text-[#e8ddd0] whitespace-nowrap"
+            className="text-[10vw] font-black uppercase tracking-tighter leading-none text-[#e8ddd0] whitespace-nowrap"
             style={{ fontFamily: "'Georgia', serif" }}
           >
-            GLOW
+            NAYA GLOW
           </span>
         </div>
 
@@ -214,7 +214,7 @@ export default function HeroIngredients() {
             alt="Naya Radiance Exfoliating Body Scrub"
             width={700}
             height={700}
-            className="object-contain drop-shadow-2xl w-[200px] sm:w-[280px] md:w-[360px] lg:w-[430px] xl:w-[490px]"
+            className="object-contain drop-shadow-2xl w-[200px] sm:w-[280px] md:w-[360px] lg:w-[430px] xl:w-[417px]"
             priority
           />
         </div>
