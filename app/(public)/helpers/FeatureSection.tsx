@@ -1,0 +1,319 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
+export default function FeaturedSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const headingRef = useRef<HTMLDivElement>(null);
+  const subheadRef = useRef<HTMLDivElement>(null);
+  const descRef = useRef<HTMLParagraphElement>(null);
+  const labelRef = useRef<HTMLParagraphElement>(null);
+  const card1Ref = useRef<HTMLDivElement>(null);
+  const card2Ref = useRef<HTMLDivElement>(null);
+  const card3Ref = useRef<HTMLDivElement>(null);
+  const disclaimerRef = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const anim = (el: Element | null, from: gsap.TweenVars, delay = 0) => {
+        if (!el) return;
+        gsap.fromTo(
+          el,
+          { opacity: 0, y: 40, ...from },
+          {
+            opacity: 1,
+            y: 0,
+            x: 0,
+            duration: 0.85,
+            delay,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: el,
+              start: "top 88%",
+              end: "top 25%",
+              toggleActions: "play reverse play reverse",
+            },
+          },
+        );
+      };
+
+      anim(headingRef.current, {});
+      anim(subheadRef.current, {}, 0.08);
+      anim(descRef.current, {}, 0.14);
+      anim(labelRef.current, {}, 0.2);
+      anim(card1Ref.current, { x: -40 }, 0.25);
+      anim(card2Ref.current, { y: 60 }, 0.32);
+      anim(card3Ref.current, { x: 40 }, 0.38);
+      anim(disclaimerRef.current, {}, 0.44);
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="w-full bg-[#e8e8f4] py-20 px-5 sm:px-8 lg:px-16"
+    >
+      <div className="max-w-[1200px] mx-auto">
+        {/* ── White card container ─────────────────────────────────────────── */}
+        <div className="bg-white rounded-[2.5rem] p-8 sm:p-10 lg:p-14 shadow-sm">
+          {/* ── Heading line 1 ──────────────────────────────────────────────── */}
+          <div ref={headingRef} className="text-center mb-1">
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              <span className="text-3xl sm:text-4xl lg:text-[2.75rem] font-black text-[#1a1a2e]">
+                ▶
+              </span>
+              <h2 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-black text-[#1a1a2e] tracking-tight">
+                Your Daily Skincare
+              </h2>
+              <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-white shadow-md flex-shrink-0">
+                <Image
+                  src="/images/IMG_6205.JPG"
+                  alt="product"
+                  width={44}
+                  height={44}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <h2 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-black text-[#1a1a2e] tracking-tight">
+                Essentials
+              </h2>
+            </div>
+          </div>
+
+          {/* ── Heading line 2 ──────────────────────────────────────────────── */}
+          <div ref={subheadRef} className="text-center mb-6">
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              <span className="text-3xl sm:text-4xl lg:text-[2.75rem] font-light text-[#9a9ab8] tracking-tight">
+                Gentle care.
+              </span>
+              <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-md flex-shrink-0">
+                <Image
+                  src="/images/IMG_6326.JPG"
+                  alt="product"
+                  width={40}
+                  height={40}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <span className="text-3xl sm:text-4xl lg:text-[2.75rem] font-black text-[#1a1a2e] tracking-tight">
+                Visible
+              </span>
+              <span className="text-3xl sm:text-4xl lg:text-[2.75rem] font-light text-[#9a9ab8] tracking-tight">
+                results
+              </span>
+            </div>
+          </div>
+
+          <p
+            ref={descRef}
+            className="text-center text-base text-[#5a5a7a] max-w-md mx-auto leading-relaxed mb-10"
+          >
+            Reveal refreshed, glowing skin with our top brightening and
+            hydrating treatments, designed for daily beauty.
+          </p>
+
+          {/* ── Label ───────────────────────────────────────────────────────── */}
+          <p
+            ref={labelRef}
+            className="text-sm font-semibold text-[#1a1a2e] mb-5 tracking-wide"
+          >
+            Featured Products
+          </p>
+
+          {/* ── Cards grid ──────────────────────────────────────────────────── */}
+          {/* Desktop: Card1 wider left | right column with Card2 + Card3 stacked */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1.35fr_1fr] gap-4">
+            {/* ── Card 1 — wide left ───────────────────────────────────────── */}
+            <div
+              ref={card1Ref}
+              className="rounded-3xl p-8 flex flex-col justify-between min-h-[340px] relative overflow-hidden"
+              style={{ backgroundColor: "#ffe1d7" }}
+            >
+              {/* Watermark rings */}
+              <div className="absolute -bottom-10 -right-10 w-64 h-64 opacity-[0.07] pointer-events-none">
+                <svg viewBox="0 0 200 200" fill="none">
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="90"
+                    stroke="#c9a87c"
+                    strokeWidth="1.5"
+                  />
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="62"
+                    stroke="#c9a87c"
+                    strokeWidth="1"
+                  />
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="34"
+                    stroke="#c9a87c"
+                    strokeWidth="0.75"
+                  />
+                </svg>
+              </div>
+
+              <div>
+                {/* Short wide rounded image */}
+                <div className="w-40 h-24 mb-6 rounded-2xl overflow-hidden bg-white/50 flex items-center justify-center">
+                  <Image
+                    src="/images/ECA30FF9-62EA-4126-8301-03D590C8250D.png"
+                    alt="Radiance Boost Serum"
+                    width={140}
+                    height={88}
+                    className="object-contain w-full h-full p-1"
+                  />
+                </div>
+                <h3 className="text-2xl font-bold text-[#1a1a2e] mb-3 leading-tight">
+                  Radiance Boost
+                  <br />
+                  Serum
+                </h3>
+                <p className="text-sm text-[#5a5a7a] leading-relaxed max-w-xs">
+                  Brightens skin tone, evens complexion, and provides deep
+                  lasting hydration with Niacinamide & Hyaluronic Acid.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3 mt-7">
+                <Link
+                  href="/products/radiance-boost-serum"
+                  className="bg-[#1a1a2e] text-white text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-[#2d2d4a] transition-colors"
+                >
+                  Get Started
+                </Link>
+                <Link
+                  href="/products/radiance-boost-serum"
+                  className="border border-[#1a1a2e]/25 text-[#1a1a2e] text-sm font-semibold px-6 py-2.5 rounded-full hover:border-[#1a1a2e]/60 transition-colors"
+                >
+                  Learn More
+                </Link>
+              </div>
+            </div>
+
+            {/* ── Right column: Card 2 + Card 3 ───────────────────────────── */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+              {/* Card 2 */}
+              <div
+                ref={card2Ref}
+                className="rounded-3xl p-7 flex flex-col justify-between relative overflow-hidden min-h-[200px]"
+                style={{ backgroundColor: "#f5f1ff" }}
+              >
+                <div className="absolute -bottom-6 -right-6 w-48 h-48 opacity-[0.07] pointer-events-none">
+                  <svg viewBox="0 0 200 200" fill="none">
+                    <circle
+                      cx="100"
+                      cy="100"
+                      r="90"
+                      stroke="#6b6baa"
+                      strokeWidth="1.5"
+                    />
+                    <circle
+                      cx="100"
+                      cy="100"
+                      r="55"
+                      stroke="#6b6baa"
+                      strokeWidth="1"
+                    />
+                  </svg>
+                </div>
+
+                <div>
+                  <div className="w-36 h-20 mb-4 rounded-2xl overflow-hidden bg-white/50 flex items-center justify-center">
+                    <Image
+                      src="/images/19EA7A51-ADB2-4A49-BCB7-0BBC0116F4F2.png"
+                      alt="Exfoliating Body Scrub"
+                      width={128}
+                      height={72}
+                      className="object-contain w-full h-full p-1"
+                    />
+                  </div>
+                  <h3 className="text-xl font-bold text-[#1a1a2e] mb-2 leading-tight">
+                    Exfoliating Body Scrub
+                  </h3>
+                  <p className="text-sm text-[#5a5a7a] leading-relaxed">
+                    Gently exfoliates dead skin, brightens dull skin, and
+                    smooths rough texture with Kojic Acid & Lemon.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3 mt-5">
+                  <Link
+                    href="/products/exfoliating-body-scrub"
+                    className="bg-[#1a1a2e] text-white text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-[#2d2d4a] transition-colors"
+                  >
+                    Get Started
+                  </Link>
+                  <Link
+                    href="/products/exfoliating-body-scrub"
+                    className="border border-[#1a1a2e]/25 text-[#1a1a2e] text-sm font-semibold px-6 py-2.5 rounded-full hover:border-[#1a1a2e]/60 transition-colors"
+                  >
+                    Learn More
+                  </Link>
+                </div>
+              </div>
+
+              {/* Card 3 — image container with scale hover on image only */}
+              <div
+                ref={card3Ref}
+                className="rounded-3xl overflow-hidden relative min-h-[220px] group cursor-pointer"
+              >
+                {/* Inner container clips the scaling image */}
+                <div className="absolute inset-0 rounded-3xl overflow-hidden">
+                  <Image
+                    src="/images/IMG_6322.JPG"
+                    alt="Confidence starts with skincare"
+                    fill
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                  />
+                </div>
+
+                {/* Gradient overlay — deepens on hover */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent transition-opacity duration-500 group-hover:from-black/85 rounded-3xl" />
+
+                {/* Skin Health badge */}
+                <div className="absolute top-4 left-4 flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full px-3 py-1.5 transition-all duration-300 group-hover:bg-white/35 group-hover:scale-105">
+                  <span className="text-white text-xs font-semibold">
+                    Skin Health
+                  </span>
+                  <div className="w-5 h-5 rounded-full bg-[#c9a87c] flex items-center justify-center">
+                    <span className="text-[9px] text-white font-bold">✦</span>
+                  </div>
+                </div>
+
+                {/* Bottom text — lifts on hover */}
+                <div className="absolute bottom-5 left-5 right-5 transition-transform duration-500 ease-out group-hover:-translate-y-2">
+                  <p className="text-white text-xl font-bold leading-snug">
+                    Confidence starts
+                    <br />
+                    with skincare
+                  </p>
+                </div>
+              </div>
+            </div>
+            {/* end right column */}
+          </div>
+          {/* end cards grid */}
+
+          {/* ── Disclaimer ───────────────────────────────────────────────────── */}
+          <p ref={disclaimerRef} className="mt-7 text-xs text-[#8888aa]">
+            Results may vary. Consistent use helps improve skin texture,
+            hydration, and tone.
+          </p>
+        </div>
+        {/* end white card */}
+      </div>
+    </section>
+  );
+}
