@@ -57,13 +57,10 @@ export default function FeaturedSection() {
   }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      className="w-full bg-[#e8e8f4] py-20 px-5 sm:px-8 lg:px-16"
-    >
-      <div className="w-[80%] mx-auto">
+    <section ref={sectionRef} className="w-full bg-[#e8e8f4] py-20">
+      <div className="w-[90%] mx-auto max-[1275px]:w-full">
         {/* ── White card container ─────────────────────────────────────────── */}
-        <div className="bg-white rounded-[2.5rem] p-8 sm:p-10 lg:p-14 shadow-sm">
+        <div className="bg-white rounded-[2.5rem] p-8 sm:p-10 lg:p-14 shadow-sm max-[1275px]:rounded-none max-[800px]:px-2">
           {/* ── Heading line 1 ──────────────────────────────────────────────── */}
           <div ref={headingRef} className="text-center mb-1">
             <div className="flex items-center justify-center gap-3 flex-wrap">
@@ -75,7 +72,7 @@ export default function FeaturedSection() {
               </h2>
               <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-white shadow-md flex-shrink-0">
                 <Image
-                  src="/images/IMG_6205.JPG"
+                  src="/images/img_6205.jpg"
                   alt="product"
                   width={44}
                   height={44}
@@ -96,7 +93,7 @@ export default function FeaturedSection() {
               </span>
               <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-md flex-shrink-0">
                 <Image
-                  src="/images/IMG_6326.JPG"
+                  src="/images/img_6326.jpg"
                   alt="product"
                   width={40}
                   height={40}
@@ -133,7 +130,7 @@ export default function FeaturedSection() {
             {/* ── Card 1 — 10% wider than others ───────────────────────────────────────── */}
             <div
               ref={card1Ref}
-              className="rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden lg:col-span-1"
+              className="rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden lg:col-span-1 max-[400px]:p-6"
               style={{ backgroundColor: "#ffe1d7" }}
             >
               {/* Watermark rings */}
@@ -166,7 +163,7 @@ export default function FeaturedSection() {
               <div>
                 {/* Short wide rounded image */}
                 <Image
-                  src="/images/19EA7A51-ADB2-4A49-BCB7-0BBC0116F4F2.png"
+                  src="/images/19ea7a51-adb2-4a49-bcb7-0bbc0116f4f2.png"
                   alt="Radiance Boost Serum"
                   width={140}
                   height={88}
@@ -183,16 +180,16 @@ export default function FeaturedSection() {
                 </p>
               </div>
 
-              <div className="flex items-center gap-3 mt-7">
+              <div className="flex items-center gap-3 mt-7 max-[400px]:gap-[4px] w-fit">
                 <Link
                   href="/products/radiance-boost-serum"
-                  className="bg-[#1a1a2e] text-white text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-[#2d2d4a] transition-colors"
+                  className=" max-[400px]:px-3 max-[400px]:py-1.5 bg-[#1a1a2e] text-white text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-[#2d2d4a] transition-colors"
                 >
                   Get Started
                 </Link>
                 <Link
                   href="/products/radiance-boost-serum"
-                  className="border border-[#1a1a2e]/25 text-[#1a1a2e] text-sm font-semibold px-6 py-2.5 rounded-full hover:border-[#1a1a2e]/60 transition-colors"
+                  className=" max-[400px]:px-3 max-[400px]:py-1.5 border border-[#1a1a2e]/25 text-[#1a1a2e] text-sm font-semibold px-6 py-2.5 rounded-full hover:border-[#1a1a2e]/60 transition-colors"
                 >
                   Learn More
                 </Link>
@@ -202,7 +199,7 @@ export default function FeaturedSection() {
             {/* ── Card 2 ───────────────────────────────────────── */}
             <div
               ref={card2Ref}
-              className="rounded-3xl p-7 flex flex-col justify-between relative overflow-hidden"
+              className="rounded-3xl p-7 flex flex-col justify-between relative overflow-hidden max-[400px]:p-6"
               style={{ backgroundColor: "#f5f1ff" }}
             >
               <div className="absolute -bottom-6 -right-6 w-48 h-48 opacity-[0.07] pointer-events-none">
@@ -226,7 +223,7 @@ export default function FeaturedSection() {
 
               <div>
                 <Image
-                  src="/images/ECA30FF9-62EA-4126-8301-03D590C8250D.png"
+                  src="/images/eca30ff9-62ea-4126-8301-03d590c8250d.png"
                   alt="Exfoliating Body Scrub"
                   width={128}
                   height={72}
@@ -241,16 +238,16 @@ export default function FeaturedSection() {
                 </p>
               </div>
 
-              <div className="flex items-center gap-3 mt-5">
+              <div className="flex items-center gap-3 mt-5 max-[400px]:gap-[4px]">
                 <Link
                   href="/products/exfoliating-body-scrub"
-                  className="bg-[#1a1a2e] text-white text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-[#2d2d4a] transition-colors"
+                  className=" max-[400px]:px-3 max-[400px]:py-1.5 bg-[#1a1a2e] text-white text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-[#2d2d4a] transition-colors"
                 >
                   Get Started
                 </Link>
                 <Link
                   href="/products/exfoliating-body-scrub"
-                  className="border border-[#1a1a2e]/25 text-[#1a1a2e] text-sm font-semibold px-6 py-2.5 rounded-full hover:border-[#1a1a2e]/60 transition-colors"
+                  className="max-[400px]:px-3 max-[400px]:py-1.5 border border-[#1a1a2e]/25 text-[#1a1a2e] text-sm font-semibold px-6 py-2.5 rounded-full hover:border-[#1a1a2e]/60 transition-colors"
                 >
                   Learn More
                 </Link>
@@ -265,7 +262,7 @@ export default function FeaturedSection() {
               {/* Inner container clips the scaling image */}
               <div className="absolute inset-0 rounded-3xl overflow-hidden">
                 <Image
-                  src="/images/IMG_6322.JPG"
+                  src="/images/img_6322.jpg"
                   alt="Confidence starts with skincare"
                   fill
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"

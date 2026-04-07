@@ -26,19 +26,19 @@ const products = [
       {
         name: "Radiance Boost Serum",
         description: "Brighten & hydrate with Niacinamide",
-        image: "/images/ECA30FF9-62EA-4126-8301-03D590C8250D.png",
+        image: "/images/eca30ff9-62ea-4126-8301-03d590c8250d.png",
         href: "/products/radiance-boost-serum",
       },
       {
         name: "Acne Correcting Serum",
         description: "Fade marks with Alpha Arbutin",
-        image: "/images/IMG_6205.JPG",
+        image: "/images/img_6205.jpg",
         href: "/products/acne-correcting-serum",
       },
       {
         name: "Age Renewal Serum",
         description: "Renew with Azelaic Acid",
-        image: "/images/08D216CC-1441-4068-996E-ED7D64A65701.png",
+        image: "/images/08d216cc-1441-4068-996e-ed7d64a65701.png",
         href: "/products/age-renewal-serum",
       },
     ],
@@ -50,19 +50,19 @@ const products = [
       {
         name: "Radiance Renewal Face Cream",
         description: "Deep hydration & renewal",
-        image: "/images/B49340AE-6FE1-47F6-BE61-8EAC75C0CCBF.png",
+        image: "/images/b49340ae-6fe1-47f6-be61-8eac75c0ccbf.png",
         href: "/products/radiance-renewal-face-cream",
       },
       {
         name: "Pigment Corrector Cream",
         description: "Target hyperpigmentation",
-        image: "/images/42CBFE95-D2A7-4D13-8A5E-72E62DCF1792.png",
+        image: "/images/42cbfe95-d2a7-4d13-8a5e-72e62dcf1792.png",
         href: "/products/pigment-corrector-face-cream",
       },
       {
         name: "Radiance Barrier Face Oil",
         description: "Squalane & Argan Oil blend",
-        image: "/images/9CB3AAE2-D6B9-4D9D-8A24-E679C00C2705.png",
+        image: "/images/9cb3aae2-d6b9-4d9d-8a24-e679c00c2705.png",
         href: "/products/radiance-barrier-face-oil",
       },
     ],
@@ -74,19 +74,19 @@ const products = [
       {
         name: "Clarifying Foam Cleanser",
         description: "Salicylic Acid pore cleanser",
-        image: "/images/432E42AB-30FD-4531-815A-E4ECE090058B.png",
+        image: "/images/432e42ab-30fd-4531-815a-e4ece090058b.png",
         href: "/products/clarifying-foam-cleanser",
       },
       {
         name: "Clarifying Black Soap",
         description: "African Black Soap deep cleanse",
-        image: "/images/5D4E84FB-2A40-4B0C-AE19-62D695738A31.png",
+        image: "/images/5d4e84fb-2a40-4b0c-ae19-62d695738a31.png",
         href: "/products/clarifying-black-soap",
       },
       {
         name: "Radiance Balance Toner",
         description: "Balance & refine pores",
-        image: "/images/056BF54D-5022-45A9-861D-FA2A3620F4A3.png",
+        image: "/images/056bf54d-5022-45a9-861d-fa2a3620f4a3.png",
         href: "/products/radiance-balance-toner",
       },
     ],
@@ -98,25 +98,25 @@ const products = [
       {
         name: "Exfoliating Body Scrub",
         description: "Kojic Acid & Lemon brightening",
-        image: "/images/19EA7A51-ADB2-4A49-BCB7-0BBC0116F4F2.png",
+        image: "/images/19ea7a51-adb2-4a49-bcb7-0bbc0116f4f2.png",
         href: "/products/exfoliating-body-scrub",
       },
       {
         name: "Purifying Body Wash",
         description: "Kaolin Clay daily cleanser",
-        image: "/images/2999B980-D234-482D-9E97-982F1BF1579A.png",
+        image: "/images/2999b980-d234-482d-9e97-982f1bf1579a.png",
         href: "/products/purifying-body-wash",
       },
       {
         name: "Radiance Repair Body Lotion",
         description: "Tranexamic Acid & Vitamin C",
-        image: "/images/5BBE98AC-B9A9-40AA-95A1-AD2F9D7A2CE6.png",
+        image: "/images/5bbe98ac-b9a9-40aa-95a1-ad2f9d7a2ce6.png",
         href: "/products/radiance-repair-body-lotion",
       },
       {
         name: "Luminous Glow Body Oil",
         description: "Argan & Sweet Almond Oil",
-        image: "/images/0323D23A-ED8D-4AB5-8F52-B8A8EB31E04F.png",
+        image: "/images/0323d23a-ed8d-4ab5-8f52-b8a8eb31e04f.png",
         href: "/products/luminous-glow-body-oil",
       },
     ],
@@ -218,7 +218,11 @@ export default function Navbar() {
                   <Link
                     key={link.label}
                     href={link.href}
-                    className={`text-sm tracking-wide transition-colors duration-150 px-3 py-1 rounded-full hover:bg-white/15 ${pathname === link.href ? "text-black font-semibold" : "text-black/80 hover:text-black"}`}
+                    className={`text-sm tracking-wide transition-colors duration-150 px-3 py-1 rounded-full hover:bg-white/15 ${
+                      pathname === link.href
+                        ? "text-black font-semibold"
+                        : "text-black/80 hover:text-black"
+                    }`}
                   >
                     {link.label}
                   </Link>
@@ -275,7 +279,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* ── Desktop Dropdown ────────────────────────────────────────────── */}
+        {/* ── Desktop Dropdown ─────────────────────────────────────────────── */}
         <AnimatePresence>
           {dropdownOpen && (
             <motion.div
@@ -313,6 +317,7 @@ export default function Navbar() {
                                 <img
                                   src={item.image}
                                   alt={item.name}
+                                  fetchPriority="high"
                                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                 />
                               </div>
@@ -336,7 +341,7 @@ export default function Navbar() {
                     </p>
                     <Link
                       href="/catalog"
-                      className="text-xs font-semibold text-black tracking-[0.1em] uppercase border border-black/20 px-5 py-2 rounded-full hover:bg-black hover:text-black transition-all duration-200"
+                      className="text-xs font-semibold text-black tracking-[0.1em] uppercase border border-black/20 px-5 py-2 rounded-full hover:bg-black hover:text-white transition-all duration-200"
                       onClick={() => setDropdownOpen(false)}
                     >
                       Shop All Products →
@@ -348,7 +353,7 @@ export default function Navbar() {
           )}
         </AnimatePresence>
 
-        {/* ── Search bar ─────────────────────────────────────────────────── */}
+        {/* ── Search bar ──────────────────────────────────────────────────── */}
         <AnimatePresence>
           {searchOpen && (
             <motion.div
@@ -371,11 +376,7 @@ export default function Navbar() {
         </AnimatePresence>
       </nav>
 
-      {/* ── MOBILE FULL-SCREEN MENU ─────────────────────────────────────────
-          Slides up from the bottom. Dark luxury aesthetic.
-          Logo + brand name top. Large editorial nav links center.
-          Account / Cart / Sign In strip at bottom.
-      ───────────────────────────────────────────────────────────────────── */}
+      {/* ── MOBILE FULL-SCREEN MENU ─────────────────────────────────────────── */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <>
@@ -422,13 +423,13 @@ export default function Navbar() {
                       className="object-contain"
                     />
                   </div>
-                  <span className="text-black font-semibold tracking-wide text-sm">
+                  <span className="text-white font-semibold tracking-wide text-sm">
                     Naya Glows
                   </span>
                 </Link>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-black/60 active:scale-90 transition-transform"
+                  className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-white/60 active:scale-90 transition-transform"
                 >
                   <X size={16} />
                 </button>
@@ -457,16 +458,22 @@ export default function Navbar() {
                         <Link
                           href={link.href}
                           onClick={() => setMobileMenuOpen(false)}
-                          className={`flex items-center justify-between py-4 border-b border-white/[0.07] group ${isActive ? "text-[#c9a87c]" : "text-black/75"}`}
+                          className={`flex items-center justify-between py-4 border-b border-white/[0.07] group ${
+                            isActive ? "text-[#c9a87c]" : "text-white/75"
+                          }`}
                         >
                           <div className="flex items-center gap-4">
                             <div
-                              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 ${isActive ? "bg-[#c9a87c]/20" : "bg-white/[0.07] group-active:bg-white/15"}`}
+                              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 ${
+                                isActive
+                                  ? "bg-[#c9a87c]/20"
+                                  : "bg-white/[0.07] group-active:bg-white/15"
+                              }`}
                             >
                               <Icon
                                 size={15}
                                 className={
-                                  isActive ? "text-[#c9a87c]" : "text-black/50"
+                                  isActive ? "text-[#c9a87c]" : "text-white/50"
                                 }
                               />
                             </div>
@@ -475,7 +482,11 @@ export default function Navbar() {
                             </span>
                           </div>
                           <span
-                            className={`text-lg transition-colors ${isActive ? "text-[#c9a87c]" : "text-black/15 group-active:text-black/40"}`}
+                            className={`text-lg transition-colors ${
+                              isActive
+                                ? "text-[#c9a87c]"
+                                : "text-white/15 group-active:text-white/40"
+                            }`}
                           >
                             →
                           </span>
@@ -516,8 +527,8 @@ export default function Navbar() {
                     onClick={() => setMobileMenuOpen(false)}
                     className="flex flex-col items-center gap-1.5 border border-white/10 rounded-2xl py-3.5 active:scale-95 transition-transform"
                   >
-                    <User size={18} className="text-black/50" />
-                    <span className="text-xs text-black/50 font-medium">
+                    <User size={18} className="text-white/50" />
+                    <span className="text-xs text-white/50 font-medium">
                       Account
                     </span>
                   </Link>
@@ -526,8 +537,8 @@ export default function Navbar() {
                     onClick={() => setMobileMenuOpen(false)}
                     className="relative flex flex-col items-center gap-1.5 border border-white/10 rounded-2xl py-3.5 active:scale-95 transition-transform"
                   >
-                    <ShoppingBag size={18} className="text-black/50" />
-                    <span className="text-xs text-black/50 font-medium">
+                    <ShoppingBag size={18} className="text-white/50" />
+                    <span className="text-xs text-white/50 font-medium">
                       Cart
                     </span>
                     <span className="absolute top-2 right-4 w-4 h-4 bg-[#c9a87c] text-black text-[9px] font-bold rounded-full flex items-center justify-center">

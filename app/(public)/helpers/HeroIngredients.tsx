@@ -11,27 +11,27 @@ const ingredients = [
   {
     name: "Kojic Acid",
     benefit: "Brightens & fades dark spots",
-    image: "/images/Body scrub with lemon and mint.png",
+    image: "/images/body-scrub-with-lemon-and-mint.png",
   },
   {
     name: "Lemon Extract",
     benefit: "Evens skin tone & exfoliates",
-    image: "/images/Body scrub with lemon and mint.png",
+    image: "/images/body-scrub-with-lemon-and-mint.png",
   },
   {
     name: "Niacinamide",
     benefit: "Controls oil & reduces redness",
-    image: "/images/Body scrub with lemon and mint.png",
+    image: "/images/body-scrub-with-lemon-and-mint.png",
   },
   {
     name: "Hyaluronic Acid",
     benefit: "Deep lasting hydration",
-    image: "/images/Body scrub with lemon and mint.png",
+    image: "/images/body-scrub-with-lemon-and-mint.png",
   },
   {
     name: "Green Tea Extract",
     benefit: "Antioxidant & anti-inflammatory",
-    image: "/images/Body scrub with lemon and mint.png",
+    image: "/images/body-scrub-with-lemon-and-mint.png",
   },
 ];
 
@@ -176,7 +176,7 @@ export default function HeroIngredients() {
           style={{ bottom: "5%", left: "3%", transform: "rotate(-18deg)" }}
         >
           <Image
-            src="/images/Body scrub with lemon and mint.png"
+            src="/images/body-scrub-with-lemon-and-mint.png"
             alt="lemon decoration"
             width={280}
             height={280}
@@ -191,7 +191,7 @@ export default function HeroIngredients() {
           style={{ top: "3%", right: "2%", transform: "rotate(22deg)" }}
         >
           <Image
-            src="/images/Body scrub with lemon and mint.png"
+            src="/images/body-scrub-with-lemon-and-mint.png"
             alt="lemon decoration"
             width={260}
             height={260}
@@ -210,11 +210,11 @@ export default function HeroIngredients() {
           }}
         >
           <Image
-            src="/images/NAYA Radiance body scrub in focu.png"
+            src="/images/naya-radiance-body-scrub-in-focu.png"
             alt="Naya Radiance Exfoliating Body Scrub"
             width={700}
             height={700}
-            className="object-contain drop-shadow-2xl w-[200px] sm:w-[280px] md:w-[360px] lg:w-[430px] xl:w-[417px]"
+            className="object-contain drop-shadow-2xl w-[200px] sm:w-[280px] md:w-[360px] lg:w-[430px] xl:w-[490px] xl:scale-75"
             priority
           />
         </div>
