@@ -61,7 +61,7 @@ export default function FeaturedSection() {
       ref={sectionRef}
       className="w-full bg-[#e8e8f4] py-20 px-5 sm:px-8 lg:px-16"
     >
-      <div className="max-w-[1200px] mx-auto">
+      <div className="w-[80%] mx-auto">
         {/* ── White card container ─────────────────────────────────────────── */}
         <div className="bg-white rounded-[2.5rem] p-8 sm:p-10 lg:p-14 shadow-sm">
           {/* ── Heading line 1 ──────────────────────────────────────────────── */}
@@ -128,13 +128,12 @@ export default function FeaturedSection() {
             Featured Products
           </p>
 
-          {/* ── Cards grid ──────────────────────────────────────────────────── */}
-          {/* Desktop: Card1 wider left | right column with Card2 + Card3 stacked */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1.35fr_1fr] gap-4">
-            {/* ── Card 1 — wide left ───────────────────────────────────────── */}
+          {/* ── Cards grid - Updated to grid of 3 with equal height ──────────────────────────────────────────────────── */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {/* ── Card 1 — 10% wider than others ───────────────────────────────────────── */}
             <div
               ref={card1Ref}
-              className="rounded-3xl p-8 flex flex-col justify-between min-h-[340px] relative overflow-hidden"
+              className="rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden lg:col-span-1"
               style={{ backgroundColor: "#ffe1d7" }}
             >
               {/* Watermark rings */}
@@ -166,15 +165,13 @@ export default function FeaturedSection() {
 
               <div>
                 {/* Short wide rounded image */}
-                <div className="w-40 h-24 mb-6 rounded-2xl overflow-hidden bg-white/50 flex items-center justify-center">
-                  <Image
-                    src="/images/ECA30FF9-62EA-4126-8301-03D590C8250D.png"
-                    alt="Radiance Boost Serum"
-                    width={140}
-                    height={88}
-                    className="object-contain w-full h-full p-1"
-                  />
-                </div>
+                <Image
+                  src="/images/19EA7A51-ADB2-4A49-BCB7-0BBC0116F4F2.png"
+                  alt="Radiance Boost Serum"
+                  width={140}
+                  height={88}
+                  className="object-cover rounded-2xl w-20 h-20 mb-10"
+                />
                 <h3 className="text-2xl font-bold text-[#1a1a2e] mb-3 leading-tight">
                   Radiance Boost
                   <br />
@@ -202,107 +199,101 @@ export default function FeaturedSection() {
               </div>
             </div>
 
-            {/* ── Right column: Card 2 + Card 3 ───────────────────────────── */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
-              {/* Card 2 */}
-              <div
-                ref={card2Ref}
-                className="rounded-3xl p-7 flex flex-col justify-between relative overflow-hidden min-h-[200px]"
-                style={{ backgroundColor: "#f5f1ff" }}
-              >
-                <div className="absolute -bottom-6 -right-6 w-48 h-48 opacity-[0.07] pointer-events-none">
-                  <svg viewBox="0 0 200 200" fill="none">
-                    <circle
-                      cx="100"
-                      cy="100"
-                      r="90"
-                      stroke="#6b6baa"
-                      strokeWidth="1.5"
-                    />
-                    <circle
-                      cx="100"
-                      cy="100"
-                      r="55"
-                      stroke="#6b6baa"
-                      strokeWidth="1"
-                    />
-                  </svg>
-                </div>
-
-                <div>
-                  <div className="w-36 h-20 mb-4 rounded-2xl overflow-hidden bg-white/50 flex items-center justify-center">
-                    <Image
-                      src="/images/19EA7A51-ADB2-4A49-BCB7-0BBC0116F4F2.png"
-                      alt="Exfoliating Body Scrub"
-                      width={128}
-                      height={72}
-                      className="object-contain w-full h-full p-1"
-                    />
-                  </div>
-                  <h3 className="text-xl font-bold text-[#1a1a2e] mb-2 leading-tight">
-                    Exfoliating Body Scrub
-                  </h3>
-                  <p className="text-sm text-[#5a5a7a] leading-relaxed">
-                    Gently exfoliates dead skin, brightens dull skin, and
-                    smooths rough texture with Kojic Acid & Lemon.
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-3 mt-5">
-                  <Link
-                    href="/products/exfoliating-body-scrub"
-                    className="bg-[#1a1a2e] text-white text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-[#2d2d4a] transition-colors"
-                  >
-                    Get Started
-                  </Link>
-                  <Link
-                    href="/products/exfoliating-body-scrub"
-                    className="border border-[#1a1a2e]/25 text-[#1a1a2e] text-sm font-semibold px-6 py-2.5 rounded-full hover:border-[#1a1a2e]/60 transition-colors"
-                  >
-                    Learn More
-                  </Link>
-                </div>
+            {/* ── Card 2 ───────────────────────────────────────── */}
+            <div
+              ref={card2Ref}
+              className="rounded-3xl p-7 flex flex-col justify-between relative overflow-hidden"
+              style={{ backgroundColor: "#f5f1ff" }}
+            >
+              <div className="absolute -bottom-6 -right-6 w-48 h-48 opacity-[0.07] pointer-events-none">
+                <svg viewBox="0 0 200 200" fill="none">
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="90"
+                    stroke="#6b6baa"
+                    strokeWidth="1.5"
+                  />
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="55"
+                    stroke="#6b6baa"
+                    strokeWidth="1"
+                  />
+                </svg>
               </div>
 
-              {/* Card 3 — image container with scale hover on image only */}
-              <div
-                ref={card3Ref}
-                className="rounded-3xl overflow-hidden relative min-h-[220px] group cursor-pointer"
-              >
-                {/* Inner container clips the scaling image */}
-                <div className="absolute inset-0 rounded-3xl overflow-hidden">
-                  <Image
-                    src="/images/IMG_6322.JPG"
-                    alt="Confidence starts with skincare"
-                    fill
-                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                  />
-                </div>
+              <div>
+                <Image
+                  src="/images/ECA30FF9-62EA-4126-8301-03D590C8250D.png"
+                  alt="Exfoliating Body Scrub"
+                  width={128}
+                  height={72}
+                  className="object-cover rounded-2xl w-20 h-20 mb-10"
+                />
+                <h3 className="text-xl font-bold text-[#1a1a2e] mb-2 leading-tight">
+                  Exfoliating Body Scrub
+                </h3>
+                <p className="text-sm text-[#5a5a7a] leading-relaxed">
+                  Gently exfoliates dead skin, brightens dull skin, and smooths
+                  rough texture with Kojic Acid & Lemon.
+                </p>
+              </div>
 
-                {/* Gradient overlay — deepens on hover */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent transition-opacity duration-500 group-hover:from-black/85 rounded-3xl" />
-
-                {/* Skin Health badge */}
-                <div className="absolute top-4 left-4 flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full px-3 py-1.5 transition-all duration-300 group-hover:bg-white/35 group-hover:scale-105">
-                  <span className="text-white text-xs font-semibold">
-                    Skin Health
-                  </span>
-                  <div className="w-5 h-5 rounded-full bg-[#c9a87c] flex items-center justify-center">
-                    <span className="text-[9px] text-white font-bold">✦</span>
-                  </div>
-                </div>
-
-                {/* Bottom text — lifts on hover */}
-                <div className="absolute bottom-5 left-5 right-5 transition-transform duration-500 ease-out group-hover:-translate-y-2">
-                  <p className="text-white text-xl font-bold leading-snug">
-                    Confidence starts
-                    <br />
-                    with skincare
-                  </p>
-                </div>
+              <div className="flex items-center gap-3 mt-5">
+                <Link
+                  href="/products/exfoliating-body-scrub"
+                  className="bg-[#1a1a2e] text-white text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-[#2d2d4a] transition-colors"
+                >
+                  Get Started
+                </Link>
+                <Link
+                  href="/products/exfoliating-body-scrub"
+                  className="border border-[#1a1a2e]/25 text-[#1a1a2e] text-sm font-semibold px-6 py-2.5 rounded-full hover:border-[#1a1a2e]/60 transition-colors"
+                >
+                  Learn More
+                </Link>
               </div>
             </div>
-            {/* end right column */}
+
+            {/* ── Card 3 — image container with scale hover on image only ───────────────────────────────────────── */}
+            <div
+              ref={card3Ref}
+              className="rounded-3xl overflow-hidden relative group cursor-pointer"
+            >
+              {/* Inner container clips the scaling image */}
+              <div className="absolute inset-0 rounded-3xl overflow-hidden">
+                <Image
+                  src="/images/IMG_6322.JPG"
+                  alt="Confidence starts with skincare"
+                  fill
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                />
+              </div>
+
+              {/* Gradient overlay — deepens on hover */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent transition-opacity duration-500 group-hover:from-black/85 rounded-3xl" />
+
+              {/* Skin Health badge */}
+              <div className="absolute top-4 left-4 flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full px-3 py-1.5 transition-all duration-300 group-hover:bg-white/35 group-hover:scale-105">
+                <span className="text-white text-xs font-semibold">
+                  Skin Health
+                </span>
+                <div className="w-5 h-5 rounded-full bg-[#c9a87c] flex items-center justify-center">
+                  <span className="text-[9px] text-white font-bold">✦</span>
+                </div>
+              </div>
+
+              {/* Bottom text — lifts on hover */}
+              <div className="absolute bottom-5 left-5 right-5 transition-transform duration-500 ease-out group-hover:-translate-y-2">
+                <p className="text-white text-xl font-bold leading-snug">
+                  Confidence starts
+                  <br />
+                  with skincare
+                </p>
+              </div>
+            </div>
           </div>
           {/* end cards grid */}
 
