@@ -212,8 +212,8 @@ export default function HeroIngredients() {
           <Image
             src="/images/NAYA Radiance body scrub in focu.png"
             alt="Naya Radiance Exfoliating Body Scrub"
-            width={1000}
-            height={1000}
+            width={700}
+            height={700}
             className="object-contain drop-shadow-2xl w-[200px] sm:w-[280px] md:w-[360px] lg:w-[430px] xl:w-[490px]"
             priority
           />
