@@ -162,7 +162,7 @@ export default function HeroIngredients() {
             className="text-[10vw] font-black uppercase tracking-tighter leading-none text-[#e8ddd0] whitespace-nowrap"
             style={{ fontFamily: "'Georgia', serif" }}
           >
-            NAYA GLOW
+            NAYA GLOWS
           </span>
         </div>
 

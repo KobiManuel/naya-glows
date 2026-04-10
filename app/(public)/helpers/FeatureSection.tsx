@@ -57,7 +57,7 @@ export default function FeaturedSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="w-full bg-[#e8e8f4] py-20">
+    <section ref={sectionRef} className="w-full bg-[#f5f1ff] py-20">
       <div className="w-[90%] mx-auto max-[1275px]:w-full">
         {/* ── White card container ─────────────────────────────────────────── */}
         <div className="bg-white rounded-[2.5rem] p-8 sm:p-10 lg:p-14 shadow-sm max-[1275px]:rounded-none max-[800px]:px-2">

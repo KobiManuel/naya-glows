@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useLayoutEffect,
+} from "react";
 import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
@@ -28,9 +34,14 @@ export default function TransformationsSection() {
   const rightCardRef = useRef<HTMLDivElement>(null);
 
   // Before/after slider state
-  const [sliderX, setSliderX] = useState(50); // percent
+  const [sliderX, setSliderX] = useState(0); // percent
   const isDragging = useRef(false);
   const sliderContainerRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    // Set initial slider position to 50%
+    setSliderX(50);
+  }, []);
 
   // ── Scroll animations ──────────────────────────────────────────────────
   useEffect(() => {
@@ -112,9 +123,9 @@ export default function TransformationsSection() {
   }, [onMouseMove, onMouseUp, onTouchMove]);
 
   return (
-    <section ref={sectionRef} className="w-full bg-[#e8e8f4] py-20">
+    <section ref={sectionRef} className="w-full bg-white  py-20">
       <div className="w-[90%] mx-auto max-[1275px]:w-full">
-        <div className="bg-white rounded-[2.5rem] p-8 sm:p-10 lg:p-14 shadow-sm max-[1275px]:rounded-none max-[800px]:px-4">
+        <div className="bg-[#f5f1ff] rounded-[2.5rem] p-8 sm:p-10 lg:p-14 shadow-sm max-[1275px]:rounded-none max-[800px]:px-4">
           {/* ── Heading ──────────────────────────────────────────────────── */}
           <div ref={headingRef} className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl lg:text-[2.6rem] font-black text-[#1a1a2e] tracking-tight leading-tight mb-2">
@@ -131,18 +142,18 @@ export default function TransformationsSection() {
             {/* ── LEFT: Story card ─────────────────────────────────────────── */}
             <div
               ref={leftCardRef}
-              className="rounded-3xl p-7 sm:p-9 flex flex-col justify-between min-h-[460px]"
-              style={{ backgroundColor: "#f5f1ff" }}
+              className="rounded-3xl p-7 sm:p-9 flex flex-col justify-between min-h-[480px]"
+              style={{ backgroundColor: "#e4ddf8" }}
             >
-              {/* Top: name + testimonial */}
-              <div>
-                <p className="text-sm font-semibold text-[#1a1a2e] mb-0.5">
+              {/* Top: name + testimonial — all centered */}
+              <div className="text-center">
+                <p className="text-base font-bold text-[#1a1a2e] mb-0.5">
                   Amara, 34 years
                 </p>
-                <p className="text-sm text-[#6b6baa] font-medium mb-5">
+                <p className="text-base font-semibold text-[#6b6baa] mb-5">
                   Visibly brighter skin in 4 weeks
                 </p>
-                <p className="text-sm text-[#5a5a7a] leading-relaxed max-w-sm italic">
+                <p className="text-sm text-[#5a5a7a] leading-relaxed italic">
                   "I'd struggled with dark spots and uneven tone for years.
                   After using the Naya Radiance Boost Serum consistently, I
                   finally started seeing a real difference — my skin looks
@@ -152,8 +163,8 @@ export default function TransformationsSection() {
 
               {/* Middle: concerns list */}
               <div className="my-7">
-                <div className="bg-white rounded-2xl px-5 py-4 shadow-sm">
-                  <p className="text-xs font-semibold text-[#1a1a2e] mb-3 tracking-wide uppercase">
+                <div className="bg-white rounded-2xl px-5 py-5 shadow-sm w-[80%] mx-auto">
+                  <p className="text-sm font-bold text-[#1a1a2e] mb-4 text-center">
                     Amara also has concerns with
                   </p>
                   <div className="flex flex-col gap-2">
@@ -161,25 +172,26 @@ export default function TransformationsSection() {
                       <Link
                         key={c.label}
                         href={c.href}
-                        className="flex items-center justify-between group px-3 py-2.5 rounded-xl hover:bg-[#f5f1ff] transition-colors duration-200"
+                        className="flex items-center justify-between px-3 py-3 rounded-2xl bg-[#e4ddf8] hover:bg-[#ede8ff] transition-colors duration-200"
                       >
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#9a9ab8] flex-shrink-0" />
-                          <span className="text-sm text-[#1a1a2e] group-hover:text-[#6b6baa] transition-colors">
+                        <div className="flex items-center gap-2.5">
+                          {/* Small icon placeholder — swap for your icon */}
+                          <span className="text-[#9a9ab8] text-sm">✦</span>
+                          <span className="text-sm font-medium text-[#1a1a2e]">
                             {c.label}
                           </span>
                         </div>
-                        <ArrowRight
-                          size={14}
-                          className="text-[#9a9ab8] group-hover:text-[#6b6baa] group-hover:translate-x-0.5 transition-all duration-200"
-                        />
+                        {/* Circular arrow button */}
+                        <span className="w-7 h-7 rounded-full border border-[#d4d4e8] flex items-center justify-center flex-shrink-0 bg-white">
+                          <ArrowRight size={13} className="text-[#6b6baa]" />
+                        </span>
                       </Link>
                     ))}
                   </div>
                 </div>
               </div>
 
-              {/* Bottom: product + CTA */}
+              {/* Bottom: product + CTA — unchanged */}
               <div className="flex items-center justify-between flex-wrap gap-3">
                 <div className="flex items-center gap-3">
                   <div className="w-11 h-11 rounded-xl overflow-hidden bg-[#ffe1d7] flex-shrink-0">
@@ -188,7 +200,7 @@ export default function TransformationsSection() {
                       alt="Radiance Boost Serum"
                       width={44}
                       height={44}
-                      className="object-contain w-full h-full p-0.5"
+                      className="object-cover w-full h-full"
                     />
                   </div>
                   <div>
@@ -213,7 +225,7 @@ export default function TransformationsSection() {
             <div
               ref={rightCardRef}
               className="rounded-3xl overflow-hidden relative"
-              style={{ backgroundColor: "#e8e8f4", minHeight: 460 }}
+              style={{ backgroundColor: "#e4ddf8", minHeight: 460 }}
             >
               {/* Improvements badge */}
               <div className="absolute top-4 right-4 z-20 bg-white rounded-2xl px-4 py-3 shadow-md">
@@ -222,15 +234,17 @@ export default function TransformationsSection() {
                 </p>
                 {/* Arc progress */}
                 <div className="flex items-center gap-2">
-                  <ArcProgress percent={73} />
-                  <span className="text-lg font-black text-[#1a1a2e]">73%</span>
+                  <ArcProgress percent={sliderX} />
+                  <span className="text-lg font-black text-[#1a1a2e]">
+                    {Number(sliderX).toFixed(0)}%
+                  </span>
                 </div>
               </div>
 
               {/* Before/After slider */}
               <div
                 ref={sliderContainerRef}
-                className="relative w-full h-full select-none"
+                className="relative w-1/2 h-full select-none mx-auto"
                 style={{ minHeight: 460, cursor: "col-resize" }}
                 onMouseDown={onMouseDown}
                 onTouchStart={onTouchStart}
