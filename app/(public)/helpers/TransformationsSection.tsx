@@ -123,16 +123,16 @@ export default function TransformationsSection() {
   }, [onMouseMove, onMouseUp, onTouchMove]);
 
   return (
-    <section ref={sectionRef} className="w-full bg-white  py-20">
+    <section ref={sectionRef} className="w-full bg-[#f5f1ff]  py-20">
       <div className="w-[90%] mx-auto max-[1275px]:w-full">
-        <div className="bg-[#f5f1ff] rounded-[2.5rem] p-8 sm:p-10 lg:p-14 shadow-sm max-[1275px]:rounded-none max-[800px]:px-4">
+        <div className="p-8 sm:p-10 lg:p-14 max-[800px]:px-4">
           {/* ── Heading ──────────────────────────────────────────────────── */}
           <div ref={headingRef} className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl lg:text-[2.6rem] font-black text-[#1a1a2e] tracking-tight leading-tight mb-2">
+            <h2 className="text-3xl sm:text-4xl lg:text-[2.6rem] font-semibold text-[#1a1a2e] tracking-tight leading-tight mb-2">
               Inspiring transformations{" "}
-              <span className="font-light text-[#9a9ab8]">from real</span>
+              <span className="font-light text-[#c2bbd4]">from real</span>
             </h2>
-            <p className="text-3xl sm:text-4xl lg:text-[2.6rem] font-light text-[#9a9ab8] tracking-tight">
+            <p className="text-3xl sm:text-4xl lg:text-[2.6rem] font-light text-[#c2bbd4] tracking-tight">
               people like you
             </p>
           </div>
@@ -147,13 +147,13 @@ export default function TransformationsSection() {
             >
               {/* Top: name + testimonial — all centered */}
               <div className="text-center">
-                <p className="text-base font-bold text-[#1a1a2e] mb-0.5">
+                <p className="text-base font-bold text-[#1a1a2e]">
                   Amara, 34 years
                 </p>
-                <p className="text-base font-semibold text-[#6b6baa] mb-5">
+                <p className="text-base font-semibold text-[#1a1a2e] mb-5">
                   Visibly brighter skin in 4 weeks
                 </p>
-                <p className="text-sm text-[#5a5a7a] leading-relaxed italic">
+                <p className="text-sm text-gray-950 leading-relaxed">
                   "I'd struggled with dark spots and uneven tone for years.
                   After using the Naya Radiance Boost Serum consistently, I
                   finally started seeing a real difference — my skin looks
@@ -196,7 +196,7 @@ export default function TransformationsSection() {
                 <div className="flex items-center gap-3">
                   <div className="w-11 h-11 rounded-xl overflow-hidden bg-[#ffe1d7] flex-shrink-0">
                     <Image
-                      src="/images/ECA30FF9-62EA-4126-8301-03D590C8250D.png"
+                      src="/images/eca30ff9-62ea-4126-8301-03d590c8250d.png"
                       alt="Radiance Boost Serum"
                       width={44}
                       height={44}
@@ -235,7 +235,7 @@ export default function TransformationsSection() {
                 {/* Arc progress */}
                 <div className="flex items-center gap-2">
                   <ArcProgress percent={sliderX} />
-                  <span className="text-lg font-black text-[#1a1a2e]">
+                  <span className="text-lg font-semibold text-[#1a1a2e]">
                     {Number(sliderX).toFixed(0)}%
                   </span>
                 </div>

@@ -22,15 +22,26 @@ const hoverImages = [
 ];
 
 const cardColors = [
-  "#ffe1d7", // peach
-  "#fce4f0", // pink
-  "#e1f0e8", // mint
-  "#f5f1ff", // lavender
-  "#fdf4e3", // warm yellow
-  "#fce4f0", // pink
-  "#e1f0e8", // mint
-  "#ffe1d7", // peach
+  "#fff2ec",
+  "#ffeaf6",
+  "#eafbf0",
+  "#f3f9fe",
+  "#f5f1ff",
+  "#ffe4e3",
+  "#fffef3",
+  "#f4f5ff",
 ];
+
+const arrowContainerColors = [
+  "#f0cbb4",
+  "#dba6c1",
+  "#aed4b4",
+  "#bcd0fb",
+  "#bfb7d7",
+  "#f4a09e",
+  "#ebd393",
+  "#b4addd"
+]
 
 const products = [
   {
@@ -39,7 +50,7 @@ const products = [
     fullName: "Radiance Boost Serum",
     price: "$34.99",
     originalPrice: "$44.99",
-    image: "/images/ECA30FF9-62EA-4126-8301-03D590C8250D.png",
+    image: "/images/eca30ff9-62ea-4126-8301-03d590c8250d.png",
     href: "/products/radiance-boost-serum",
   },
   {
@@ -48,7 +59,7 @@ const products = [
     fullName: "Clarifying Foam Cleanser",
     price: "$28.99",
     originalPrice: "$36.99",
-    image: "/images/432E42AB-30FD-4531-815A-E4ECE090058B.png",
+    image: "/images/432e42ab-30fd-4531-815a-e4ece090058b.png",
     href: "/products/clarifying-foam-cleanser",
   },
   {
@@ -57,7 +68,7 @@ const products = [
     fullName: "Radiance Barrier Face Oil",
     price: "$38.99",
     originalPrice: "$49.99",
-    image: "/images/9CB3AAE2-D6B9-4D9D-8A24-E679C00C2705.png",
+    image: "/images/9cb3aae2-d6b9-4d9d-8a24-e679c00c2705.png",
     href: "/products/radiance-barrier-face-oil",
   },
   {
@@ -75,7 +86,7 @@ const products = [
     fullName: "Exfoliating Body Scrub",
     price: "$29.99",
     originalPrice: "$39.99",
-    image: "/images/19EA7A51-ADB2-4A49-BCB7-0BBC0116F4F2.png",
+    image: "/images/19ea7a51-adb2-4a49-bcb7-0bbc0116f4f2.png",
     href: "/products/exfoliating-body-scrub",
   },
   {
@@ -84,7 +95,7 @@ const products = [
     fullName: "Pigment Corrector Face Cream",
     price: "$36.99",
     originalPrice: "$46.99",
-    image: "/images/42CBFE95-D2A7-4D13-8A5E-72E62DCF1792.png",
+    image: "/images/42cbfe95-d2a7-4d13-8a5e-72e62dcf1792.png",
     href: "/products/pigment-corrector-face-cream",
   },
   {
@@ -93,7 +104,7 @@ const products = [
     fullName: "Radiance Balance Toner",
     price: "$24.99",
     originalPrice: "$32.99",
-    image: "/images/056BF54D-5022-45A9-861D-FA2A3620F4A3.png",
+    image: "/images/056bf54d-5022-45a9-861d-fa2a3620f4a3.png",
     href: "/products/radiance-balance-toner",
   },
   {
@@ -102,7 +113,7 @@ const products = [
     fullName: "Luminous Glow Body Oil",
     price: "$32.99",
     originalPrice: "$42.99",
-    image: "/images/0323D23A-ED8D-4AB5-8F52-B8A8EB31E04F.png",
+    image: "/images/0323d23a-ed8d-4ab5-8f52-b8a8eb31e04f.png",
     href: "/products/luminous-glow-body-oil",
   },
 ];
@@ -111,12 +122,14 @@ function ProductCard({
   product,
   bgColor,
   hoverImage,
+  arrowBgColor,
   animRef,
 }: {
   product: (typeof products)[0];
   bgColor: string;
   hoverImage: string;
   animRef: (el: HTMLDivElement | null) => void;
+  arrowBgColor: string;
 }) {
   const [hovered, setHovered] = useState(false);
   const imgRef = useRef<HTMLDivElement>(null);
@@ -221,13 +234,13 @@ function ProductCard({
         <Link
           href={product.href}
           onClick={(e) => e.stopPropagation()}
-          className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${
-            hovered
-              ? "bg-white text-[#1a1a2e] scale-110"
-              : "bg-[#1a1a2e]/10 text-[#1a1a2e] hover:bg-[#1a1a2e]/20"
-          }`}
+          className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${hovered
+            ? "bg-white text-[#1a1a2e] scale-110"
+            : ` text-[#1a1a2e] hover:bg-white`
+            }`}
+          style={{ backgroundColor: hovered ? "white" : arrowBgColor }}
         >
-          <ArrowRight size={15} />
+          <ArrowRight size={15} color={hovered ? "black" : "white"} />
         </Link>
       </div>
     </div>
@@ -274,16 +287,16 @@ export default function CatalogSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="w-full bg-[#f5f1ff] py-20">
+    <section ref={sectionRef} className="w-full bg-white py-20">
       <div className="w-[90%] mx-auto max-[1275px]:w-full">
-        <div className="bg-white rounded-[2.5rem] p-8 sm:p-10 lg:p-14 shadow-sm max-[1275px]:rounded-none max-[800px]:px-4">
+        <div className=" p-8 sm:p-10 lg:p-14  max-[800px]:px-4">
           {/* ── Heading + CTA ─────────────────────────────────────────────── */}
           <div
             ref={headingRef}
             className="flex items-end justify-between mb-10 flex-wrap gap-4"
           >
             <div>
-              <h2 className="text-3xl sm:text-4xl lg:text-[2.6rem] font-black text-[#1a1a2e] tracking-tight leading-tight">
+              <h2 className="text-3xl sm:text-4xl lg:text-[2.6rem] font-semibold text-[#1a1a2e] tracking-tight leading-tight">
                 Find the perfect Solution
               </h2>
               <p className="text-3xl sm:text-4xl lg:text-[2.6rem] font-light text-[#9a9ab8] tracking-tight leading-tight">
@@ -312,6 +325,7 @@ export default function CatalogSection() {
                 animRef={(el) => {
                   cardRefs.current[i] = el;
                 }}
+                arrowBgColor={arrowContainerColors[i % arrowContainerColors.length]}
               />
             ))}
           </div>

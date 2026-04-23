@@ -5,6 +5,7 @@ import TransformationsSection from "./helpers/TransformationsSection";
 import CatalogSection from "./helpers/CatalogSection";
 import HowItWorksSection from "./helpers/HowItWorks";
 import ProductSpotlightSection from "./helpers/ProductSpotlightSection";
+import BestSellersSection from "./helpers/BestSellerSection";
 
 type Props = {};
 
@@ -17,6 +18,7 @@ const Main = (props: Props) => {
       <CatalogSection />
       <HowItWorksSection />
       <ProductSpotlightSection />
+      <BestSellersSection />
     </>
   );
 };

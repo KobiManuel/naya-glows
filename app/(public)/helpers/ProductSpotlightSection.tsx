@@ -34,12 +34,24 @@ const rightCards = [
     },
 ];
 
+const getScale = () => {
+    if (typeof window === "undefined") return 1;
+    const w = window.innerWidth;
+    if (w < 400) return 0.38;
+    if (w < 480) return 0.44;
+    if (w < 640) return 0.54;
+    if (w < 768) return 0.66;
+    if (w < 1024) return 0.80;
+    return 1;
+};
+
 export default function ProductSpotlightSection() {
     const sectionRef = useRef<HTMLElement>(null);
     const headingRef = useRef<HTMLDivElement>(null);
     const subRef = useRef<HTMLParagraphElement>(null);
     const productRef = useRef<HTMLDivElement>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
+    const innerRef = useRef<HTMLDivElement>(null);
 
     // SVG line refs
     const svgRef = useRef<SVGSVGElement>(null);
@@ -50,6 +62,16 @@ export default function ProductSpotlightSection() {
     const rightCardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
     useEffect(() => {
+        // Apply scale on mount and resize
+        const applyScale = () => {
+            if (!innerRef.current) return;
+            const s = getScale();
+            innerRef.current.style.transform = `scale(${s})`;
+            innerRef.current.style.transformOrigin = "top center";
+        };
+        applyScale();
+        window.addEventListener("resize", applyScale);
+
         const ctx = gsap.context(() => {
             const tl = gsap.timeline({
                 scrollTrigger: {
@@ -82,7 +104,7 @@ export default function ProductSpotlightSection() {
                 0.2
             );
 
-            // 3. Lines materialise (strokeDashoffset → 0)
+            // 3. Lines animate outward from center (strokeDashoffset → 0)
             lineRefs.current.forEach((el, i) => {
                 if (!el) return;
                 const length = (el as SVGGeometryElement).getTotalLength?.() ?? 200;
@@ -92,7 +114,7 @@ export default function ProductSpotlightSection() {
                     {
                         strokeDashoffset: 0,
                         opacity: 1,
-                        duration: 0.55,
+                        duration: 0.6,
                         ease: "power2.out",
                     },
                     0.55 + i * 0.08
@@ -112,7 +134,10 @@ export default function ProductSpotlightSection() {
             });
         }, sectionRef);
 
-        return () => ctx.revert();
+        return () => {
+            ctx.revert();
+            window.removeEventListener("resize", applyScale);
+        };
     }, []);
 
     const cardStyle: React.CSSProperties = {
@@ -120,17 +145,35 @@ export default function ProductSpotlightSection() {
         boxShadow: "4px 6px 0px 0px #b8d4b4, 8px 12px 0px 0px #a0c4a8",
     };
 
+    /*
+      SVG viewBox: 660 wide × 420 tall
+      Product center: x=330, y=210
+      Cards sit at:
+        Top-left:    x=0,   y=80   (higher, wider)
+        Bottom-left: x=0,   y=290  (lower, closer)
+        Top-right:   x=660, y=80
+        Bottom-right:x=660, y=290
+
+      Top lines: bracket/elbow shape matching reference —
+        from image side → go horizontal out → drop down to card level
+        Path drawn FROM card END toward center so dashoffset animates outward from image.
+
+      Bottom lines: simpler shallower diagonal.
+
+      Lines are drawn starting from the image-side endpoint so the
+      strokeDashoffset animation reveals them growing outward from the product.
+    */
+
     return (
-        <section ref={sectionRef} className="w-full bg-[#e8e8f4] py-20">
-            <div className="w-[90%] mx-auto max-[1275px]:w-full">
+        <section ref={sectionRef} className="w-full bg-[#eafbf0] py-20">
+            <div className="w-[90%] max-w-[1440px] mx-auto max-[1275px]:w-full">
                 <div
                     ref={wrapperRef}
-                    className="rounded-[2.5rem] p-8 sm:p-10 lg:p-14 shadow-sm max-[1275px]:rounded-none max-[800px]:px-4"
-                    style={{ backgroundColor: "#e8f0e4" }}
+                    className=" p-8 sm:p-10 lg:p-14 max-[800px]:px-4"
                 >
                     {/* ── Heading ─────────────────────────────────────────── */}
                     <div ref={headingRef} className="text-center mb-10 lg:mb-14">
-                        <h2 className="text-3xl sm:text-4xl lg:text-[2.6rem] font-black text-[#1a1a2e] tracking-tight leading-tight">
+                        <h2 className="text-3xl sm:text-4xl lg:text-[2.6rem] font-semibold text-[#1a1a2e] tracking-tight leading-tight">
                             Boost Your Confidence with
                         </h2>
                         <p className="text-3xl sm:text-4xl lg:text-[2.6rem] font-light tracking-tight leading-tight"
@@ -139,111 +182,138 @@ export default function ProductSpotlightSection() {
                         </p>
                     </div>
 
-                    {/* ── Main layout: cards + product + cards ────────────── */}
-                    <div className="relative flex items-center justify-center gap-0 overflow-x-auto">
+                    {/* ── Scalable inner wrapper ───────────────────────────── */}
+                    <div style={{ overflow: "visible" }}>
+                        <div ref={innerRef} style={{ transformOrigin: "top center" }}>
 
-                        {/* LEFT CARDS */}
-                        <div className="flex flex-col gap-5 z-10 flex-shrink-0" style={{ width: 160 }}>
-                            {leftCards.map((card, i) => (
-                                <div
-                                    key={card.title}
-                                    ref={(el) => { leftCardRefs.current[i] = el; }}
-                                    className="rounded-2xl p-4"
-                                    style={cardStyle}
-                                >
-                                    <div className="flex items-center justify-between mb-2">
-                                        <span className="text-sm font-bold text-[#1a1a2e]">{card.title}</span>
-                                        <div className="w-7 h-7 rounded-full bg-white/60 flex items-center justify-center text-[#6a9a72] text-xs flex-shrink-0">
-                                            {card.icon}
+                            {/* ── Main layout: cards + product + cards ──────── */}
+                            <div className="relative flex items-center justify-center gap-0">
+
+                                {/* LEFT CARDS */}
+                                <div className="flex flex-col z-10 flex-shrink-0 " style={{ width: 160, gap: "100px" }}>
+                                    {leftCards.map((card, i) => (
+                                        <div
+                                            key={card.title}
+                                            ref={(el) => { leftCardRefs.current[i] = el; }}
+                                            className="rounded-2xl p-4"
+                                            style={cardStyle}
+                                        >
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="text-sm font-bold text-[#1a1a2e]">{card.title}</span>
+                                                <div className="w-7 h-7 rounded-full bg-white/60 flex items-center justify-center text-[#6a9a72] text-xs flex-shrink-0">
+                                                    {card.icon}
+                                                </div>
+                                            </div>
+                                            <p className="text-xs text-[#4a6a4e] leading-relaxed">{card.description}</p>
                                         </div>
-                                    </div>
-                                    <p className="text-xs text-[#4a6a4e] leading-relaxed">{card.description}</p>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
 
-                        {/* CENTER: SVG lines + product image */}
-                        <div className="relative flex items-center justify-center flex-shrink-0"
-                            style={{ width: 340, height: 420 }}>
+                                {/* CENTER: SVG lines + product image */}
+                                <div className="relative flex items-center justify-center flex-shrink-0"
+                                    style={{ width: 340, height: 420 }}>
 
-                            {/* Product image — behind lines */}
-                            <div
-                                ref={productRef}
-                                className="absolute inset-0 z-0 flex items-center justify-center"
-                            >
-                                <Image
-                                    src="/images/black-radiance.png"
-                                    alt="Naya Radiance Balance Toner"
-                                    width={220}
-                                    height={380}
-                                    className="object-contain drop-shadow-2xl"
-                                    style={{ width: 220, height: 380 }}
-                                    priority
-                                />
+                                    {/* Product image — behind lines */}
+                                    <div
+                                        ref={productRef}
+                                        className="absolute inset-0 z-0 flex items-center justify-center"
+                                    >
+                                        <Image
+                                            src="/images/black-radiance.png"
+                                            alt="Naya Radiance Balance Toner"
+                                            width={220}
+                                            height={380}
+                                            className="object-contain drop-shadow-2xl"
+                                            style={{ width: 220, height: 380 }}
+                                            priority
+                                        />
+                                    </div>
+
+                                    {/* SVG connecting lines — over image */}
+                                    <svg
+                                        ref={svgRef}
+                                        className="absolute pointer-events-none"
+                                        style={{
+                                            zIndex: -1,
+                                            // Extend beyond the center div to reach the cards
+                                            width: "660px",
+                                            height: "420px",
+                                            left: "50%",
+                                            top: "0",
+                                            transform: "translateX(-50%)",
+                                            overflow: "visible",
+                                        }}
+                                        viewBox="0 0 660 420"
+                                        fill="none"
+                                    >
+                                        {/*
+                                          Top-left bracket: image left edge ~x=170, card right edge ~x=160
+                                          Starts at image side (330-85=245 left edge of product area), goes left,
+                                          elbows up, then goes to card.
+                                          Drawn FROM image outward so dashoffset reveals left→card.
+                                          Image center x=330, product left ~245.
+                                          Card top sits at y≈80, bottom card at y≈290.
+                                          Top line: from (245,155) → go left to (170,155) → up to (170,100) → left to (0,100)  [bracket]
+                                          Bottom line: from (245,260) → straight left to (0,290)  [shallow diagonal]
+                                        */}
+
+                                        {/* Top-left bracket */}
+                                        <path
+                                            ref={(el) => { lineRefs.current[0] = el; }}
+                                            d="M 245,165 L 185,165 L 185,100 L 0,100"
+                                            stroke="#8ab88e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"
+                                        />
+                                        {/* Bottom-left shallow diagonal */}
+                                        <line
+                                            ref={(el) => { lineRefs.current[1] = el as SVGLineElement; }}
+                                            x1="245" y1="265" x2="0" y2="290"
+                                            stroke="#8ab88e" strokeWidth="1.5" strokeLinecap="round"
+                                        />
+                                        {/* Top-right bracket (mirror) */}
+                                        <path
+                                            ref={(el) => { lineRefs.current[2] = el; }}
+                                            d="M 415,165 L 475,165 L 475,100 L 660,100"
+                                            stroke="#8ab88e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"
+                                        />
+                                        {/* Bottom-right shallow diagonal */}
+                                        <line
+                                            ref={(el) => { lineRefs.current[3] = el as SVGLineElement; }}
+                                            x1="415" y1="265" x2="660" y2="290"
+                                            stroke="#8ab88e" strokeWidth="1.5" strokeLinecap="round"
+                                        />
+
+                                        {/* Terminal dots at card ends */}
+                                        {[
+                                            [0, 100], [0, 290], [660, 100], [660, 290],
+                                        ].map(([cx, cy], i) => (
+                                            <circle key={i} cx={cx} cy={cy} r={4} fill="#8ab88e" opacity={0.7} />
+                                        ))}
+                                        {/* Center origin dot */}
+                                        <circle cx="330" cy="210" r="5" fill="#6a9a72" opacity={0.5} />
+                                    </svg>
+                                </div>
+
+                                {/* RIGHT CARDS */}
+                                <div className="flex flex-col z-10 flex-shrink-0 " style={{ width: 160, gap: "100px" }}>
+                                    {rightCards.map((card, i) => (
+                                        <div
+                                            key={card.title}
+                                            ref={(el) => { rightCardRefs.current[i] = el; }}
+                                            className="rounded-2xl p-4"
+                                            style={cardStyle}
+                                        >
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="text-sm font-bold text-[#1a1a2e]">{card.title}</span>
+                                                <div className="w-7 h-7 rounded-full bg-white/60 flex items-center justify-center text-[#6a9a72] text-xs flex-shrink-0">
+                                                    {card.icon}
+                                                </div>
+                                            </div>
+                                            <p className="text-xs text-[#4a6a4e] leading-relaxed">{card.description}</p>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
 
-                            {/* SVG connecting lines — absolutely on top of image */}
-                            <svg
-                                ref={svgRef}
-                                className="absolute inset-0 w-full h-full pointer-events-none"
-                                style={{ zIndex: 10 }}
-                                viewBox="0 0 340 420"
-                                fill="none"
-                            >
-                                {/* Top-left: horizontal at y=140 (top card vertical center) */}
-                                <line
-                                    ref={(el) => { lineRefs.current[0] = el as SVGLineElement; }}
-                                    x1="0" y1="140" x2="170" y2="140"
-                                    stroke="#8ab88e" strokeWidth="1.5" strokeLinecap="round"
-                                />
-                                {/* Bottom-left: horizontal at y=280 (bottom card vertical center) */}
-                                <line
-                                    ref={(el) => { lineRefs.current[1] = el as SVGLineElement; }}
-                                    x1="0" y1="280" x2="170" y2="280"
-                                    stroke="#8ab88e" strokeWidth="1.5" strokeLinecap="round"
-                                />
-                                {/* Top-right: horizontal at y=140 */}
-                                <line
-                                    ref={(el) => { lineRefs.current[2] = el as SVGLineElement; }}
-                                    x1="170" y1="140" x2="340" y2="140"
-                                    stroke="#8ab88e" strokeWidth="1.5" strokeLinecap="round"
-                                />
-                                {/* Bottom-right: horizontal at y=280 */}
-                                <line
-                                    ref={(el) => { lineRefs.current[3] = el as SVGLineElement; }}
-                                    x1="170" y1="280" x2="340" y2="280"
-                                    stroke="#8ab88e" strokeWidth="1.5" strokeLinecap="round"
-                                />
-
-                                {/* Terminal dots at card ends */}
-                                {[
-                                    [0, 140], [0, 280], [340, 140], [340, 280],
-                                ].map(([cx, cy], i) => (
-                                    <circle key={i} cx={cx} cy={cy} r={4} fill="#8ab88e" opacity={0.7} />
-                                ))}
-                                {/* Center origin dot */}
-                                <circle cx="170" cy="210" r="5" fill="#6a9a72" opacity={0.5} />
-                            </svg>
-                        </div>
-
-                        {/* RIGHT CARDS */}
-                        <div className="flex flex-col gap-5 z-10 flex-shrink-0" style={{ width: 160 }}>
-                            {rightCards.map((card, i) => (
-                                <div
-                                    key={card.title}
-                                    ref={(el) => { rightCardRefs.current[i] = el; }}
-                                    className="rounded-2xl p-4"
-                                    style={cardStyle}
-                                >
-                                    <div className="flex items-center justify-between mb-2">
-                                        <span className="text-sm font-bold text-[#1a1a2e]">{card.title}</span>
-                                        <div className="w-7 h-7 rounded-full bg-white/60 flex items-center justify-center text-[#6a9a72] text-xs flex-shrink-0">
-                                            {card.icon}
-                                        </div>
-                                    </div>
-                                    <p className="text-xs text-[#4a6a4e] leading-relaxed">{card.description}</p>
-                                </div>
-                            ))}
                         </div>
                     </div>
 

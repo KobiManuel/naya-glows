@@ -219,8 +219,8 @@ export default function Navbar() {
                     key={link.label}
                     href={link.href}
                     className={`text-sm tracking-wide transition-colors duration-150 px-3 py-1 rounded-full hover:bg-white/15 ${pathname === link.href
-                        ? "text-black font-semibold"
-                        : "text-black/80 hover:text-black"
+                      ? "text-black font-semibold"
+                      : "text-black/80 hover:text-black"
                       }`}
                   >
                     {link.label}
@@ -463,8 +463,8 @@ export default function Navbar() {
                           <div className="flex items-center gap-4">
                             <div
                               className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 ${isActive
-                                  ? "bg-[#c9a87c]/20"
-                                  : "bg-white/[0.07] group-active:bg-white/15"
+                                ? "bg-[#c9a87c]/20"
+                                : "bg-white/[0.07] group-active:bg-white/15"
                                 }`}
                             >
                               <Icon
@@ -480,8 +480,8 @@ export default function Navbar() {
                           </div>
                           <span
                             className={`text-lg transition-colors ${isActive
-                                ? "text-[#c9a87c]"
-                                : "text-white/15 group-active:text-white/40"
+                              ? "text-[#c9a87c]"
+                              : "text-white/15 group-active:text-white/40"
                               }`}
                           >
                             →

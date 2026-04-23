@@ -57,17 +57,17 @@ export default function FeaturedSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="w-full bg-[#f5f1ff] py-20">
+    <section ref={sectionRef} className="w-full py-20 bg-white">
       <div className="w-[90%] mx-auto max-[1275px]:w-full">
         {/* ── White card container ─────────────────────────────────────────── */}
-        <div className="bg-white rounded-[2.5rem] p-8 sm:p-10 lg:p-14 shadow-sm max-[1275px]:rounded-none max-[800px]:px-2">
+        <div className=" p-8 sm:p-10 lg:p-14 max-[800px]:px-2">
           {/* ── Heading line 1 ──────────────────────────────────────────────── */}
           <div ref={headingRef} className="text-center mb-1">
             <div className="flex items-center justify-center gap-3 flex-wrap">
-              <span className="text-3xl sm:text-4xl lg:text-[2.75rem] font-black text-[#1a1a2e]">
+              <span className="text-3xl sm:text-4xl lg:text-[2.75rem] font-semibold text-[#1a1a2e]">
                 ▶
               </span>
-              <h2 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-black text-[#1a1a2e] tracking-tight">
+              <h2 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-semibold text-[#1a1a2e] tracking-tight">
                 Your Daily Skincare
               </h2>
               <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-white shadow-md flex-shrink-0">
@@ -79,7 +79,7 @@ export default function FeaturedSection() {
                   className="object-cover w-full h-full"
                 />
               </div>
-              <h2 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-black text-[#1a1a2e] tracking-tight">
+              <h2 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-semibold text-[#1a1a2e] tracking-tight">
                 Essentials
               </h2>
             </div>
@@ -100,7 +100,7 @@ export default function FeaturedSection() {
                   className="object-cover w-full h-full"
                 />
               </div>
-              <span className="text-3xl sm:text-4xl lg:text-[2.75rem] font-black text-[#1a1a2e] tracking-tight">
+              <span className="text-3xl sm:text-4xl lg:text-[2.75rem] font-semibold text-[#1a1a2e] tracking-tight">
                 Visible
               </span>
               <span className="text-3xl sm:text-4xl lg:text-[2.75rem] font-light text-[#9a9ab8] tracking-tight">
