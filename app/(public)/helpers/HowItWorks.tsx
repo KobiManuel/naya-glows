@@ -132,7 +132,7 @@ export default function HowItWorksSection() {
                     </div>
 
                     {/* ── Centered connector row ───────────────────────────────────── */}
-                    <div ref={connectorRef} className="flex items-center justify-center mb-10 px-2">
+                    <div ref={connectorRef} className="flex items-center justify-center mb-10 px-2 max-[700px]:hidden">
                         <div className="flex items-center gap-0 min-w-1/2 mx-auto">
 
                             {steps.map((step, i) => (
@@ -189,7 +189,7 @@ export default function HowItWorksSection() {
                                 onClick={() => setActiveStep(i)}
                                 className={`relative rounded-3xl p-7 flex flex-col items-center text-center cursor-pointer transition-all duration-400 group ${activeStep === i
                                     ? "bg-[#fff5f2] shadow-md ring-1 ring-[#ffd0ba]"
-                                    : "bg-[#f5f5f5] hover:bg-[#fff5f2]/50"
+                                    : "bg-[#f5f5f5] hover:bg-[#fff5f2]/50 shadow-lg"
                                     }`}
                             >
                                 {/* Image + dot ring wrapper */}

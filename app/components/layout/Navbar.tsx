@@ -125,7 +125,7 @@ const products = [
 
 const navLinks = [
   { label: "Home", href: "/", icon: Home },
-  { label: "About", href: "/about", icon: BookOpen },
+  // { label: "About", href: "/about", icon: BookOpen },
   { label: "Catalog", href: "/catalog", icon: ShoppingBag },
   { label: "Our Story", href: "/our-story", icon: HelpCircle },
   { label: "Contact", href: "/contact", icon: Phone },

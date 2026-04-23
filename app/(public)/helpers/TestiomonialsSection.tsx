@@ -163,7 +163,7 @@ export default function TestimonialsSection() {
                             <div
                                 key={t.name}
                                 ref={(el) => { cardRefs.current[i] = el; }}
-                                className="group relative flex-shrink-0 snap-start rounded-3xl overflow-hidden cursor-pointer bg-[#f5f5f5] transition-all duration-300 hover:shadow-2xl"
+                                className="group relative flex-shrink-0 snap-start rounded-3xl overflow-hidden cursor-pointer bg-[#f5f5f5] transition-all duration-300 shadow-lg"
                                 style={{ width: "min(320px, 82vw)", height: 320 }}
                             >
                                 {/* ── HOVER BG IMAGE (CSS-only reveal via group-hover) ── */}
