@@ -48,7 +48,7 @@ export default function WhyChooseSection() {
                         ease: "power3.out",
                         scrollTrigger: {
                             trigger: el,
-                            start: "top 88%",
+                            start: "top 95%",
                             end: "top 25%",
                             toggleActions: "play reverse play reverse",
                         },

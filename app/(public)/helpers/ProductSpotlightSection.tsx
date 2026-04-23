@@ -75,11 +75,10 @@ export default function ProductSpotlightSection() {
         const ctx = gsap.context(() => {
             const tl = gsap.timeline({
                 scrollTrigger: {
-                    trigger: wrapperRef.current,
-                    start: "top 82%",
-                    end: "top 20%",
+                    trigger: productRef.current,
+                    start: "top center",  // Product center hits viewport center
                     toggleActions: "play reverse play reverse",
-                },
+                }
             });
 
             // 1. Heading
