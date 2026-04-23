@@ -159,7 +159,7 @@ export default function HeroIngredients() {
           aria-hidden
         >
           <span
-            className="text-[10vw] font-semibold uppercase tracking-tighter leading-none text-[#e8ddd0] whitespace-nowrap"
+            className="text-[10vw] font-black uppercase tracking-tighter leading-none text-[#e8ddd0] whitespace-nowrap"
             style={{ fontFamily: "'Georgia', serif" }}
           >
             NAYA GLOWS
