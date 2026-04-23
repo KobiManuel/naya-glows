@@ -173,7 +173,7 @@ export default function Navbar() {
 
       {/* ── DESKTOP + MOBILE TOP NAVBAR ────────────────────────────────────── */}
       <nav className="w-full fixed top-7 left-0 z-50 bg-transparent">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12">
+        <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-12">
           <div className="flex items-center h-[64px] lg:h-[72px] gap-3">
             {/* LEFT: Logo + All Products (desktop only) */}
             <div className="flex items-center gap-3 flex-shrink-0">
@@ -218,11 +218,10 @@ export default function Navbar() {
                   <Link
                     key={link.label}
                     href={link.href}
-                    className={`text-sm tracking-wide transition-colors duration-150 px-3 py-1 rounded-full hover:bg-white/15 ${
-                      pathname === link.href
+                    className={`text-sm tracking-wide transition-colors duration-150 px-3 py-1 rounded-full hover:bg-white/15 ${pathname === link.href
                         ? "text-black font-semibold"
                         : "text-black/80 hover:text-black"
-                    }`}
+                      }`}
                   >
                     {link.label}
                   </Link>
@@ -458,17 +457,15 @@ export default function Navbar() {
                         <Link
                           href={link.href}
                           onClick={() => setMobileMenuOpen(false)}
-                          className={`flex items-center justify-between py-4 border-b border-white/[0.07] group ${
-                            isActive ? "text-[#c9a87c]" : "text-white/75"
-                          }`}
+                          className={`flex items-center justify-between py-4 border-b border-white/[0.07] group ${isActive ? "text-[#c9a87c]" : "text-white/75"
+                            }`}
                         >
                           <div className="flex items-center gap-4">
                             <div
-                              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 ${
-                                isActive
+                              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 ${isActive
                                   ? "bg-[#c9a87c]/20"
                                   : "bg-white/[0.07] group-active:bg-white/15"
-                              }`}
+                                }`}
                             >
                               <Icon
                                 size={15}
@@ -482,11 +479,10 @@ export default function Navbar() {
                             </span>
                           </div>
                           <span
-                            className={`text-lg transition-colors ${
-                              isActive
+                            className={`text-lg transition-colors ${isActive
                                 ? "text-[#c9a87c]"
                                 : "text-white/15 group-active:text-white/40"
-                            }`}
+                              }`}
                           >
                             →
                           </span>
