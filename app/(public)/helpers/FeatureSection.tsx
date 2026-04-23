@@ -257,7 +257,7 @@ export default function FeaturedSection() {
             {/* ── Card 3 — image container with scale hover on image only ───────────────────────────────────────── */}
             <div
               ref={card3Ref}
-              className="rounded-3xl overflow-hidden relative group cursor-pointer"
+              className="rounded-3xl overflow-hidden relative group cursor-pointer min-h-[300px]"
             >
               {/* Inner container clips the scaling image */}
               <div className="absolute inset-0 rounded-3xl overflow-hidden">
