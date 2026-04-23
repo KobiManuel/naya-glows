@@ -23,3 +23,20 @@ body {
   color: var(--foreground);
   font-family: var(--font-dm-sans), sans-serif;
 }
+
+/* Add to your global.css */
+@keyframes pulse-slow {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}

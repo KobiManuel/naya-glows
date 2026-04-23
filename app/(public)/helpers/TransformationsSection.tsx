@@ -163,7 +163,7 @@ export default function TransformationsSection() {
 
               {/* Middle: concerns list */}
               <div className="my-7">
-                <div className="bg-white rounded-2xl px-5 py-5 shadow-sm w-[80%] mx-auto">
+                <div className="bg-white rounded-2xl px-5 py-5 shadow-sm w-[80%] max-[800px]:w-full mx-auto">
                   <p className="text-sm font-bold text-[#1a1a2e] mb-4 text-center">
                     Amara also has concerns with
                   </p>
@@ -172,7 +172,7 @@ export default function TransformationsSection() {
                       <Link
                         key={c.label}
                         href={c.href}
-                        className="flex items-center justify-between px-3 py-3 rounded-2xl bg-[#e4ddf8] hover:bg-[#ede8ff] transition-colors duration-200"
+                        className="flex items-center justify-between px-3 py-3 rounded-2xl bg-gradient-to-tr from-[#f5f1ff] to-white hover:from-[#f5f1ff] hover:to-[#e8dffa] hover:bg-[#ede8ff] transition-colors duration-200"
                       >
                         <div className="flex items-center gap-2.5">
                           {/* Small icon placeholder — swap for your icon */}

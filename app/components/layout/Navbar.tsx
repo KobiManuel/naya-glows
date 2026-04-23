@@ -127,7 +127,7 @@ const navLinks = [
   { label: "Home", href: "/", icon: Home },
   { label: "About", href: "/about", icon: BookOpen },
   { label: "Catalog", href: "/catalog", icon: ShoppingBag },
-  { label: "FAQ", href: "/faq", icon: HelpCircle },
+  { label: "Our Story", href: "/our-story", icon: HelpCircle },
   { label: "Contact", href: "/contact", icon: Phone },
 ];
 

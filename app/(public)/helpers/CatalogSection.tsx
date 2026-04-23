@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
@@ -8,18 +8,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowRight } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
-
-// All img_ images cycling
-const hoverImages = [
-  "/images/img_6320.jpg",
-  "/images/img_6322.jpg",
-  "/images/img_6323.jpg",
-  "/images/img_6324.jpg",
-  "/images/img_6325.jpg",
-  "/images/img_6326.jpg",
-  "/images/img_6328.jpg",
-  "/images/img_6331.jpg",
-];
 
 const cardColors = [
   "#fff2ec",
@@ -121,88 +109,44 @@ const products = [
 function ProductCard({
   product,
   bgColor,
-  hoverImage,
   arrowBgColor,
   animRef,
 }: {
   product: (typeof products)[0];
   bgColor: string;
-  hoverImage: string;
   animRef: (el: HTMLDivElement | null) => void;
   arrowBgColor: string;
 }) {
-  const [hovered, setHovered] = useState(false);
-  const imgRef = useRef<HTMLDivElement>(null);
-
-  const handleEnter = () => {
-    setHovered(true);
-    if (imgRef.current) {
-      gsap.fromTo(
-        imgRef.current,
-        { opacity: 0, scale: 1.18 },
-        { opacity: 1, scale: 1, duration: 0.45, ease: "power2.out" },
-      );
-    }
-  };
-
-  const handleLeave = () => {
-    if (imgRef.current) {
-      gsap.to(imgRef.current, {
-        opacity: 0,
-        scale: 1.08,
-        duration: 0.3,
-        ease: "power2.in",
-        onComplete: () => setHovered(false),
-      });
-    } else {
-      setHovered(false);
-    }
-  };
-
   return (
     <div
       ref={animRef}
-      onMouseOver={handleEnter}
-      onMouseLeave={handleLeave}
       className="relative rounded-3xl overflow-hidden flex flex-col justify-between p-6 min-h-[260px] group cursor-pointer transition-shadow duration-300 hover:shadow-xl"
       style={{ backgroundColor: bgColor }}
     >
-      {/* Hover background image */}
-      {hovered && (
-        <div
-          ref={imgRef}
-          className="absolute inset-0 z-0 pointer-events-none"
-          style={{ opacity: 0 }}
-        >
-          <Image
-            src={hoverImage}
-            alt="lifestyle"
-            fill
-            className="object-cover"
-          />
-          {/* Overlay to keep text readable */}
-          {/* <div className="absolute inset-0 bg-black/45" /> */}
-        </div>
-      )}
+      {/* ── HOVER BG IMAGE — CSS-only reveal with scaledown ── */}
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        <Image
+          src={product.image}
+          alt={product.fullName}
+          fill
+          className="object-cover scale-[1.18] group-hover:scale-100 transition-transform duration-700 ease-out"
+        />
+      </div>
 
       {/* Card top: category label */}
       <div className="relative z-10">
-        <p
-          className={`text-sm font-medium mb-4 transition-colors duration-300 ${hovered ? "text-white/70" : "text-[#1a1a2e]/50"}`}
-        >
-          <span
-            className={`font-bold transition-colors duration-300 ${hovered ? "text-white" : "text-[#1a1a2e]"}`}
-          >
+        <p className="group-hover:opacity-0  text-sm font-medium mb-4 transition-colors duration-300 text-[#1a1a2e]/50">
+          <span className="font-bold transition-colors duration-300 text-[#1a1a2e] group-hover:text-white">
             {product.category}
           </span>{" "}
-          <span className={hovered ? "text-white/60" : "text-[#1a1a2e]/50"}>
+          <span className="transition-colors duration-300 text-[#1a1a2e]/50 group-hover:text-white/60">
             {product.name}
           </span>
         </p>
 
         {/* Product image — shown when NOT hovered */}
         <div
-          className={`w-full flex justify-center transition-all duration-300 ${hovered ? "opacity-0 pointer-events-none" : "opacity-100"}`}
+          className="w-full flex justify-center transition-opacity duration-300 opacity-100 group-hover:opacity-0 group-hover:pointer-events-none"
           style={{ height: 110 }}
         >
           <Image
@@ -217,30 +161,25 @@ function ProductCard({
 
       {/* Card bottom: price + button */}
       <div className="relative z-10 flex items-center justify-between mt-4">
-        <div>
-          <span
-            className={`text-base font-bold transition-colors duration-300 ${hovered ? "text-white" : "text-[#1a1a2e]"}`}
-          >
+        <div className="group-hover:opacity-0 ">
+          <span className="text-base font-bold transition-colors duration-300 text-[#1a1a2e] group-hover:text-white">
             {product.price}
           </span>{" "}
-          <span
-            className={`text-sm line-through transition-colors duration-300 ${hovered ? "text-white/50" : "text-[#1a1a2e]/35"}`}
-          >
+          <span className="text-sm line-through transition-colors duration-300 text-[#1a1a2e]/35 group-hover:text-white/50">
             {product.originalPrice}
           </span>
         </div>
 
-        {/* Arrow button */}
+        {/* Arrow button — uses white overlay for hover bg to allow smooth CSS transition */}
         <Link
           href={product.href}
           onClick={(e) => e.stopPropagation()}
-          className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${hovered
-            ? "bg-white text-[#1a1a2e] scale-110"
-            : ` text-[#1a1a2e] hover:bg-white`
-            }`}
-          style={{ backgroundColor: hovered ? "white" : arrowBgColor }}
+          className="relative w-9 h-9 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110 overflow-hidden"
+          style={{ backgroundColor: arrowBgColor }}
         >
-          <ArrowRight size={15} color={hovered ? "black" : "white"} />
+          {/* White overlay fades in on hover */}
+          <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full" />
+          <ArrowRight size={15} className="relative z-10 text-white group-hover:text-black transition-colors duration-300" />
         </Link>
       </div>
     </div>
@@ -321,7 +260,6 @@ export default function CatalogSection() {
                 key={product.fullName}
                 product={product}
                 bgColor={cardColors[i % cardColors.length]}
-                hoverImage={hoverImages[i % hoverImages.length]}
                 animRef={(el) => {
                   cardRefs.current[i] = el;
                 }}
