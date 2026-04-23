@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -55,6 +56,7 @@ const getScale = () => {
 };
 
 export default function HeroIngredients() {
+  const pathname = usePathname();
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const jarRef = useRef<HTMLDivElement>(null);
@@ -64,7 +66,7 @@ export default function HeroIngredients() {
   const lemon0Ref = useRef<HTMLDivElement>(null);
   const lemon1Ref = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       // ── Floating lemon idle animations ──────────────────────────────────
       gsap.to(lemon0Ref.current, {
@@ -91,7 +93,7 @@ export default function HeroIngredients() {
           start: "top top",
           end: "+=150%",
           scrub: 1.2,
-          pin: true,
+          pin: pathname === "/",
           anticipatePin: 1,
         },
       });
@@ -145,7 +147,7 @@ export default function HeroIngredients() {
     }, containerRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [pathname]);
 
   return (
     // 250vh = 100vh viewport + 150vh scroll travel (matches end: "+=150%")

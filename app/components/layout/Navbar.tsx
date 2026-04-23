@@ -138,13 +138,12 @@ export default function Navbar() {
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
 
-  // Reset all states on route change
-  useEffect(() => {
+  const closeAllMenus = () => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     setDropdownOpen(false);
     setSearchOpen(false);
     setMobileMenuOpen(false);
-  }, [pathname]);
+  };
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
@@ -179,6 +178,7 @@ export default function Navbar() {
             <div className="flex items-center gap-3 flex-shrink-0">
               <Link
                 href="/"
+                onClick={closeAllMenus}
                 className="w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-white flex items-center justify-center shadow-sm hover:scale-105 transition-transform duration-200"
               >
                 <Image
@@ -218,6 +218,7 @@ export default function Navbar() {
                   <Link
                     key={link.label}
                     href={link.href}
+                    onClick={closeAllMenus}
                     className={`text-sm tracking-wide transition-colors duration-150 px-3 py-1 rounded-full hover:bg-white/15 ${pathname === link.href
                       ? "text-black font-semibold"
                       : "text-black/80 hover:text-black"
@@ -242,6 +243,7 @@ export default function Navbar() {
               {/* Account — desktop only */}
               <Link
                 href="/account"
+                onClick={closeAllMenus}
                 className="hidden lg:flex w-10 h-10 rounded-full bg-white items-center justify-center text-[#1a1a1a] hover:scale-105 transition-transform duration-200 shadow-sm"
               >
                 <User size={16} />
@@ -250,6 +252,7 @@ export default function Navbar() {
               {/* Cart */}
               <Link
                 href="/cart"
+                onClick={closeAllMenus}
                 className="relative w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#1a1a1a] hover:scale-105 transition-transform duration-200 shadow-sm"
               >
                 <ShoppingBag size={16} />
@@ -261,6 +264,7 @@ export default function Navbar() {
               {/* Sign In — desktop only */}
               <Link
                 href="/signin"
+                onClick={closeAllMenus}
                 className="hidden lg:block ml-1 text-sm font-medium bg-white text-[#1a1a1a] px-4 py-2 rounded-full hover:bg-white/90 transition-colors tracking-wide shadow-sm"
               >
                 Sign In
@@ -279,9 +283,10 @@ export default function Navbar() {
         </div>
 
         {/* ── Desktop Dropdown ─────────────────────────────────────────────── */}
-        <AnimatePresence>
+        <AnimatePresence initial={false}>
           {dropdownOpen && (
             <motion.div
+              key="desktop-dropdown"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
@@ -353,9 +358,10 @@ export default function Navbar() {
         </AnimatePresence>
 
         {/* ── Search bar ──────────────────────────────────────────────────── */}
-        <AnimatePresence>
+        <AnimatePresence initial={false}>
           {searchOpen && (
             <motion.div
+              key="desktop-search"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
@@ -376,9 +382,9 @@ export default function Navbar() {
       </nav>
 
       {/* ── MOBILE FULL-SCREEN MENU ─────────────────────────────────────────── */}
-      <AnimatePresence>
+      <AnimatePresence initial={false}>
         {mobileMenuOpen && (
-          <>
+          <motion.div key="mobile-menu-root">
             {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -553,7 +559,7 @@ export default function Navbar() {
                 </div>
               </motion.div>
             </motion.div>
-          </>
+          </motion.div>
         )}
       </AnimatePresence>
     </>
