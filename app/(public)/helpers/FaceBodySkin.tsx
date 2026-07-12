@@ -5,31 +5,16 @@ import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useSectionContent, useSectionLoading } from "../../store/useSectionContent";
+import { defaultCategoriesContent } from "@/lib/content/homeCategories";
+import CategoriesSkeleton from "./skeletons/CategoriesSkeleton";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const categories = [
-    {
-        label: "face",
-        image: "/images/img_6322.jpg",
-        buttonText: "shop face",
-        href: "/catalog?category=face",
-    },
-    {
-        label: "body",
-        image: "/images/img_6320.jpg",
-        buttonText: "shop body",
-        href: "/catalog?category=body",
-    },
-    {
-        label: "scent",
-        image: "/images/img_6326.jpg",
-        buttonText: "shop scent",
-        href: "/catalog?category=scent",
-    },
-];
-
 export default function CategoriesSection() {
+    const content = useSectionContent("home.categories", defaultCategoriesContent);
+    const categories = content.categories;
+    const isLoading = useSectionLoading("home.categories");
     const sectionRef = useRef<HTMLElement>(null);
     const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -60,11 +45,16 @@ export default function CategoriesSection() {
     }, []);
 
     return (
-        <section ref={sectionRef} className="w-full bg-white overflow-y-hidden">
+        <section ref={sectionRef} className="relative w-full bg-white overflow-y-hidden">
+            {isLoading && (
+                <div className="absolute inset-0 z-50">
+                    <CategoriesSkeleton />
+                </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
                 {categories.map((cat, i) => (
                     <div
-                        key={cat.label}
+                        key={i}
                         ref={(el) => { cardRefs.current[i] = el; }}
                         className="relative overflow-hidden group cursor-pointer h-[380px] sm:h-[440px] md:h-[580px] lg:h-[640px]"
                     >

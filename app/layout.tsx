@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
+import StoreProvider from "./store/StoreProvider";
+import CartFlyOverlay from "./components/CartFlyOverlay";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -102,7 +105,13 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <StoreProvider>
+          {children}
+          <Toaster richColors position="top-center" />
+          <CartFlyOverlay />
+        </StoreProvider>
+      </body>
     </html>
   );
 }

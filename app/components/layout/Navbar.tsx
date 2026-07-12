@@ -4,7 +4,10 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useAnimationControls } from "framer-motion";
+import { CART_LANDED_EVENT } from "../../store/cartFlyBus";
+import { useCart } from "../../store/cartSlice";
+import { useUserAuth } from "../../store/useUserAuth";
 import {
   Search,
   User,
@@ -136,6 +139,25 @@ export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { itemCount } = useCart();
+  const { user } = useUserAuth();
+  const cartIconControls = useAnimationControls();
+
+  useEffect(() => {
+    const handler = () => {
+      cartIconControls.start({
+        scale: [1, 1.35, 1],
+        boxShadow: [
+          "0 0 0 0 rgba(201,168,124,0)",
+          "0 0 0 10px rgba(201,168,124,0.35)",
+          "0 0 0 0 rgba(201,168,124,0)",
+        ],
+        transition: { duration: 0.6, ease: "easeOut" },
+      });
+    };
+    window.addEventListener(CART_LANDED_EVENT, handler);
+    return () => window.removeEventListener(CART_LANDED_EVENT, handler);
+  }, [cartIconControls]);
   const pathname = usePathname();
 
   const closeAllMenus = () => {
@@ -250,25 +272,30 @@ export default function Navbar() {
               </Link>
 
               {/* Cart */}
-              <Link
-                href="/cart"
-                onClick={closeAllMenus}
-                className="relative w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#1a1a1a] hover:scale-105 transition-transform duration-200 shadow-sm"
-              >
-                <ShoppingBag size={16} />
-                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#c9a87c] text-black text-[9px] font-semibold rounded-full flex items-center justify-center">
-                  0
-                </span>
+              <Link href="/cart" onClick={closeAllMenus} data-cart-icon>
+                <motion.div
+                  animate={cartIconControls}
+                  className="relative w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#1a1a1a] hover:scale-105 transition-transform duration-200 shadow-sm"
+                >
+                  <ShoppingBag size={16} />
+                  {itemCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#c9a87c] text-black text-[9px] font-semibold rounded-full flex items-center justify-center">
+                      {itemCount > 9 ? "9+" : itemCount}
+                    </span>
+                  )}
+                </motion.div>
               </Link>
 
-              {/* Sign In — desktop only */}
-              <Link
-                href="/signin"
-                onClick={closeAllMenus}
-                className="hidden lg:block ml-1 text-sm font-medium bg-white text-[#1a1a1a] px-4 py-2 rounded-full hover:bg-white/90 transition-colors tracking-wide shadow-sm"
-              >
-                Sign In
-              </Link>
+              {/* Sign In — desktop only, hidden once signed in */}
+              {!user && (
+                <Link
+                  href="/signin"
+                  onClick={closeAllMenus}
+                  className="hidden lg:block ml-1 text-sm font-medium bg-white text-[#1a1a1a] px-4 py-2 rounded-full hover:bg-white/90 transition-colors tracking-wide shadow-sm"
+                >
+                  Sign In
+                </Link>
+              )}
 
               {/* Hamburger — mobile only */}
               <button
@@ -543,19 +570,33 @@ export default function Navbar() {
                     <span className="text-xs text-white/50 font-medium">
                       Cart
                     </span>
-                    <span className="absolute top-2 right-4 w-4 h-4 bg-[#c9a87c] text-black text-[9px] font-bold rounded-full flex items-center justify-center">
-                      0
-                    </span>
+                    {itemCount > 0 && (
+                      <span className="absolute top-2 right-4 w-4 h-4 bg-[#c9a87c] text-black text-[9px] font-bold rounded-full flex items-center justify-center">
+                        {itemCount > 9 ? "9+" : itemCount}
+                      </span>
+                    )}
                   </Link>
-                  <Link
-                    href="/signin"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex flex-col items-center justify-center bg-white rounded-2xl py-3.5 active:scale-95 transition-transform"
-                  >
-                    <span className="text-sm font-semibold text-[#1a1a1a] leading-none">
-                      Sign In
-                    </span>
-                  </Link>
+                  {user ? (
+                    <Link
+                      href="/account"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex flex-col items-center justify-center bg-white rounded-2xl py-3.5 active:scale-95 transition-transform"
+                    >
+                      <span className="text-sm font-semibold text-[#1a1a1a] leading-none truncate max-w-full px-2">
+                        Hi, {user.name.split(" ")[0]}
+                      </span>
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/signin"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex flex-col items-center justify-center bg-white rounded-2xl py-3.5 active:scale-95 transition-transform"
+                    >
+                      <span className="text-sm font-semibold text-[#1a1a1a] leading-none">
+                        Sign In
+                      </span>
+                    </Link>
+                  )}
                 </div>
               </motion.div>
             </motion.div>

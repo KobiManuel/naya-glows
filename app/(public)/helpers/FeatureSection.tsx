@@ -30,7 +30,7 @@ export default function FeaturedSection() {
             opacity: 1,
             y: 0,
             x: 0,
-            duration: 0.85,
+            duration: 1.4,
             delay,
             ease: "power3.out",
             scrollTrigger: {

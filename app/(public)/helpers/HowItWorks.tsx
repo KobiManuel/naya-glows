@@ -4,29 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useSectionContent, useSectionLoading } from "../../store/useSectionContent";
+import { defaultHowItWorksContent } from "@/lib/content/homeHowItWorks";
+import HowItWorksSkeleton from "./skeletons/HowItWorksSkeleton";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const steps = [
-    {
-        number: "01",
-        title: "Choose Your Product",
-        description: "Browse our collection and pick what fits your skin, hair, or wellness needs",
-        image: "/images/img_6325.jpg",
-    },
-    {
-        number: "02",
-        title: "Place Your Order",
-        description: "Fast and secure checkout — no subscriptions or hidden fees.",
-        image: "/images/img_6326.jpg",
-    },
-    {
-        number: "03",
-        title: "Get It Delivered",
-        description: "Enjoy doorstep delivery in just a few days — start your transformation right away",
-        image: "/images/img_6328.jpg",
-    },
-];
+// Step numbers are structural (one per fixed slot), not admin-editable content.
+const stepNumbers = ["01", "02", "03"];
 
 const DOT_COUNT = 24;
 const RING_R = 52;
@@ -64,6 +49,9 @@ function DotRing({ active }: { active: boolean }) {
 }
 
 export default function HowItWorksSection() {
+    const content = useSectionContent("home.howItWorks", defaultHowItWorksContent);
+    const steps = content.steps;
+    const isLoading = useSectionLoading("home.howItWorks");
     const sectionRef = useRef<HTMLElement>(null);
     const headingRef = useRef<HTMLDivElement>(null);
     const connectorRef = useRef<HTMLDivElement>(null);
@@ -80,7 +68,7 @@ export default function HowItWorksSection() {
                     { opacity: 0, y: 40, ...from },
                     {
                         opacity: 1, y: 0, x: 0,
-                        duration: 0.85, delay,
+                        duration: 1.4, delay,
                         ease: "power3.out",
                         scrollTrigger: {
                             trigger: el,
@@ -109,7 +97,12 @@ export default function HowItWorksSection() {
     }, []);
 
     return (
-        <section ref={sectionRef} className="w-full bg-[#FaFaFa] py-20">
+        <section ref={sectionRef} className="relative w-full bg-[#FaFaFa] py-20">
+            {isLoading && (
+                <div className="absolute inset-0 z-50">
+                    <HowItWorksSkeleton />
+                </div>
+            )}
             <div className="w-[90%] mx-auto max-[1275px]:w-full">
                 <div className="p-8 sm:p-10 lg:p-14 max-[800px]:px-4">
 
@@ -117,17 +110,17 @@ export default function HowItWorksSection() {
                     <div ref={headingRef} className="text-center mb-12">
                         <div className="flex items-center justify-center gap-3 flex-wrap mb-1">
                             <h2 className="text-3xl sm:text-4xl lg:text-[2.6rem] font-semibold text-[#1a1a2e] tracking-tight">
-                                How It Works:
+                                {content.headingPart1}
                             </h2>
                             <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-white shadow-md flex-shrink-0 bg-[#ffe1d7]">
                                 <Image src="/images/img_6331.jpg" alt="step" width={44} height={44} className="object-cover w-full h-full" />
                             </div>
                             <h2 className="text-3xl sm:text-4xl lg:text-[2.6rem] font-semibold text-[#1a1a2e] tracking-tight">
-                                Just 3
+                                {content.headingPart2}
                             </h2>
                         </div>
                         <p className="text-3xl sm:text-4xl lg:text-[2.6rem] font-light text-gray-300 tracking-tight">
-                            Simple Steps
+                            {content.headingPart3}
                         </p>
                     </div>
 
@@ -136,7 +129,7 @@ export default function HowItWorksSection() {
                         <div className="flex items-center gap-0 min-w-1/2 mx-auto">
 
                             {steps.map((step, i) => (
-                                <div key={step.number} className="flex items-center" style={{ flex: i < steps.length - 1 ? "0 0 auto" : "0 0 auto" }}>
+                                <div key={i} className="flex items-center" style={{ flex: i < steps.length - 1 ? "0 0 auto" : "0 0 auto" }}>
 
                                     {/* Number bubble */}
                                     <button
@@ -148,7 +141,7 @@ export default function HowItWorksSection() {
                                                 : "bg-[#fff5f2] text-[#c09080] border border-[#f5c8b8]"
                                             }`}
                                     >
-                                        {step.number}
+                                        {stepNumbers[i]}
                                         {activeStep === i && (
                                             <span className="absolute inset-0 rounded-full bg-[#c4745a]/25 animate-ping pointer-events-none" />
                                         )}
@@ -184,7 +177,7 @@ export default function HowItWorksSection() {
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         {steps.map((step, i) => (
                             <div
-                                key={step.number}
+                                key={i}
                                 ref={(el) => { cardRefs.current[i] = el; }}
                                 onClick={() => setActiveStep(i)}
                                 className={`relative rounded-3xl p-7 flex flex-col items-center text-center cursor-pointer transition-all duration-400 group ${activeStep === i
@@ -227,7 +220,7 @@ export default function HowItWorksSection() {
                     </div>
 
                     <p className="mt-8 text-xs text-[#b09088]">
-                        Free delivery on orders over $75. No subscription required.
+                        {content.footerNote}
                     </p>
                 </div>
             </div>

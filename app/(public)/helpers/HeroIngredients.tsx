@@ -5,43 +5,19 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useSectionContent, useSectionLoading } from "../../store/useSectionContent";
+import { defaultIngredientsContent } from "@/lib/content/homeIngredients";
+import IngredientsSkeleton from "./skeletons/IngredientsSkeleton";
 
 gsap.registerPlugin(ScrollTrigger);
-
-const ingredients = [
-  {
-    name: "Kojic Acid",
-    benefit: "Brightens & fades dark spots",
-    image: "/images/body-scrub-with-lemon-and-mint.png",
-  },
-  {
-    name: "Lemon Extract",
-    benefit: "Evens skin tone & exfoliates",
-    image: "/images/body-scrub-with-lemon-and-mint.png",
-  },
-  {
-    name: "Niacinamide",
-    benefit: "Controls oil & reduces redness",
-    image: "/images/body-scrub-with-lemon-and-mint.png",
-  },
-  {
-    name: "Hyaluronic Acid",
-    benefit: "Deep lasting hydration",
-    image: "/images/body-scrub-with-lemon-and-mint.png",
-  },
-  {
-    name: "Green Tea Extract",
-    benefit: "Antioxidant & anti-inflammatory",
-    image: "/images/body-scrub-with-lemon-and-mint.png",
-  },
-];
 
 const RING_RADIUS = 420;
 
 // -Math.PI / 2 puts index 0 at 12 o'clock (top).
 // Adding Math.PI / 5 (36°) rotates the whole ring so items
 // land at upper-left, lower-left, bottom, lower-right, upper-right —
-// nothing at the top.
+// nothing at the top. Tuned specifically for 5 items — the ingredient
+// list is fixed at 5 slots for this reason (see lib/content/homeIngredients.ts).
 const ANGLE_OFFSET = -Math.PI / 2 + Math.PI / 5;
 
 const getScale = () => {
@@ -57,6 +33,10 @@ const getScale = () => {
 
 export default function HeroIngredients() {
   const pathname = usePathname();
+  const content = useSectionContent("home.ingredients", defaultIngredientsContent);
+  const ingredients = content.ingredients;
+  const isLoading = useSectionLoading("home.ingredients");
+
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const jarRef = useRef<HTMLDivElement>(null);
@@ -147,12 +127,18 @@ export default function HeroIngredients() {
     }, containerRef);
 
     return () => ctx.revert();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   return (
     // 250vh = 100vh viewport + 150vh scroll travel (matches end: "+=150%")
     // Prevents section from appearing twice on scroll
     <div ref={containerRef} className="relative" style={{ height: "100vh" }}>
+      {isLoading && (
+        <div className="absolute inset-0 z-50">
+          <IngredientsSkeleton />
+        </div>
+      )}
       <div className="sticky top-0 w-full h-screen overflow-hidden bg-[#fdf8f3]">
         {/* BG giant text */}
         <div
@@ -229,13 +215,13 @@ export default function HeroIngredients() {
           {/* Heading */}
           <div className="absolute top-6 sm:top-12 left-0 right-0 text-center">
             <p className="text-[10px] sm:text-xs tracking-[0.25em] uppercase text-[#a0876a] mb-2 font-medium">
-              What's Inside
+              {content.eyebrow}
             </p>
             <h2
               className="text-2xl sm:text-4xl lg:text-5xl font-bold text-[#1a1a1a]"
               style={{ fontFamily: "'Georgia', serif" }}
             >
-              Key Ingredients
+              {content.heading}
             </h2>
           </div>
 
@@ -251,10 +237,13 @@ export default function HeroIngredients() {
             }}
           />
 
-          {/* Ring items — z-10 (behind jar z-20) so they materialize from behind */}
+          {/* Ring items — z-10 (behind jar z-20) so they materialize from behind.
+              Keyed by index (not name) so a content-swap updates text/image in
+              place instead of remounting — remounting would drop the GSAP
+              transforms already applied by the scroll timeline above. */}
           {ingredients.map((ing, i) => (
             <div
-              key={ing.name}
+              key={i}
               ref={(el) => {
                 ringItemRefs.current[i] = el;
               }}
@@ -297,16 +286,6 @@ export default function HeroIngredients() {
               </div>
             </div>
           ))}
-
-          {/* Bottom CTA */}
-          {/* <div className="absolute bottom-6 sm:bottom-12 left-0 right-0 flex flex-col items-center gap-2">
-            <p className="text-xs sm:text-sm text-[#5a4a3a]/60">
-              Visible results in 2–4 weeks
-            </p>
-            <button className="mt-2 bg-[#1a1a1a] text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-medium tracking-wide hover:bg-[#333] transition-colors pointer-events-auto">
-              Shop the Scrub →
-            </button>
-          </div> */}
         </div>
       </div>
     </div>

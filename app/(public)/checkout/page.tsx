@@ -1,0 +1,248 @@
+"use client";
+
+import { useState, type FormEvent } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { toast } from "sonner";
+import { useCart, itemUnitPrice } from "../../store/cartSlice";
+import { useSettings } from "../../store/useSettings";
+import GlassCard from "../helpers/glass/GlassCard";
+import { useCreateOrderMutation, useInitializePaymentMutation } from "../../store/userApi";
+import { getApiErrorMessage } from "../../store/apiError";
+import { isApiConfigured } from "@/lib/api";
+
+const inputClass =
+  "w-full bg-white/70 border border-white/60 rounded-xl px-4 py-3 text-sm outline-none placeholder:text-[#16241a]/35 focus:border-[#8ab88e] transition-colors";
+
+type ShippingForm = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+};
+
+const emptyForm: ShippingForm = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  address: "",
+  city: "",
+  state: "",
+  zip: "",
+};
+
+export default function CheckoutPage() {
+  const { items, subtotal } = useCart();
+  const { subscriptionDiscountPercent } = useSettings();
+  const [form, setForm] = useState<ShippingForm>(emptyForm);
+  const shipping = subtotal >= 75 || subtotal === 0 ? 0 : 6;
+  const backendReady = isApiConfigured();
+
+  const [createOrder, { isLoading: creatingOrder }] = useCreateOrderMutation();
+  const [initializePayment, { isLoading: initializingPayment }] = useInitializePaymentMutation();
+  const submitting = creatingOrder || initializingPayment;
+
+  const updateField = (field: keyof ShippingForm) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((f) => ({ ...f, [field]: e.target.value }));
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    if (!backendReady) {
+      toast.error("Payments aren't connected yet (NEXT_PUBLIC_API_URL isn't set).");
+      return;
+    }
+
+    try {
+      const { order } = await createOrder({
+        items: items.map((i) => ({ slug: i.slug, qty: i.qty, isSubscription: i.isSubscription })),
+        shippingDetails: form,
+      }).unwrap();
+
+      const { authorizationUrl } = await initializePayment({ orderId: order.id }).unwrap();
+
+      window.location.href = authorizationUrl;
+    } catch (err) {
+      toast.error(
+        getApiErrorMessage(err, "Something went wrong starting your payment. Please try again."),
+      );
+    }
+  };
+
+  if (items.length === 0) {
+    return (
+      <main className="bg-gradient-to-b from-[#eafbf0] to-[#f4faf3] text-[#16241a] min-h-screen flex items-center justify-center px-5">
+        <GlassCard className="max-w-md w-full text-center py-16 px-8">
+          <h1 className="text-2xl font-light mb-3">Nothing to check out</h1>
+          <p className="text-sm text-[#16241a]/60 leading-relaxed mb-8">
+            Your cart is empty. Add a few favorites first.
+          </p>
+          <Link
+            href="/catalog"
+            className="inline-block text-sm font-semibold bg-[#16241a] text-white px-6 py-2.5 rounded-full"
+          >
+            Browse Catalog
+          </Link>
+        </GlassCard>
+      </main>
+    );
+  }
+
+  return (
+    <main className="bg-gradient-to-b from-[#eafbf0] to-[#f4faf3] text-[#16241a] min-h-screen">
+      <section className="pt-32 sm:pt-36 pb-24 px-5 sm:px-8 lg:px-12">
+        <div className="max-w-[1100px] mx-auto">
+          <h1 className="text-[clamp(1.8rem,3.5vw,2.6rem)] font-light mb-10">
+            Checkout
+          </h1>
+
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+          >
+            {/* Shipping form */}
+            <GlassCard className="lg:col-span-2 p-6 sm:p-8">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-[#16241a]/50 mb-6">
+                Shipping Details
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <input
+                  required
+                  placeholder="First name"
+                  value={form.firstName}
+                  onChange={updateField("firstName")}
+                  className={inputClass}
+                />
+                <input
+                  required
+                  placeholder="Last name"
+                  value={form.lastName}
+                  onChange={updateField("lastName")}
+                  className={inputClass}
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <input
+                  required
+                  type="email"
+                  placeholder="Email address"
+                  value={form.email}
+                  onChange={updateField("email")}
+                  className={inputClass}
+                />
+                <input
+                  required
+                  type="tel"
+                  placeholder="Phone number"
+                  value={form.phone}
+                  onChange={updateField("phone")}
+                  className={inputClass}
+                />
+              </div>
+              <input
+                required
+                placeholder="Street address"
+                value={form.address}
+                onChange={updateField("address")}
+                className={`${inputClass} mb-4`}
+              />
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-2">
+                <input
+                  required
+                  placeholder="City"
+                  value={form.city}
+                  onChange={updateField("city")}
+                  className={inputClass}
+                />
+                <input
+                  required
+                  placeholder="State"
+                  value={form.state}
+                  onChange={updateField("state")}
+                  className={inputClass}
+                />
+                <input
+                  required
+                  placeholder="ZIP / Postal code"
+                  value={form.zip}
+                  onChange={updateField("zip")}
+                  className={inputClass}
+                />
+              </div>
+
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-[#16241a]/50 mb-3 mt-8">
+                Payment
+              </h2>
+              <p className="text-xs text-[#16241a]/45 leading-relaxed">
+                You&apos;ll be securely redirected to Paystack to complete
+                payment. Amounts are charged in Nigerian Naira (₦).
+              </p>
+            </GlassCard>
+
+            {/* Order summary */}
+            <div>
+              <GlassCard className="p-6 sticky top-28">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-[#16241a]/50 mb-5">
+                  Order Summary
+                </h2>
+
+                <div className="flex flex-col gap-3 mb-5">
+                  {items.map((item) => (
+                    <div key={item.slug} className="flex items-center gap-3">
+                      <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-[#d4e8d0] flex-shrink-0">
+                        <Image src={item.image} alt={item.name} fill className="object-contain p-1.5" />
+                        <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#16241a] text-white text-[9px] flex items-center justify-center">
+                          {item.qty}
+                        </span>
+                      </div>
+                      <p className="text-xs flex-1 line-clamp-2">
+                        {item.name}
+                        {item.isSubscription && (
+                          <span className="ml-1.5 text-[9px] font-semibold uppercase tracking-wide text-[#4f7957]">
+                            (Subscribed)
+                          </span>
+                        )}
+                      </p>
+                      <p className="text-xs font-semibold flex-shrink-0">
+                        ${(itemUnitPrice(item, subscriptionDiscountPercent) * item.qty).toFixed(2)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="w-full h-px bg-[#16241a]/10 mb-4" />
+                <div className="flex items-center justify-between text-sm mb-2">
+                  <span className="text-[#16241a]/60">Subtotal</span>
+                  <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm mb-5">
+                  <span className="text-[#16241a]/60">Shipping</span>
+                  <span className="font-semibold">{shipping === 0 ? "Free" : "$6.00"}</span>
+                </div>
+                <div className="w-full h-px bg-[#16241a]/10 mb-5" />
+                <div className="flex items-center justify-between text-base font-bold mb-6">
+                  <span>Total</span>
+                  <span>${(subtotal + shipping).toFixed(2)}</span>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full text-center bg-[#16241a] text-white text-sm font-semibold px-6 py-3.5 rounded-full hover:bg-[#233324] transition-colors disabled:opacity-60"
+                >
+                  {submitting ? "Redirecting to Paystack…" : "Pay with Paystack"}
+                </button>
+              </GlassCard>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+  );
+}

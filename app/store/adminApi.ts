@@ -1,0 +1,274 @@
+import {
+  createApi,
+  fetchBaseQuery,
+  type BaseQueryFn,
+  type FetchArgs,
+  type FetchBaseQueryError,
+} from "@reduxjs/toolkit/query/react";
+import { toast } from "sonner";
+import type { RootState } from "./store";
+import { clearAuth as clearAdminAuth, ADMIN_TOKEN_KEY, type AuthUser } from "./adminAuthSlice";
+import type { Product } from "@/lib/products";
+
+const rawBaseQuery = fetchBaseQuery({
+  baseUrl: process.env.NEXT_PUBLIC_API_URL,
+  prepareHeaders: (headers, { getState }) => {
+    const token = (getState() as RootState).adminAuth.token;
+    if (token) headers.set("Authorization", `Bearer ${token}`);
+    return headers;
+  },
+});
+
+// 401 interceptor: clears the admin session, toasts, and sends the admin
+// back to /admin/login — independent of userApi's interceptor so a
+// customer session in the same browser is never touched by an admin 401.
+const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
+  args,
+  api,
+  extraOptions,
+) => {
+  const result = await rawBaseQuery(args, api, extraOptions);
+  if (result.error?.status === 401) {
+    api.dispatch(clearAdminAuth());
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(ADMIN_TOKEN_KEY);
+      toast.error("Session expired — please sign in again.");
+      window.location.href = "/admin/login";
+    }
+  }
+  return result;
+};
+
+export type AdminUserRow = {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  country: string | null;
+  currency: string;
+  createdAt: string;
+};
+
+export type AdminOrderRow = {
+  id: string;
+  status: string;
+  currency: string;
+  total: number;
+  createdAt: string;
+  manualStage: string | null;
+  user: { name: string; email: string } | null;
+  shippingDetails: Record<string, string> | null;
+  items: { qty: number; isSubscription: boolean; product: { name: string } }[];
+};
+
+// Mirrors backend/src/modules/orders/tracking.ts's STAGE_DEFS — UI-only
+// labels for the manual tracking-stage selector, kept as a small constant
+// here rather than round-tripping to the server just for display strings.
+export const TRACKING_STAGES = [
+  { key: "PLACED", label: "Order Placed" },
+  { key: "PROCESSING", label: "Processing" },
+  { key: "DISPATCHED", label: "Dispatched" },
+  { key: "OUT_FOR_DELIVERY", label: "Out for Delivery" },
+  { key: "DELIVERED", label: "Delivered" },
+] as const;
+
+export type ContactMessageRow = {
+  id: string;
+  name: string;
+  email: string;
+  subject: string | null;
+  message: string;
+  createdAt: string;
+};
+
+export type NewsletterSubscriberRow = {
+  id: string;
+  email: string;
+  createdAt: string;
+};
+
+export type EmailCampaignRow = {
+  id: string;
+  subject: string;
+  html: string;
+  recipientCount: number;
+  createdAt: string;
+};
+
+export type SettingsPayload = { usdToNgnRate: number; subscriptionDiscountPercent: number };
+
+export type ContentBlockRow = { id: string; key: string; data: unknown; updatedAt: string };
+
+export type ConsultationRow = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  skinConcern: string;
+  preferredDate: string | null;
+  message: string | null;
+  status: string;
+  createdAt: string;
+};
+
+export type WholesaleInquiryRow = {
+  id: string;
+  businessName: string;
+  contactName: string;
+  email: string;
+  phone: string | null;
+  message: string | null;
+  status: string;
+  createdAt: string;
+};
+
+export const adminApi = createApi({
+  reducerPath: "adminApi",
+  baseQuery: baseQueryWithReauth,
+  tagTypes: [
+    "Product",
+    "Content",
+    "User",
+    "Order",
+    "Settings",
+    "ContactMessage",
+    "NewsletterSubscriber",
+    "EmailCampaign",
+  ],
+  endpoints: (builder) => ({
+    login: builder.mutation<
+      { user: AuthUser; token: string },
+      { email: string; password: string }
+    >({
+      query: (body) => ({ url: "/auth/login", method: "POST", body }),
+    }),
+    getMe: builder.query<{ user: AuthUser }, void>({
+      query: () => "/auth/me",
+    }),
+
+    listProducts: builder.query<Product[], void>({
+      query: () => "/products",
+      transformResponse: (res: { products: Product[] }) => res.products,
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map((p) => ({ type: "Product" as const, id: p.slug })),
+              { type: "Product" as const, id: "LIST" },
+            ]
+          : [{ type: "Product" as const, id: "LIST" }],
+    }),
+    createProduct: builder.mutation<Product, Partial<Product>>({
+      query: (body) => ({ url: "/products", method: "POST", body }),
+      invalidatesTags: [{ type: "Product", id: "LIST" }],
+    }),
+    updateProduct: builder.mutation<Product, Partial<Product> & { slug: string }>({
+      query: ({ slug, ...body }) => ({ url: `/products/${slug}`, method: "PUT", body }),
+      invalidatesTags: [{ type: "Product", id: "LIST" }],
+    }),
+    deleteProduct: builder.mutation<void, string>({
+      query: (slug) => ({ url: `/products/${slug}`, method: "DELETE" }),
+      invalidatesTags: [{ type: "Product", id: "LIST" }],
+    }),
+    uploadImage: builder.mutation<{ url: string }, FormData>({
+      query: (formData) => ({ url: "/uploads", method: "POST", body: formData }),
+    }),
+
+    listContent: builder.query<ContentBlockRow[], void>({
+      query: () => "/content",
+      transformResponse: (res: { blocks: ContentBlockRow[] }) => res.blocks,
+      providesTags: [{ type: "Content", id: "LIST" }],
+    }),
+    upsertContent: builder.mutation<ContentBlockRow, { key: string; data: unknown }>({
+      query: ({ key, data }) => ({ url: `/content/${key}`, method: "PUT", body: { data } }),
+      invalidatesTags: [{ type: "Content", id: "LIST" }],
+    }),
+    deleteContent: builder.mutation<void, string>({
+      query: (key) => ({ url: `/content/${key}`, method: "DELETE" }),
+      invalidatesTags: [{ type: "Content", id: "LIST" }],
+    }),
+
+    listUsers: builder.query<AdminUserRow[], void>({
+      query: () => "/admin/users",
+      transformResponse: (res: { users: AdminUserRow[] }) => res.users,
+      providesTags: [{ type: "User", id: "LIST" }],
+    }),
+
+    listOrders: builder.query<AdminOrderRow[], void>({
+      query: () => "/admin/orders",
+      transformResponse: (res: { orders: AdminOrderRow[] }) => res.orders,
+      providesTags: [{ type: "Order", id: "LIST" }],
+    }),
+    setOrderTrackingStage: builder.mutation<void, { id: string; stage: string | null }>({
+      query: ({ id, stage }) => ({ url: `/admin/orders/${id}/tracking`, method: "PUT", body: { stage } }),
+      invalidatesTags: [{ type: "Order", id: "LIST" }],
+    }),
+
+    listConsultations: builder.query<ConsultationRow[], void>({
+      query: () => "/admin/consultations",
+      transformResponse: (res: { requests: ConsultationRow[] }) => res.requests,
+    }),
+
+    listWholesaleInquiries: builder.query<WholesaleInquiryRow[], void>({
+      query: () => "/admin/wholesale-inquiries",
+      transformResponse: (res: { inquiries: WholesaleInquiryRow[] }) => res.inquiries,
+    }),
+
+    getSettings: builder.query<SettingsPayload, void>({
+      query: () => "/admin/settings",
+      transformResponse: (res: { settings: SettingsPayload }) => res.settings,
+      providesTags: [{ type: "Settings", id: "LIST" }],
+    }),
+    updateSetting: builder.mutation<SettingsPayload, { key: string; value: string | number }>({
+      query: ({ key, value }) => ({ url: `/admin/settings/${key}`, method: "PUT", body: { value } }),
+      transformResponse: (res: { settings: SettingsPayload }) => res.settings,
+      invalidatesTags: [{ type: "Settings", id: "LIST" }],
+    }),
+
+    listContactMessages: builder.query<ContactMessageRow[], void>({
+      query: () => "/admin/contact-messages",
+      transformResponse: (res: { messages: ContactMessageRow[] }) => res.messages,
+      providesTags: [{ type: "ContactMessage", id: "LIST" }],
+    }),
+
+    listNewsletterSubscribers: builder.query<NewsletterSubscriberRow[], void>({
+      query: () => "/admin/newsletter-subscribers",
+      transformResponse: (res: { subscribers: NewsletterSubscriberRow[] }) => res.subscribers,
+      providesTags: [{ type: "NewsletterSubscriber", id: "LIST" }],
+    }),
+
+    listEmailCampaigns: builder.query<EmailCampaignRow[], void>({
+      query: () => "/admin/email-campaigns",
+      transformResponse: (res: { campaigns: EmailCampaignRow[] }) => res.campaigns,
+      providesTags: [{ type: "EmailCampaign", id: "LIST" }],
+    }),
+    sendEmailCampaign: builder.mutation<EmailCampaignRow, { subject: string; message: string }>({
+      query: (body) => ({ url: "/admin/email-campaigns/send", method: "POST", body }),
+      transformResponse: (res: { campaign: EmailCampaignRow }) => res.campaign,
+      invalidatesTags: [{ type: "EmailCampaign", id: "LIST" }],
+    }),
+  }),
+});
+
+export const {
+  useLoginMutation,
+  useGetMeQuery,
+  useListProductsQuery,
+  useCreateProductMutation,
+  useUpdateProductMutation,
+  useDeleteProductMutation,
+  useUploadImageMutation,
+  useListContentQuery,
+  useUpsertContentMutation,
+  useDeleteContentMutation,
+  useListUsersQuery,
+  useListOrdersQuery,
+  useSetOrderTrackingStageMutation,
+  useListConsultationsQuery,
+  useListWholesaleInquiriesQuery,
+  useGetSettingsQuery,
+  useUpdateSettingMutation,
+  useListContactMessagesQuery,
+  useListNewsletterSubscribersQuery,
+  useListEmailCampaignsQuery,
+  useSendEmailCampaignMutation,
+} = adminApi;

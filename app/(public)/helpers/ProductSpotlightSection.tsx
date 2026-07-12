@@ -85,13 +85,13 @@ export default function ProductSpotlightSection() {
             tl.fromTo(
                 headingRef.current,
                 { opacity: 0, y: 30 },
-                { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
+                { opacity: 1, y: 0, duration: 1.0, ease: "power3.out" },
                 0
             );
             tl.fromTo(
                 subRef.current,
                 { opacity: 0, y: 20 },
-                { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
+                { opacity: 1, y: 0, duration: 0.85, ease: "power3.out" },
                 0.1
             );
 
@@ -99,7 +99,7 @@ export default function ProductSpotlightSection() {
             tl.fromTo(
                 productRef.current,
                 { opacity: 0, scale: 0.85, y: 30 },
-                { opacity: 1, scale: 1, y: 0, duration: 0.7, ease: "back.out(1.4)" },
+                { opacity: 1, scale: 1, y: 0, duration: 1.15, ease: "back.out(1.4)" },
                 0.2
             );
 
@@ -113,7 +113,7 @@ export default function ProductSpotlightSection() {
                     {
                         strokeDashoffset: 0,
                         opacity: 1,
-                        duration: 0.6,
+                        duration: 1.0,
                         ease: "power2.out",
                     },
                     0.55 + i * 0.08
@@ -127,7 +127,7 @@ export default function ProductSpotlightSection() {
                 tl.fromTo(
                     el,
                     { opacity: 0, x: isLeft ? -24 : 24, y: 10 },
-                    { opacity: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" },
+                    { opacity: 1, x: 0, y: 0, duration: 0.75, ease: "power3.out" },
                     0.7 + i * 0.1
                 );
             });

@@ -202,7 +202,7 @@ export default function CatalogSection() {
             opacity: 1,
             y: 0,
             x: 0,
-            duration: 0.8,
+            duration: 1.4,
             delay,
             ease: "power3.out",
             scrollTrigger: {

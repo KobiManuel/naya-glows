@@ -1,8 +1,10 @@
 "use client";
 
+import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { toast } from "sonner";
 import {
     Mail,
     Phone,
@@ -12,7 +14,12 @@ import {
     Leaf,
     Droplets,
     Shield,
+    Check,
 } from "lucide-react";
+import { FaInstagram, FaTwitter, FaFacebookF, FaYoutube } from "react-icons/fa";
+import { useSubscribeNewsletterMutation } from "../../store/userApi";
+import { getApiErrorMessage } from "../../store/apiError";
+import { isApiConfigured } from "@/lib/api";
 
 const footerLinks = {
     Shop: [
@@ -36,13 +43,18 @@ const footerLinks = {
         { name: "Terms of Service", href: "/terms" },
         { name: "Track Order", href: "/track-order" },
     ],
+    Business: [
+        { name: "Wholesale Inquiries", href: "/wholesale" },
+        { name: "Our Branches", href: "/branches" },
+        { name: "Skin Education", href: "/skin-education" },
+    ],
 };
 
 const socialLinks = [
-    { name: "Instagram", icon: Shield, href: "https://instagram.com" },
-    { name: "Twitter", icon: Shield, href: "https://twitter.com" },
-    { name: "Facebook", icon: Shield, href: "https://facebook.com" },
-    { name: "Youtube", icon: Shield, href: "https://youtube.com" },
+    { name: "Instagram", icon: FaInstagram, href: "https://instagram.com" },
+    { name: "Twitter", icon: FaTwitter, href: "https://twitter.com" },
+    { name: "Facebook", icon: FaFacebookF, href: "https://facebook.com" },
+    { name: "Youtube", icon: FaYoutube, href: "https://youtube.com" },
 ];
 
 const benefits = [
@@ -54,6 +66,25 @@ const benefits = [
 
 export default function Footer() {
     const pathname = usePathname();
+    const [newsletterEmail, setNewsletterEmail] = useState("");
+    const [subscribed, setSubscribed] = useState(false);
+    const [subscribeNewsletter, { isLoading: subscribing }] = useSubscribeNewsletterMutation();
+
+    const handleSubscribe = async (e: FormEvent) => {
+        e.preventDefault();
+        if (!isApiConfigured()) {
+            toast.error("Newsletter signup isn't connected yet (NEXT_PUBLIC_API_URL isn't set).");
+            return;
+        }
+        try {
+            await subscribeNewsletter({ email: newsletterEmail }).unwrap();
+            setSubscribed(true);
+            setNewsletterEmail("");
+            setTimeout(() => setSubscribed(false), 4000);
+        } catch (err) {
+            toast.error(getApiErrorMessage(err, "Couldn't subscribe. Please try again."));
+        }
+    };
 
     return (
         <footer className="relative bg-black text-white/70 overflow-hidden">
@@ -86,7 +117,7 @@ export default function Footer() {
                     })}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-12">
                     {/* Brand column */}
                     <div className="lg:col-span-2 space-y-6">
                         <div className="flex items-center gap-3">
@@ -112,19 +143,30 @@ export default function Footer() {
                             <p className="text-white/80 text-sm font-medium tracking-wide">
                                 Join the glow
                             </p>
-                            <div className="flex">
+                            <form className="flex" onSubmit={handleSubscribe}>
                                 <input
                                     type="email"
+                                    required
+                                    value={newsletterEmail}
+                                    onChange={(e) => setNewsletterEmail(e.target.value)}
                                     placeholder="Your email address"
                                     className="flex-1 bg-white/5 border border-white/10 rounded-l-full px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#c9a87c]/50 transition-all"
                                 />
-                                <button className="bg-[#c9a87c] text-black px-5 rounded-r-full hover:bg-[#d4b88c] transition-all duration-300 flex items-center gap-2 group">
+                                <button
+                                    type="submit"
+                                    disabled={subscribing}
+                                    className="bg-[#c9a87c] text-black px-5 rounded-r-full hover:bg-[#d4b88c] transition-all duration-300 flex items-center gap-2 group disabled:opacity-60"
+                                >
                                     <span className="text-sm font-medium hidden sm:inline">
-                                        Subscribe
+                                        {subscribed ? "Subscribed" : subscribing ? "Joining…" : "Subscribe"}
                                     </span>
-                                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                                    {subscribed ? (
+                                        <Check size={16} />
+                                    ) : (
+                                        <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                                    )}
                                 </button>
-                            </div>
+                            </form>
                             <p className="text-white/30 text-xs">
                                 10% off your first order • No spam, just radiance
                             </p>

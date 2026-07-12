@@ -5,69 +5,16 @@ import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowLeft, ArrowRight, Star } from "lucide-react";
+import { useSectionContent, useSectionLoading } from "../../store/useSectionContent";
+import { defaultTestimonialsContent } from "@/lib/content/homeTestimonials";
+import TestimonialsSkeleton from "./skeletons/TestimonialsSkeleton";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const testimonials = [
-    {
-        name: "Amara T.",
-        rating: 4.9,
-        quote: "My skin completely changed. The hyperpigmentation I'd been fighting for years is barely noticeable now.",
-        tags: ["Dark Spots", "2 weeks"],
-        product: "Pigment Corrector Cream",
-        productImage: "/images/42cbfe95-d2a7-4d13-8a5e-72e62dcf1792.png",
-    },
-    {
-        name: "Lucas M.",
-        rating: 4.8,
-        quote: "This serum helped fade my acne marks and rough patches. After a month, my skin looked smoother and more even.",
-        tags: ["Pigmentation", "1 month"],
-        product: "Acne Correcting Serum",
-        productImage: "/images/img_6205.jpg",
-    },
-    {
-        name: "Noah A.",
-        rating: 4.9,
-        quote: "Confidence in a bottle. My skin has never looked so clear and radiant — compliments everywhere I go.",
-        tags: ["Confidence", "10 days"],
-        product: "Radiance Boost Serum",
-        productImage: "/images/eca30ff9-62ea-4126-8301-03d590c8250d.png",
-    },
-    {
-        name: "Olivia R.",
-        rating: 4.8,
-        quote: "The skin on my neck was loose and crepey. In 4 weeks, it felt tighter and smoother — such a visible lift!",
-        tags: ["Firming", "4 weeks"],
-        product: "Radiance Repair Lotion",
-        productImage: "/images/5bbe98ac-b9a9-40aa-95a1-ad2f9d7a2ce6.png",
-    },
-    {
-        name: "Ethan B.",
-        rating: 4.7,
-        quote: "The serum really works. Fine lines are softer and my skin feels fresher within two weeks of daily use.",
-        tags: ["Anti-Aging", "2 weeks"],
-        product: "Age Renewal Serum",
-        productImage: "/images/08d216cc-1441-4068-996e-ed7d64a65701.png",
-    },
-    {
-        name: "Maya K.",
-        rating: 5.0,
-        quote: "Finally found a cleanser that doesn't strip my skin. My complexion looks balanced and healthy every day.",
-        tags: ["Balance", "3 weeks"],
-        product: "Clarifying Foam Cleanser",
-        productImage: "/images/432e42ab-30fd-4531-815a-e4ece090058b.png",
-    },
-    {
-        name: "Zara H.",
-        rating: 4.9,
-        quote: "The body scrub transformed my skin. It feels soft, looks brighter, and I actually love showing my shoulders now.",
-        tags: ["Body Care", "6 weeks"],
-        product: "Exfoliating Body Scrub",
-        productImage: "/images/19ea7a51-adb2-4a49-bcb7-0bbc0116f4f2.png",
-    },
-];
-
 export default function TestimonialsSection() {
+    const content = useSectionContent("home.testimonials", defaultTestimonialsContent);
+    const testimonials = content.testimonials;
+    const isLoading = useSectionLoading("home.testimonials");
     const sectionRef = useRef<HTMLElement>(null);
     const headingRef = useRef<HTMLDivElement>(null);
     const sliderRef = useRef<HTMLDivElement>(null);
@@ -86,7 +33,7 @@ export default function TestimonialsSection() {
                     { opacity: 0, y: 40, ...from },
                     {
                         opacity: 1, y: 0, x: 0,
-                        duration: 0.85, delay,
+                        duration: 1.4, delay,
                         ease: "power3.out",
                         scrollTrigger: {
                             trigger: el,
@@ -103,7 +50,10 @@ export default function TestimonialsSection() {
         }, sectionRef);
 
         return () => ctx.revert();
-    }, []);
+        // Re-run if the testimonial count changes (e.g. an admin edit swaps
+        // in a longer/shorter list) so scroll triggers stay bound to real,
+        // currently-mounted cards instead of stale/removed ones.
+    }, [testimonials.length]);
 
     // Track scroll position to enable/disable arrows
     const updateArrows = () => {
@@ -133,7 +83,12 @@ export default function TestimonialsSection() {
     };
 
     return (
-        <section ref={sectionRef} className="w-full py-20">
+        <section ref={sectionRef} className="relative w-full py-20">
+            {isLoading && (
+                <div className="absolute inset-0 z-50">
+                    <TestimonialsSkeleton />
+                </div>
+            )}
             <div className="w-[90%] max-w-[1440px] mx-auto max-[1275px]:w-full">
                 <div className=" p-8 sm:p-10 lg:p-14 max-[800px]:px-4">
 
@@ -141,14 +96,14 @@ export default function TestimonialsSection() {
                     <div ref={headingRef} className="text-center mb-12">
                         <div className="flex items-center justify-center gap-3 flex-wrap">
                             <h2 className="text-3xl sm:text-4xl lg:text-[2.6rem] font-semibold text-[#1a1a2e] tracking-tight">
-                                Visible Results
+                                {content.headingHighlight}
                             </h2>
                             {/* Inline bubble */}
                             <div className="w-11 h-11 rounded-full overflow-hidden bg-[#f5c775] border-2 border-white shadow-md flex items-center justify-center flex-shrink-0">
                                 <span className="text-white text-lg">✦</span>
                             </div>
                             <h2 className="text-3xl sm:text-4xl lg:text-[2.6rem] font-light text-[#9a9ab8] tracking-tight">
-                                Real people
+                                {content.headingRest}
                             </h2>
                         </div>
                     </div>
@@ -161,7 +116,7 @@ export default function TestimonialsSection() {
                     >
                         {testimonials.map((t, i) => (
                             <div
-                                key={t.name}
+                                key={i}
                                 ref={(el) => { cardRefs.current[i] = el; }}
                                 className="group relative flex-shrink-0 snap-start rounded-3xl overflow-hidden cursor-pointer bg-[#f5f5f5] transition-all duration-300 shadow-lg"
                                 style={{ width: "min(320px, 82vw)", height: 320 }}

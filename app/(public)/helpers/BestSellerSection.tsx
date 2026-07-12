@@ -5,35 +5,14 @@ import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useSectionContent } from "../../store/useSectionContent";
+import { defaultBestSellersContent } from "@/lib/content/homeBestSellers";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const cards = [
-    {
-        name: "Amara, 34 years",
-        result: "Visibly brighter skin in 4 weeks",
-        quote:
-            "\"The Naya Radiance Boost Serum transformed my skin. It's clearer, more even.\"",
-        image: "/images/img_6323.jpg",
-        productImage: "/images/9cb3aae2-d6b9-4d9d-8a24-e679c00c2705.png",
-        productName: "Radiance Boost",
-        productSub: "Serum",
-        href: "/products/radiance-boost-serum",
-    },
-    {
-        name: "Kezia, 29 years",
-        result: "Smoother, glowing skin in 3 weeks",
-        quote:
-            "\"The body scrub gave me a noticeable glow. My skin feels softer and more radiant.\"",
-        image: "/images/img_6320.jpg",
-        productImage: "/images/0323d23a-ed8d-4ab5-8f52-b8a8eb31e04f.png",
-        productName: "Radiance Scrub",
-        productSub: "Exfoliator",
-        href: "/products/radiance-body-scrub",
-    },
-];
-
 export default function BestSellersSection() {
+    const content = useSectionContent("home.bestSellers", defaultBestSellersContent);
+    const cards = content.cards;
     const sectionRef = useRef<HTMLElement>(null);
     const headingRef = useRef<HTMLDivElement>(null);
     const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -49,7 +28,7 @@ export default function BestSellersSection() {
                         opacity: 1,
                         y: 0,
                         x: 0,
-                        duration: 0.85,
+                        duration: 1.4,
                         delay,
                         ease: "power3.out",
                         scrollTrigger: {
@@ -77,10 +56,10 @@ export default function BestSellersSection() {
                     <div ref={headingRef} className="text-center mb-12">
                         <h2 className="text-3xl sm:text-4xl lg:text-[2.6rem] font-semibold text-[#1a1a2e] tracking-tight leading-tight mb-1">
                             Best Sellers,{" "}
-                            <span className="font-light text-[#6a9a72]">Real</span>
+                            <span className="font-light text-[#6a9a72]">{content.headingHighlight}</span>
                         </h2>
                         <p className="text-3xl sm:text-4xl lg:text-[2.6rem] font-light text-[#6a9a72] tracking-tight">
-                            Results
+                            {content.headingRest}
                         </p>
                     </div>
 

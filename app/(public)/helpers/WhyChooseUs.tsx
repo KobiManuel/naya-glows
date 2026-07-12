@@ -2,31 +2,23 @@
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FlaskConical, Rocket, MessageCircleHeart } from "lucide-react";
+import { useSectionContent, useSectionLoading } from "../../store/useSectionContent";
+import { defaultWhyChooseContent } from "@/lib/content/homeWhyChoose";
+import WhyChooseSkeleton from "./skeletons/WhyChooseSkeleton";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const features = [
-    {
-        icon: FlaskConical,
-        title: "Clinically Proven Formulas",
-        description: "Backed by science and dermatology, every product is tested for visible results.",
-    },
-    {
-        icon: Rocket,
-        title: "Fast, Visible Results",
-        description: "From clearer skin to smoother texture — most users notice changes within 2–4 weeks.",
-    },
-    {
-        icon: MessageCircleHeart,
-        title: "Personalized Support",
-        description: "Expert guidance and easy online consultation to help you achieve your skincare goals.",
-    },
-];
+// Icons are structural (one per fixed slot), not admin-editable content.
+const featureIcons = [FlaskConical, Rocket, MessageCircleHeart];
 
 export default function WhyChooseSection() {
+    const content = useSectionContent("home.whyChoose", defaultWhyChooseContent);
+    const features = content.features;
+    const isLoading = useSectionLoading("home.whyChoose");
     const sectionRef = useRef<HTMLElement>(null);
     const headingRef = useRef<HTMLDivElement>(null);
     const ctaRef = useRef<HTMLDivElement>(null);
@@ -44,7 +36,7 @@ export default function WhyChooseSection() {
                     { opacity: 0, y: 40, ...from },
                     {
                         opacity: 1, y: 0, x: 0, scale: 1,
-                        duration: 0.85, delay,
+                        duration: 1.4, delay,
                         ease: "power3.out",
                         scrollTrigger: {
                             trigger: el,
@@ -97,25 +89,33 @@ export default function WhyChooseSection() {
                     className=" overflow-hidden relative"
 
                 >
+                    {isLoading && (
+                        <div className="absolute inset-0 z-50">
+                            <WhyChooseSkeleton />
+                        </div>
+                    )}
                     {/* ── Top bar: heading + CTAs ───────────────────────────────── */}
                     <div className="relative z-20 flex items-start justify-between gap-6 p-8 sm:p-10 lg:p-14 flex-wrap">
                         <div ref={headingRef}>
                             <h2 className="text-3xl sm:text-4xl lg:text-[2.8rem] font-semibold text-[#1a1a2e] tracking-tight leading-[1.05]">
-                                Why Choose
+                                {content.headingLine1}
                             </h2>
                             <h2 className="text-3xl sm:text-4xl lg:text-[2.8rem] font-semibold text-[#1a1a2e] tracking-tight leading-[1.05]">
-                                Naya?
+                                {content.headingLine2}
                             </h2>
                         </div>
 
                         <div ref={ctaRef} className="flex items-center gap-3 flex-wrap">
                             <button className="flex items-center gap-2 bg-[#1a1a2e] text-white text-sm font-semibold px-6 py-3 rounded-full hover:bg-[#2d2d4a] transition-colors">
-                                Get Started
+                                {content.primaryCtaLabel}
                                 <span className="w-1.5 h-1.5 rounded-full bg-white" />
                             </button>
-                            <button className="text-sm font-semibold text-white hover:text-black bg-[#9bb6d5] backdrop-blur-sm px-6 py-3 rounded-full hover:bg-white transition-colors">
-                                Online consultation
-                            </button>
+                            <Link
+                                href="/consultation"
+                                className="text-sm font-semibold text-white hover:text-black bg-[#9bb6d5] backdrop-blur-sm px-6 py-3 rounded-full hover:bg-white transition-colors"
+                            >
+                                {content.secondaryCtaLabel}
+                            </Link>
                         </div>
                     </div>
 
@@ -156,11 +156,11 @@ export default function WhyChooseSection() {
                                             <rect x="11" y="2" width="2.5" height="12" rx="0.5" fill="#1a1a2e" />
                                         </svg>
                                     </span>
-                                    <span className="text-[11px] font-semibold text-[#1a1a2e] tracking-wide">Skin Clarity</span>
+                                    <span className="text-[11px] font-semibold text-[#1a1a2e] tracking-wide">{content.stat1Label}</span>
                                 </div>
                                 <span className="text-[10px] font-semibold text-[#5a5a7a] bg-white/60 px-2 py-0.5 rounded-full">Fast result</span>
                             </div>
-                            <p className="text-[11px] text-[#5a5a7a] mb-3 leading-snug">Improvements in 4 weeks</p>
+                            <p className="text-[11px] text-[#5a5a7a] mb-3 leading-snug">{content.stat1Sublabel}</p>
 
                             {/* Mini wave SVG */}
                             <div className="relative h-10 mb-2">
@@ -180,7 +180,7 @@ export default function WhyChooseSection() {
                             </div>
 
                             <div className="flex items-end justify-between">
-                                <span className="text-2xl font-semibold text-[#1a1a2e]">27%</span>
+                                <span className="text-2xl font-semibold text-[#1a1a2e]">{content.stat1Value}</span>
                                 <span className="w-6 h-6 rounded-full bg-white/60 flex items-center justify-center">
                                     <svg width="11" height="11" viewBox="0 0 16 16" fill="none">
                                         <path d="M8 14V2M8 2L3 7M8 2L13 7" stroke="#1a1a2e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" transform="rotate(180 8 8)" />
@@ -195,8 +195,8 @@ export default function WhyChooseSection() {
                             className="absolute right-[4%] top-[42%] sm:right-[8%] lg:right-[14%] z-20 w-[170px] sm:w-[190px] rounded-2xl p-4 shadow-lg bg-white/90 backdrop-blur-sm"
                             style={{ border: "1px solid rgba(255,255,255,0.8)" }}
                         >
-                            <p className="text-xl font-semibold text-[#1a1a2e] mb-0.5">23+</p>
-                            <p className="text-[11px] text-[#5a5a7a] font-medium mb-3">Trusted by thousands</p>
+                            <p className="text-xl font-semibold text-[#1a1a2e] mb-0.5">{content.stat2Value}</p>
+                            <p className="text-[11px] text-[#5a5a7a] font-medium mb-3">{content.stat2Label}</p>
                             <div className="flex items-center">
                                 {[0, 1, 2, 3].map((i) => (
                                     <div
@@ -231,10 +231,10 @@ export default function WhyChooseSection() {
                     // }}
                     >
                         {features.map((feature, i) => {
-                            const Icon = feature.icon;
+                            const Icon = featureIcons[i];
                             return (
                                 <div
-                                    key={feature.title}
+                                    key={i}
                                     ref={(el) => { featureRefs.current[i] = el; }}
                                     className="relative p-6 sm:p-7 lg:p-8 group bg-[#d2deee] rounded-xl transition-colors duration-300"
                                     style={{
