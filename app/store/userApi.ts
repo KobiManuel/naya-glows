@@ -10,6 +10,15 @@ import type { RootState } from "./store";
 import { clearAuth as clearUserAuth, USER_TOKEN_KEY, type AuthUser } from "./userAuthSlice";
 import type { Product } from "@/lib/products";
 
+export type MyOrderRow = {
+  id: string;
+  status: string;
+  currency: string;
+  total: number;
+  createdAt: string;
+  items: { qty: number; isSubscription: boolean; product: { name: string } }[];
+};
+
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: process.env.NEXT_PUBLIC_API_URL,
   prepareHeaders: (headers, { getState }) => {
@@ -18,6 +27,16 @@ const rawBaseQuery = fetchBaseQuery({
     return headers;
   },
 });
+
+// Login/register 401s (wrong password, duplicate email, etc.) are just a
+// failed attempt, not an expired session — exempt them so the interceptor
+// below doesn't fire a bogus "session expired" toast and redirect while
+// someone's simply mistyping their password on /signin.
+const AUTH_ENDPOINTS = ["/auth/login", "/auth/register"];
+function isAuthEndpoint(args: string | FetchArgs): boolean {
+  const url = typeof args === "string" ? args : args.url;
+  return AUTH_ENDPOINTS.some((endpoint) => url.includes(endpoint));
+}
 
 // 401 interceptor: clears the customer session, toasts, and sends the user
 // back to /signin — kept separate from adminApi's version so an admin
@@ -28,7 +47,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
   extraOptions,
 ) => {
   const result = await rawBaseQuery(args, api, extraOptions);
-  if (result.error?.status === 401) {
+  if (result.error?.status === 401 && !isAuthEndpoint(args)) {
     api.dispatch(clearUserAuth());
     if (typeof window !== "undefined") {
       localStorage.removeItem(USER_TOKEN_KEY);
@@ -42,7 +61,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["SavedProducts"],
+  tagTypes: ["SavedProducts", "MyOrders"],
   endpoints: (builder) => ({
     register: builder.mutation<
       { user: AuthUser; token: string },
@@ -67,6 +86,12 @@ export const userApi = createApi({
       }
     >({
       query: (body) => ({ url: "/orders", method: "POST", body }),
+      invalidatesTags: [{ type: "MyOrders", id: "LIST" }],
+    }),
+    listMyOrders: builder.query<MyOrderRow[], void>({
+      query: () => "/orders/mine",
+      transformResponse: (res: { orders: MyOrderRow[] }) => res.orders,
+      providesTags: [{ type: "MyOrders", id: "LIST" }],
     }),
     trackOrder: builder.query<
       {
@@ -88,13 +113,20 @@ export const userApi = createApi({
       query: ({ id, email }) => `/orders/track/${id}?email=${encodeURIComponent(email)}`,
     }),
     initializePayment: builder.mutation<
-      { authorizationUrl: string; reference: string },
+      { reference: string; email: string; amount: number; currency: string },
       { orderId: string }
     >({
       query: (body) => ({ url: "/payments/paystack/initialize", method: "POST", body }),
     }),
     verifyPayment: builder.query<
-      { order: { id: string; status: string }; payment: { status: string } },
+      {
+        order: {
+          id: string;
+          status: string;
+          shippingDetails: { email?: string } | null;
+        };
+        payment: { status: string };
+      },
       string
     >({
       query: (reference) => `/payments/paystack/verify/${reference}`,
@@ -157,6 +189,7 @@ export const {
   useLoginMutation,
   useGetMeQuery,
   useCreateOrderMutation,
+  useListMyOrdersQuery,
   useInitializePaymentMutation,
   useVerifyPaymentQuery,
   useGetContentQuery,

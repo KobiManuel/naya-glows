@@ -5,10 +5,14 @@ import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useSectionContent } from "../../store/useSectionContent";
+import { defaultFeaturedProductsContent } from "@/lib/content/homeFeaturedProducts";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function FeaturedSection() {
+  const content = useSectionContent("home.featuredProducts", defaultFeaturedProductsContent);
+  const [card1, card2] = content.cards;
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
   const subheadRef = useRef<HTMLDivElement>(null);
@@ -68,11 +72,11 @@ export default function FeaturedSection() {
                 ▶
               </span>
               <h2 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-semibold text-[#1a1a2e] tracking-tight">
-                Your Daily Skincare
+                {content.headingLine1}
               </h2>
               <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-white shadow-md flex-shrink-0">
                 <Image
-                  src="/images/img_6205.jpg"
+                  src={content.headingIcon1}
                   alt="product"
                   width={44}
                   height={44}
@@ -80,7 +84,7 @@ export default function FeaturedSection() {
                 />
               </div>
               <h2 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-semibold text-[#1a1a2e] tracking-tight">
-                Essentials
+                {content.headingLine1Suffix}
               </h2>
             </div>
           </div>
@@ -89,11 +93,11 @@ export default function FeaturedSection() {
           <div ref={subheadRef} className="text-center mb-6">
             <div className="flex items-center justify-center gap-3 flex-wrap">
               <span className="text-3xl sm:text-4xl lg:text-[2.75rem] font-light text-[#9a9ab8] tracking-tight">
-                Gentle care.
+                {content.headingLine2Prefix}
               </span>
               <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-md flex-shrink-0">
                 <Image
-                  src="/images/img_6326.jpg"
+                  src={content.headingIcon2}
                   alt="product"
                   width={40}
                   height={40}
@@ -101,10 +105,10 @@ export default function FeaturedSection() {
                 />
               </div>
               <span className="text-3xl sm:text-4xl lg:text-[2.75rem] font-semibold text-[#1a1a2e] tracking-tight">
-                Visible
+                {content.headingLine2Bold}
               </span>
               <span className="text-3xl sm:text-4xl lg:text-[2.75rem] font-light text-[#9a9ab8] tracking-tight">
-                results
+                {content.headingLine2Light}
               </span>
             </div>
           </div>
@@ -113,8 +117,7 @@ export default function FeaturedSection() {
             ref={descRef}
             className="text-center text-base text-[#5a5a7a] max-w-md mx-auto leading-relaxed mb-10"
           >
-            Reveal refreshed, glowing skin with our top brightening and
-            hydrating treatments, designed for daily beauty.
+            {content.description}
           </p>
 
           {/* ── Label ───────────────────────────────────────────────────────── */}
@@ -122,7 +125,7 @@ export default function FeaturedSection() {
             ref={labelRef}
             className="text-sm font-semibold text-[#1a1a2e] mb-5 tracking-wide"
           >
-            Featured Products
+            {content.label}
           </p>
 
           {/* ── Cards grid - Updated to grid of 3 with equal height ──────────────────────────────────────────────────── */}
@@ -163,35 +166,32 @@ export default function FeaturedSection() {
               <div>
                 {/* Short wide rounded image */}
                 <Image
-                  src="/images/19ea7a51-adb2-4a49-bcb7-0bbc0116f4f2.png"
-                  alt="Radiance Boost Serum"
+                  src={card1.image}
+                  alt={card1.title}
                   width={140}
                   height={88}
                   className="object-cover rounded-2xl w-20 h-20 mb-10"
                 />
                 <h3 className="text-2xl font-bold text-[#1a1a2e] mb-3 leading-tight">
-                  Radiance Boost
-                  <br />
-                  Serum
+                  {card1.title}
                 </h3>
                 <p className="text-sm text-[#5a5a7a] leading-relaxed max-w-xs">
-                  Brightens skin tone, evens complexion, and provides deep
-                  lasting hydration with Niacinamide & Hyaluronic Acid.
+                  {card1.description}
                 </p>
               </div>
 
               <div className="flex items-center gap-3 mt-7 max-[400px]:gap-[4px] w-fit">
                 <Link
-                  href="/products/radiance-boost-serum"
+                  href={card1.primaryCtaHref}
                   className=" max-[400px]:px-3 max-[400px]:py-1.5 bg-[#1a1a2e] text-white text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-[#2d2d4a] transition-colors"
                 >
-                  Get Started
+                  {card1.primaryCtaLabel}
                 </Link>
                 <Link
-                  href="/products/radiance-boost-serum"
+                  href={card1.secondaryCtaHref}
                   className=" max-[400px]:px-3 max-[400px]:py-1.5 border border-[#1a1a2e]/25 text-[#1a1a2e] text-sm font-semibold px-6 py-2.5 rounded-full hover:border-[#1a1a2e]/60 transition-colors"
                 >
-                  Learn More
+                  {card1.secondaryCtaLabel}
                 </Link>
               </div>
             </div>
@@ -223,33 +223,32 @@ export default function FeaturedSection() {
 
               <div>
                 <Image
-                  src="/images/eca30ff9-62ea-4126-8301-03d590c8250d.png"
-                  alt="Exfoliating Body Scrub"
+                  src={card2.image}
+                  alt={card2.title}
                   width={128}
                   height={72}
                   className="object-cover rounded-2xl w-20 h-20 mb-10"
                 />
                 <h3 className="text-xl font-bold text-[#1a1a2e] mb-2 leading-tight">
-                  Exfoliating Body Scrub
+                  {card2.title}
                 </h3>
                 <p className="text-sm text-[#5a5a7a] leading-relaxed">
-                  Gently exfoliates dead skin, brightens dull skin, and smooths
-                  rough texture with Kojic Acid & Lemon.
+                  {card2.description}
                 </p>
               </div>
 
               <div className="flex items-center gap-3 mt-5 max-[400px]:gap-[4px]">
                 <Link
-                  href="/products/exfoliating-body-scrub"
+                  href={card2.primaryCtaHref}
                   className=" max-[400px]:px-3 max-[400px]:py-1.5 bg-[#1a1a2e] text-white text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-[#2d2d4a] transition-colors"
                 >
-                  Get Started
+                  {card2.primaryCtaLabel}
                 </Link>
                 <Link
-                  href="/products/exfoliating-body-scrub"
+                  href={card2.secondaryCtaHref}
                   className="max-[400px]:px-3 max-[400px]:py-1.5 border border-[#1a1a2e]/25 text-[#1a1a2e] text-sm font-semibold px-6 py-2.5 rounded-full hover:border-[#1a1a2e]/60 transition-colors"
                 >
-                  Learn More
+                  {card2.secondaryCtaLabel}
                 </Link>
               </div>
             </div>
@@ -262,8 +261,8 @@ export default function FeaturedSection() {
               {/* Inner container clips the scaling image */}
               <div className="absolute inset-0 rounded-3xl overflow-hidden">
                 <Image
-                  src="/images/img_6322.jpg"
-                  alt="Confidence starts with skincare"
+                  src={content.lifestyleImage}
+                  alt={content.lifestyleText}
                   fill
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                 />
@@ -275,7 +274,7 @@ export default function FeaturedSection() {
               {/* Skin Health badge */}
               <div className="absolute top-4 left-4 flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full px-3 py-1.5 transition-all duration-300 group-hover:bg-white/35 group-hover:scale-105">
                 <span className="text-white text-xs font-semibold">
-                  Skin Health
+                  {content.lifestyleBadge}
                 </span>
                 <div className="w-5 h-5 rounded-full bg-[#c9a87c] flex items-center justify-center">
                   <span className="text-[9px] text-white font-bold">✦</span>
@@ -285,9 +284,7 @@ export default function FeaturedSection() {
               {/* Bottom text — lifts on hover */}
               <div className="absolute bottom-5 left-5 right-5 transition-transform duration-500 ease-out group-hover:-translate-y-2">
                 <p className="text-white text-xl font-bold leading-snug">
-                  Confidence starts
-                  <br />
-                  with skincare
+                  {content.lifestyleText}
                 </p>
               </div>
             </div>
@@ -296,8 +293,7 @@ export default function FeaturedSection() {
 
           {/* ── Disclaimer ───────────────────────────────────────────────────── */}
           <p ref={disclaimerRef} className="mt-7 text-xs text-[#8888aa]">
-            Results may vary. Consistent use helps improve skin texture,
-            hydration, and tone.
+            {content.disclaimer}
           </p>
         </div>
         {/* end white card */}

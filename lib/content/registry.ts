@@ -7,6 +7,12 @@ export type ContentSectionMeta = {
 
 export const contentRegistry: ContentSectionMeta[] = [
   {
+    key: "home.featuredProducts",
+    label: "Featured Products",
+    group: "Homepage",
+    description: "Heading, description, and the 2 product cards + lifestyle image card.",
+  },
+  {
     key: "home.hero",
     label: "Hero",
     group: "Homepage",

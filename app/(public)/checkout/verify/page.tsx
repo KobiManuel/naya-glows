@@ -3,8 +3,9 @@
 import { Suspense, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { XCircle, Loader2 } from "lucide-react";
 import GlassCard from "../../helpers/glass/GlassCard";
+import PaymentSuccessAnimation from "../../helpers/PaymentSuccessAnimation";
 import { useCart } from "../../../store/cartSlice";
 import { useVerifyPaymentQuery } from "../../../store/userApi";
 import { getApiErrorMessage } from "../../../store/apiError";
@@ -31,7 +32,7 @@ function VerifyContent() {
 
   if (!reference) {
     return (
-      <GlassCard className="max-w-md w-full text-center py-16 px-8">
+      <GlassCard className="max-w-md w-full text-center py-16 px-6 sm:px-8">
         <div className="w-16 h-16 rounded-full bg-white/70 flex items-center justify-center mx-auto mb-6">
           <XCircle size={28} className="text-[#c0574c]" />
         </div>
@@ -51,7 +52,7 @@ function VerifyContent() {
 
   if (isLoading) {
     return (
-      <GlassCard className="max-w-md w-full text-center py-16 px-8">
+      <GlassCard className="max-w-md w-full text-center py-16 px-6 sm:px-8">
         <Loader2 size={28} className="text-[#6a9a72] mx-auto mb-6 animate-spin" />
         <h1 className="text-xl font-medium mb-2">Confirming your payment…</h1>
         <p className="text-sm text-[#16241a]/50">This only takes a moment.</p>
@@ -60,11 +61,14 @@ function VerifyContent() {
   }
 
   if (paid) {
+    const email = data?.order.shippingDetails?.email ?? "";
+    const trackHref = data?.order.id
+      ? `/track-order?id=${encodeURIComponent(data.order.id)}&email=${encodeURIComponent(email)}`
+      : "/track-order";
+
     return (
-      <GlassCard className="max-w-md w-full text-center py-16 px-8">
-        <div className="w-16 h-16 rounded-full bg-white/70 flex items-center justify-center mx-auto mb-6">
-          <CheckCircle2 size={28} className="text-[#6a9a72]" />
-        </div>
+      <GlassCard className="max-w-md w-full text-center py-16 px-6 sm:px-8">
+        <PaymentSuccessAnimation />
         <h1 className="text-2xl font-light mb-3">Order confirmed</h1>
         <p className="text-sm text-[#16241a]/60 leading-relaxed mb-2">
           Thank you for shopping with Naya Glows — your payment went through
@@ -81,7 +85,7 @@ function VerifyContent() {
             Continue Shopping
           </Link>
           <Link
-            href="/track-order"
+            href={trackHref}
             className="inline-block text-sm font-semibold border border-[#16241a]/20 text-[#16241a] px-6 py-2.5 rounded-full hover:bg-[#16241a]/5 transition-colors"
           >
             Track this order
@@ -92,7 +96,7 @@ function VerifyContent() {
   }
 
   return (
-    <GlassCard className="max-w-md w-full text-center py-16 px-8">
+    <GlassCard className="max-w-md w-full text-center py-16 px-6 sm:px-8">
       <div className="w-16 h-16 rounded-full bg-white/70 flex items-center justify-center mx-auto mb-6">
         <XCircle size={28} className="text-[#c0574c]" />
       </div>
@@ -117,7 +121,7 @@ export default function CheckoutVerifyPage() {
     <main className="bg-gradient-to-b from-[#eafbf0] to-[#f4faf3] text-[#16241a] min-h-screen flex items-center justify-center px-5">
       <Suspense
         fallback={
-          <GlassCard className="max-w-md w-full text-center py-16 px-8">
+          <GlassCard className="max-w-md w-full text-center py-16 px-6 sm:px-8">
             <Loader2 size={28} className="text-[#6a9a72] mx-auto mb-6 animate-spin" />
             <p className="text-sm text-[#16241a]/50">Loading…</p>
           </GlassCard>

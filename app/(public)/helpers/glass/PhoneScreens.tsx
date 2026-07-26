@@ -15,7 +15,7 @@ export function AppHomeScreen() {
         </div>
         <div className="w-6 h-6 rounded-full bg-white/80 flex items-center justify-center overflow-hidden">
           <Image
-            src="/images/naya-logo.png"
+            src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381892/naya-glows/legacy/naya-logo.png"
             alt=""
             width={14}
             height={14}

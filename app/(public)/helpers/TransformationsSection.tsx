@@ -196,7 +196,7 @@ export default function TransformationsSection() {
                 <div className="flex items-center gap-3">
                   <div className="w-11 h-11 rounded-xl overflow-hidden bg-[#ffe1d7] flex-shrink-0">
                     <Image
-                      src="/images/eca30ff9-62ea-4126-8301-03d590c8250d.png"
+                      src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381851/naya-glows/legacy/eca30ff9-62ea-4126-8301-03d590c8250d.png"
                       alt="Radiance Boost Serum"
                       width={44}
                       height={44}
@@ -213,7 +213,7 @@ export default function TransformationsSection() {
                   </div>
                 </div>
                 <Link
-                  href="/products/radiance-boost-serum"
+                  href="/transformations"
                   className="bg-[#1a1a2e] text-white text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-[#2d2d4a] transition-colors"
                 >
                   Get Started
@@ -252,7 +252,7 @@ export default function TransformationsSection() {
                 {/* AFTER (full — bottom layer) */}
                 <div className="absolute inset-0">
                   <Image
-                    src="/images/youthful.png"
+                    src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381846/naya-glows/legacy/aging.png"
                     alt="After — youthful skin"
                     fill
                     className="object-contain"
@@ -270,7 +270,7 @@ export default function TransformationsSection() {
                   style={{ width: `${sliderX}%` }}
                 >
                   <Image
-                    src="/images/aging.png"
+                    src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381952/naya-glows/legacy/youthful.png"
                     alt="Before — aging skin"
                     fill
                     className="object-contain"

@@ -56,13 +56,13 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/images/naya-logo.png",
+        url: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381892/naya-glows/legacy/naya-logo.png",
         width: 500,
         height: 500,
         alt: "Naya Glows Logo",
       },
       {
-        url: "/images/naya-radiance-body-scrub-in-focu.png",
+        url: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381893/naya-glows/legacy/naya-radiance-body-scrub-in-focu.png",
         width: 1200,
         height: 630,
         alt: "Naya Radiance Exfoliating Body Scrub",
@@ -73,7 +73,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Naya Glows | Radiance-Boosting Skincare",
     description: "Clean, potent skincare for brighter, healthier skin. Free shipping on orders $75+",
-    images: ["/images/naya-radiance-body-scrub-in-focu.png"],
+    images: ["https://res.cloudinary.com/bhozkz7o/image/upload/v1784381893/naya-glows/legacy/naya-radiance-body-scrub-in-focu.png"],
     creator: "@nayaglows",
     site: "@nayaglows",
   },

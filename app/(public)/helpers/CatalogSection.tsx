@@ -38,7 +38,7 @@ const products = [
     fullName: "Radiance Boost Serum",
     price: "$34.99",
     originalPrice: "$44.99",
-    image: "/images/eca30ff9-62ea-4126-8301-03d590c8250d.png",
+    image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381851/naya-glows/legacy/eca30ff9-62ea-4126-8301-03d590c8250d.png",
     href: "/products/radiance-boost-serum",
   },
   {
@@ -47,7 +47,7 @@ const products = [
     fullName: "Clarifying Foam Cleanser",
     price: "$28.99",
     originalPrice: "$36.99",
-    image: "/images/432e42ab-30fd-4531-815a-e4ece090058b.png",
+    image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381840/naya-glows/legacy/432e42ab-30fd-4531-815a-e4ece090058b.png",
     href: "/products/clarifying-foam-cleanser",
   },
   {
@@ -56,7 +56,7 @@ const products = [
     fullName: "Radiance Barrier Face Oil",
     price: "$38.99",
     originalPrice: "$49.99",
-    image: "/images/9cb3aae2-d6b9-4d9d-8a24-e679c00c2705.png",
+    image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381845/naya-glows/legacy/9cb3aae2-d6b9-4d9d-8a24-e679c00c2705.png",
     href: "/products/radiance-barrier-face-oil",
   },
   {
@@ -65,7 +65,7 @@ const products = [
     fullName: "Acne Correcting Serum",
     price: "$34.99",
     originalPrice: "$44.99",
-    image: "/images/img_6205.jpg",
+    image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381853/naya-glows/legacy/img_6205.jpg",
     href: "/products/acne-correcting-serum",
   },
   {
@@ -74,7 +74,7 @@ const products = [
     fullName: "Exfoliating Body Scrub",
     price: "$29.99",
     originalPrice: "$39.99",
-    image: "/images/19ea7a51-adb2-4a49-bcb7-0bbc0116f4f2.png",
+    image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381835/naya-glows/legacy/19ea7a51-adb2-4a49-bcb7-0bbc0116f4f2.png",
     href: "/products/exfoliating-body-scrub",
   },
   {
@@ -83,7 +83,7 @@ const products = [
     fullName: "Pigment Corrector Face Cream",
     price: "$36.99",
     originalPrice: "$46.99",
-    image: "/images/42cbfe95-d2a7-4d13-8a5e-72e62dcf1792.png",
+    image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381838/naya-glows/legacy/42cbfe95-d2a7-4d13-8a5e-72e62dcf1792.png",
     href: "/products/pigment-corrector-face-cream",
   },
   {
@@ -92,7 +92,7 @@ const products = [
     fullName: "Radiance Balance Toner",
     price: "$24.99",
     originalPrice: "$32.99",
-    image: "/images/056bf54d-5022-45a9-861d-fa2a3620f4a3.png",
+    image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381832/naya-glows/legacy/056bf54d-5022-45a9-861d-fa2a3620f4a3.png",
     href: "/products/radiance-balance-toner",
   },
   {
@@ -101,7 +101,7 @@ const products = [
     fullName: "Luminous Glow Body Oil",
     price: "$32.99",
     originalPrice: "$42.99",
-    image: "/images/0323d23a-ed8d-4ab5-8f52-b8a8eb31e04f.png",
+    image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381830/naya-glows/legacy/0323d23a-ed8d-4ab5-8f52-b8a8eb31e04f.png",
     href: "/products/luminous-glow-body-oil",
   },
 ];

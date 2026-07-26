@@ -227,27 +227,41 @@ export default function AdminProductsPage() {
                 ))}
               </select>
               <div className="grid grid-cols-2 gap-3">
-                <input
-                  required
-                  type="number"
-                  step="0.01"
-                  placeholder="Price"
-                  value={form.price || ""}
-                  onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))}
-                  className={inputClass}
-                />
-                <input
-                  required
-                  type="number"
-                  step="0.01"
-                  placeholder="Original price"
-                  value={form.originalPrice || ""}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, originalPrice: Number(e.target.value) }))
-                  }
-                  className={inputClass}
-                />
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wide text-[#16241a]/50 mb-1.5">
+                    Price ($)
+                  </label>
+                  <input
+                    required
+                    type="number"
+                    step="0.01"
+                    placeholder="Price"
+                    value={form.price || ""}
+                    onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))}
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wide text-[#16241a]/50 mb-1.5">
+                    Original Price ($)
+                  </label>
+                  <input
+                    required
+                    type="number"
+                    step="0.01"
+                    placeholder="Original price"
+                    value={form.originalPrice || ""}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, originalPrice: Number(e.target.value) }))
+                    }
+                    className={inputClass}
+                  />
+                </div>
               </div>
+              <p className="text-xs text-[#16241a]/40 -mt-1">
+                Original Price is the pre-discount &quot;was&quot; price shown struck through on
+                the storefront — set it equal to Price if there&apos;s no discount.
+              </p>
               <input
                 required
                 placeholder="Tagline"

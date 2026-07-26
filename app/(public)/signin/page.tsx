@@ -53,13 +53,13 @@ export default function SignInPage() {
 
   return (
     <main className="bg-gradient-to-b from-[#eafbf0] to-[#f4faf3] text-[#16241a] min-h-screen">
-      <section className="pt-32 sm:pt-36 pb-24 px-5 sm:px-8 lg:px-12">
+      <section className="pt-32 sm:pt-36 pb-24 px-0 sm:px-8 lg:px-12">
         <div className="max-w-[1100px] mx-auto">
-          <GlassCard className="grid grid-cols-1 lg:grid-cols-2 overflow-hidden !rounded-[2rem]">
+          <GlassCard className="grid grid-cols-1 lg:grid-cols-2 overflow-hidden !rounded-none sm:!rounded-[2rem]">
             {/* Image side */}
             <div className="relative hidden lg:block min-h-[560px]">
               <Image
-                src="/images/new/IMG_7419.JPG"
+                src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381916/naya-glows/legacy/new/img_7419.jpg"
                 alt="Naya Glows"
                 fill
                 className="object-cover object-top"
@@ -76,7 +76,7 @@ export default function SignInPage() {
             </div>
 
             {/* Form side */}
-            <div className="p-8 sm:p-12 flex flex-col justify-center">
+            <div className="px-5 py-10 sm:p-12 flex flex-col justify-center">
               <div className="flex items-center gap-1 bg-white/70 rounded-full p-1 mb-8 w-fit">
                 <button
                   type="button"

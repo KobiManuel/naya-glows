@@ -73,10 +73,10 @@ function MarqueeStrip() {
 }
 
 const galleryImages = [
-  "/images/new/DSC00339%20copy.jpg",
-  "/images/new/IMG_7419.JPG",
-  "/images/new/IMG_7557.JPG",
-  "/images/new/DSC00420%20copy.jpg",
+  "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381908/naya-glows/legacy/new/dsc00339-copy.jpg",
+  "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381916/naya-glows/legacy/new/img_7419.jpg",
+  "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381923/naya-glows/legacy/new/img_7557.jpg",
+  "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381912/naya-glows/legacy/new/dsc00420-copy.jpg",
 ];
 
 export default function OurStoryPage() {
@@ -96,7 +96,7 @@ export default function OurStoryPage() {
       <section className="relative w-full h-[100dvh] min-h-[560px] overflow-hidden bg-[#10160f]">
         {videoFailed ? (
           <Image
-            src="/images/new/IMG_7419.JPG"
+            src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381916/naya-glows/legacy/new/img_7419.jpg"
             alt="Naya Glows"
             fill
             priority
@@ -106,8 +106,8 @@ export default function OurStoryPage() {
           <video
             ref={videoRef}
             className="absolute inset-0 w-full h-full object-cover"
-            src="/images/new/41341302-C730-4F62-8BC1-1D03BC983A7D.MOV"
-            poster="/images/new/IMG_7419.JPG"
+            src="https://res.cloudinary.com/bhozkz7o/video/upload/v1784381904/naya-glows/legacy/new/41341302-c730-4f62-8bc1-1d03bc983a7d.mov"
+            poster="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381916/naya-glows/legacy/new/img_7419.jpg"
             autoPlay
             muted
             loop
@@ -181,7 +181,7 @@ export default function OurStoryPage() {
             <GlassCard className="grid grid-cols-1 md:grid-cols-2 overflow-hidden !rounded-[2rem]">
               <div className="relative h-[360px] md:h-full min-h-[420px]">
                 <Image
-                  src="/images/founder-image.jpg"
+                  src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381852/naya-glows/legacy/founder-image.jpg"
                   alt="Susan Eze, founder of Naya Glows"
                   fill
                   className="object-cover object-top"
@@ -293,7 +293,7 @@ export default function OurStoryPage() {
           <motion.div variants={fadeIn} custom={0}>
             <GlassCard className="relative h-[480px] overflow-hidden !rounded-[1.75rem]">
               <Image
-                src="/images/new/IMG_7557.JPG"
+                src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381923/naya-glows/legacy/new/img_7557.jpg"
                 alt="Naya Glows mission"
                 fill
                 className="object-cover object-top"
@@ -376,7 +376,7 @@ export default function OurStoryPage() {
       {/* ── CLOSING CTA ─────────────────────────────────────────── */}
       <section className="relative overflow-hidden" style={{ height: "440px" }}>
         <Image
-          src="/images/new/DSC00420%20copy.jpg"
+          src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381912/naya-glows/legacy/new/dsc00420-copy.jpg"
           alt="Naya Glows skincare"
           fill
           className="object-cover object-top"

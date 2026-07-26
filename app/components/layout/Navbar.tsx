@@ -29,19 +29,19 @@ const products = [
       {
         name: "Radiance Boost Serum",
         description: "Brighten & hydrate with Niacinamide",
-        image: "/images/eca30ff9-62ea-4126-8301-03d590c8250d.png",
+        image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381851/naya-glows/legacy/eca30ff9-62ea-4126-8301-03d590c8250d.png",
         href: "/products/radiance-boost-serum",
       },
       {
         name: "Acne Correcting Serum",
         description: "Fade marks with Alpha Arbutin",
-        image: "/images/img_6205.jpg",
+        image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381853/naya-glows/legacy/img_6205.jpg",
         href: "/products/acne-correcting-serum",
       },
       {
         name: "Age Renewal Serum",
         description: "Renew with Azelaic Acid",
-        image: "/images/08d216cc-1441-4068-996e-ed7d64a65701.png",
+        image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381833/naya-glows/legacy/08d216cc-1441-4068-996e-ed7d64a65701.png",
         href: "/products/age-renewal-serum",
       },
     ],
@@ -53,19 +53,19 @@ const products = [
       {
         name: "Radiance Renewal Face Cream",
         description: "Deep hydration & renewal",
-        image: "/images/b49340ae-6fe1-47f6-be61-8eac75c0ccbf.png",
+        image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381847/naya-glows/legacy/b49340ae-6fe1-47f6-be61-8eac75c0ccbf.png",
         href: "/products/radiance-renewal-face-cream",
       },
       {
         name: "Pigment Corrector Cream",
         description: "Target hyperpigmentation",
-        image: "/images/42cbfe95-d2a7-4d13-8a5e-72e62dcf1792.png",
+        image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381838/naya-glows/legacy/42cbfe95-d2a7-4d13-8a5e-72e62dcf1792.png",
         href: "/products/pigment-corrector-face-cream",
       },
       {
         name: "Radiance Barrier Face Oil",
         description: "Squalane & Argan Oil blend",
-        image: "/images/9cb3aae2-d6b9-4d9d-8a24-e679c00c2705.png",
+        image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381845/naya-glows/legacy/9cb3aae2-d6b9-4d9d-8a24-e679c00c2705.png",
         href: "/products/radiance-barrier-face-oil",
       },
     ],
@@ -77,19 +77,19 @@ const products = [
       {
         name: "Clarifying Foam Cleanser",
         description: "Salicylic Acid pore cleanser",
-        image: "/images/432e42ab-30fd-4531-815a-e4ece090058b.png",
+        image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381840/naya-glows/legacy/432e42ab-30fd-4531-815a-e4ece090058b.png",
         href: "/products/clarifying-foam-cleanser",
       },
       {
         name: "Clarifying Black Soap",
         description: "African Black Soap deep cleanse",
-        image: "/images/5d4e84fb-2a40-4b0c-ae19-62d695738a31.png",
+        image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381842/naya-glows/legacy/5d4e84fb-2a40-4b0c-ae19-62d695738a31.png",
         href: "/products/clarifying-black-soap",
       },
       {
         name: "Radiance Balance Toner",
         description: "Balance & refine pores",
-        image: "/images/056bf54d-5022-45a9-861d-fa2a3620f4a3.png",
+        image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381832/naya-glows/legacy/056bf54d-5022-45a9-861d-fa2a3620f4a3.png",
         href: "/products/radiance-balance-toner",
       },
     ],
@@ -101,25 +101,25 @@ const products = [
       {
         name: "Exfoliating Body Scrub",
         description: "Kojic Acid & Lemon brightening",
-        image: "/images/19ea7a51-adb2-4a49-bcb7-0bbc0116f4f2.png",
+        image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381835/naya-glows/legacy/19ea7a51-adb2-4a49-bcb7-0bbc0116f4f2.png",
         href: "/products/exfoliating-body-scrub",
       },
       {
         name: "Purifying Body Wash",
         description: "Kaolin Clay daily cleanser",
-        image: "/images/2999b980-d234-482d-9e97-982f1bf1579a.png",
+        image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381837/naya-glows/legacy/2999b980-d234-482d-9e97-982f1bf1579a.png",
         href: "/products/purifying-body-wash",
       },
       {
         name: "Radiance Repair Body Lotion",
         description: "Tranexamic Acid & Vitamin C",
-        image: "/images/5bbe98ac-b9a9-40aa-95a1-ad2f9d7a2ce6.png",
+        image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381841/naya-glows/legacy/5bbe98ac-b9a9-40aa-95a1-ad2f9d7a2ce6.png",
         href: "/products/radiance-repair-body-lotion",
       },
       {
         name: "Luminous Glow Body Oil",
         description: "Argan & Sweet Almond Oil",
-        image: "/images/0323d23a-ed8d-4ab5-8f52-b8a8eb31e04f.png",
+        image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381830/naya-glows/legacy/0323d23a-ed8d-4ab5-8f52-b8a8eb31e04f.png",
         href: "/products/luminous-glow-body-oil",
       },
     ],
@@ -204,7 +204,7 @@ export default function Navbar() {
                 className="w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-white flex items-center justify-center shadow-sm hover:scale-105 transition-transform duration-200"
               >
                 <Image
-                  src="/images/naya-logo.png"
+                  src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381892/naya-glows/legacy/naya-logo.png"
                   alt="Naya Glows"
                   width={26}
                   height={26}
@@ -448,7 +448,7 @@ export default function Navbar() {
                 >
                   <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center">
                     <Image
-                      src="/images/naya-logo.png"
+                      src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381892/naya-glows/legacy/naya-logo.png"
                       alt="Naya Glows"
                       width={22}
                       height={22}

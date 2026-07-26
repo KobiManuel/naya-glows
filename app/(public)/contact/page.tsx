@@ -242,7 +242,7 @@ export default function ContactPage() {
                         {/* Inline pill image */}
                         <span className="hero-img-pill inline-block w-[120px] h-[56px] rounded-full overflow-hidden relative align-middle mx-1 border border-[#8ab88e]/30">
                             <Image
-                                src="/images/img_6322.jpg"
+                                src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381858/naya-glows/legacy/img_6322.jpg"
                                 alt="skin"
                                 fill
                                 className="object-cover object-center"
@@ -255,7 +255,7 @@ export default function ContactPage() {
                     <span className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mt-1">
                         <span className="hero-img-pill inline-block w-[90px] h-[56px] rounded-full overflow-hidden relative align-middle mx-1 border border-[#8ab88e]/30">
                             <Image
-                                src="/images/naya-radiance-body-scrub-in-focu.png"
+                                src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381893/naya-glows/legacy/naya-radiance-body-scrub-in-focu.png"
                                 alt="product"
                                 fill
                                 className="object-cover"
@@ -282,9 +282,9 @@ export default function ContactPage() {
             <section className="py-10 px-6">
                 <div className="grid grid-cols-3 gap-2 max-w-4xl mx-auto">
                     {[
-                        { src: "/images/img_6320.jpg", alt: "Glowing skin" },
-                        { src: "/images/img_6325.jpg", alt: "Model portrait" },
-                        { src: "/images/img_6323.jpg", alt: "Skincare routine" },
+                        { src: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381854/naya-glows/legacy/img_6320.jpg", alt: "Glowing skin" },
+                        { src: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381871/naya-glows/legacy/img_6325.jpg", alt: "Model portrait" },
+                        { src: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381863/naya-glows/legacy/img_6323.jpg", alt: "Skincare routine" },
                     ].map(({ src, alt }, i) => (
                         <motion.div
                             key={src}
@@ -312,7 +312,7 @@ export default function ContactPage() {
                     style={{ height: "620px" }}
                 >
                     <Image
-                        src="/images/new/IMG_7419.JPG"
+                        src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381916/naya-glows/legacy/new/img_7419.jpg"
                         alt="Happy customer"
                         fill
                         className="object-cover object-top"
@@ -331,7 +331,7 @@ export default function ContactPage() {
                         </p>
                         <div className="flex items-center gap-3">
                             <div className="w-9 h-9 rounded-full overflow-hidden relative flex-shrink-0 border border-[#8ab88e]/40">
-                                <Image src="/images/img_6328.jpg" alt="Customer" fill className="object-cover" />
+                                <Image src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381876/naya-glows/legacy/img_6328.jpg" alt="Customer" fill className="object-cover" />
                             </div>
                             <div>
                                 <p className="text-white text-sm font-medium" >

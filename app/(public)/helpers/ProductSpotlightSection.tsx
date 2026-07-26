@@ -218,7 +218,7 @@ export default function ProductSpotlightSection() {
                                         className="absolute inset-0 z-0 flex items-center justify-center"
                                     >
                                         <Image
-                                            src="/images/black-radiance.png"
+                                            src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381848/naya-glows/legacy/black-radiance.png"
                                             alt="Naya Radiance Balance Toner"
                                             width={220}
                                             height={380}

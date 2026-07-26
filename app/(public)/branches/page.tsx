@@ -2,6 +2,7 @@
 
 import { MapPin, Phone, Clock } from "lucide-react";
 import GlassCard from "../helpers/glass/GlassCard";
+import PageHeader from "../helpers/PageHeader";
 import { useSectionContent, useSectionLoading } from "../../store/useSectionContent";
 import { defaultBranchesContent } from "@/lib/content/businessBranches";
 
@@ -13,12 +14,18 @@ export default function BranchesPage() {
     <main className="bg-gradient-to-b from-[#eafbf0] to-[#f4faf3] text-[#16241a] min-h-screen">
       <section className="pt-32 sm:pt-36 pb-24 px-5 sm:px-8 lg:px-12">
         <div className="max-w-[900px] mx-auto">
-          <p className="text-[11px] tracking-[0.3em] uppercase text-[#6a9a72] mb-3 font-medium text-center">
-            Find Us
-          </p>
-          <h1 className="text-[clamp(1.8rem,3.5vw,2.6rem)] font-light mb-12 text-center">
-            {content.heading}
-          </h1>
+          <PageHeader
+            eyebrow="Find Us"
+            heading={content.heading}
+            images={[
+              {
+                src: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381879/naya-glows/legacy/img_6331.jpg",
+                alt: "Naya Glows storefront",
+                afterWord: 0,
+              },
+            ]}
+            className="mb-12"
+          />
 
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

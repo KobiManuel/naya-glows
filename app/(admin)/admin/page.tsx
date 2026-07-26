@@ -1,11 +1,13 @@
 "use client";
 
-import { Package, Users, FileText, ShoppingCart } from "lucide-react";
+import Link from "next/link";
+import { Package, Users, FileText, ShoppingCart, Wallet } from "lucide-react";
 import {
   useListProductsQuery,
   useListUsersQuery,
   useListContentQuery,
   useListOrdersQuery,
+  useGetBudgetSummaryQuery,
 } from "../../store/adminApi";
 
 export default function AdminOverviewPage() {
@@ -13,6 +15,7 @@ export default function AdminOverviewPage() {
   const { data: users } = useListUsersQuery();
   const { data: content } = useListContentQuery();
   const { data: orders } = useListOrdersQuery();
+  const { data: budget } = useGetBudgetSummaryQuery();
 
   const stats = [
     { label: "Products", value: products?.length ?? null, icon: Package, href: "/admin/products" },
@@ -51,14 +54,29 @@ export default function AdminOverviewPage() {
         })}
       </div>
 
-      <div className="mt-10 bg-white/60 backdrop-blur-xl border border-white/60 rounded-2xl p-6">
-        <h2 className="text-base font-semibold mb-2">Coming next</h2>
-        <p className="text-sm text-[#16241a]/50 leading-relaxed">
-          The Budget Tracker will start reporting once real payments come in
-          (the schema and Orders are already live). Multi-currency display is
-          also queued up next.
-        </p>
-      </div>
+      <Link
+        href="/admin/budget"
+        className="mt-10 block bg-white/60 backdrop-blur-xl border border-white/60 rounded-2xl p-6 hover:bg-white/80 transition-colors"
+      >
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <Wallet size={16} className="text-[#6a9a72]" />
+              <h2 className="text-base font-semibold">Budget Snapshot</h2>
+            </div>
+            <p className="text-sm text-[#16241a]/50">
+              {budget
+                ? `${budget.paidOrderCount} paid order(s), plus any manual entries.`
+                : "Revenue and manual expense tracking for the business."}
+            </p>
+          </div>
+          {budget && (
+            <p className="text-2xl font-semibold">
+              ₦{budget.net.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+            </p>
+          )}
+        </div>
+      </Link>
     </div>
   );
 }

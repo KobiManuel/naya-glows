@@ -5,8 +5,19 @@ import Link from "next/link";
 import { User, Package, Heart, LogOut, MapPin, X } from "lucide-react";
 import GlassCard from "../helpers/glass/GlassCard";
 import { useUserAuth } from "../../store/useUserAuth";
-import { useListSavedProductsQuery, useToggleSavedProductMutation } from "../../store/userApi";
+import {
+  useListSavedProductsQuery,
+  useToggleSavedProductMutation,
+  useListMyOrdersQuery,
+} from "../../store/userApi";
 import { isApiConfigured } from "@/lib/api";
+
+const statusStyles: Record<string, string> = {
+  PAID: "bg-[#d4e8d0] text-[#4f7957]",
+  PENDING: "bg-[#f4e8c9] text-[#8a6f1f]",
+  FAILED: "bg-[#f5d9d5] text-[#c0574c]",
+  CANCELLED: "bg-[#e5e5e5] text-[#666]",
+};
 
 export default function AccountPage() {
   const { user, loading, logout } = useUserAuth();
@@ -14,6 +25,9 @@ export default function AccountPage() {
     skip: !isApiConfigured() || !user,
   });
   const [toggleSavedProduct] = useToggleSavedProductMutation();
+  const { data: myOrders = [] } = useListMyOrdersQuery(undefined, {
+    skip: !isApiConfigured() || !user,
+  });
 
   if (loading) {
     return (
@@ -24,7 +38,7 @@ export default function AccountPage() {
   if (!user) {
     return (
       <main className="bg-gradient-to-b from-[#eafbf0] to-[#f4faf3] text-[#16241a] min-h-screen flex items-center justify-center px-5">
-        <GlassCard className="max-w-md w-full text-center py-16 px-8">
+        <GlassCard className="max-w-md w-full text-center py-16 px-6 sm:px-8">
           <div className="w-14 h-14 rounded-full bg-white/70 flex items-center justify-center mx-auto mb-5">
             <User size={22} className="text-[#6a9a72]" />
           </div>
@@ -47,7 +61,7 @@ export default function AccountPage() {
     <main className="bg-gradient-to-b from-[#eafbf0] to-[#f4faf3] text-[#16241a] min-h-screen">
       <section className="pt-32 sm:pt-36 pb-24 px-5 sm:px-8 lg:px-12">
         <div className="max-w-[900px] mx-auto">
-          <GlassCard className="p-8 flex items-center gap-5 mb-8 flex-wrap">
+          <GlassCard className="px-5 py-8 sm:p-8 flex items-center gap-5 mb-8 flex-wrap">
             <div className="w-16 h-16 rounded-full bg-[#16241a] flex items-center justify-center flex-shrink-0">
               <User size={24} className="text-white" />
             </div>
@@ -71,23 +85,56 @@ export default function AccountPage() {
           </GlassCard>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <GlassCard className="p-8">
+            <GlassCard className="px-5 py-8 sm:p-8">
               <div className="w-10 h-10 rounded-full bg-white/70 flex items-center justify-center mb-4">
                 <Package size={17} className="text-[#6a9a72]" />
               </div>
               <h2 className="text-base font-semibold mb-1">Order History</h2>
-              <p className="text-sm text-[#16241a]/50 mb-4">
-                You have no past orders yet.
-              </p>
-              <Link
-                href="/catalog"
-                className="text-sm font-semibold text-[#6a9a72] hover:underline"
-              >
-                Start shopping →
-              </Link>
+              {myOrders.length === 0 ? (
+                <>
+                  <p className="text-sm text-[#16241a]/50 mb-4">
+                    You have no past orders yet.
+                  </p>
+                  <Link
+                    href="/catalog"
+                    className="text-sm font-semibold text-[#6a9a72] hover:underline"
+                  >
+                    Start shopping →
+                  </Link>
+                </>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {myOrders.map((order) => {
+                    const itemCount = order.items.reduce((sum, i) => sum + i.qty, 0);
+                    return (
+                      <Link
+                        key={order.id}
+                        href={`/track-order?id=${encodeURIComponent(order.id)}&email=${encodeURIComponent(user.email)}`}
+                        className="flex items-center justify-between gap-3 hover:opacity-80 transition-opacity"
+                      >
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium leading-snug">
+                            {itemCount} item(s) · {order.currency} {order.total.toLocaleString()}
+                          </p>
+                          <p className="text-xs text-[#16241a]/45">
+                            {new Date(order.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <span
+                          className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-full flex-shrink-0 ${
+                            statusStyles[order.status] ?? "bg-white/60 text-[#16241a]/60"
+                          }`}
+                        >
+                          {order.status}
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
             </GlassCard>
 
-            <GlassCard className="p-8">
+            <GlassCard className="px-5 py-8 sm:p-8">
               <div className="w-10 h-10 rounded-full bg-white/70 flex items-center justify-center mb-4">
                 <Heart size={17} className="text-[#6a9a72]" />
               </div>

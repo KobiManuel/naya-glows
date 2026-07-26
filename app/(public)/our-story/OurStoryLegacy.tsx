@@ -126,7 +126,7 @@ export default function OurStoryPage() {
                         {/* Top-left portrait — woman relaxing */}
                         <div className="mosaic-img col-span-4 row-span-3 relative overflow-hidden">
                             <Image
-                                src="/images/img_6328.jpg"
+                                src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381876/naya-glows/legacy/img_6328.jpg"
                                 alt="Relaxed woman"
                                 fill
                                 className="object-cover object-top"
@@ -136,7 +136,7 @@ export default function OurStoryPage() {
                         {/* Center large — glowing skin */}
                         <div className="mosaic-img col-span-5 row-span-4 col-start-5 row-start-1 relative overflow-hidden">
                             <Image
-                                src="/images/img_6320.jpg"
+                                src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381854/naya-glows/legacy/img_6320.jpg"
                                 alt="Glowing skin"
                                 fill
                                 className="object-cover"
@@ -158,7 +158,7 @@ export default function OurStoryPage() {
                         {/* Top-right — product shot */}
                         <div className="mosaic-img col-span-3 row-span-2 col-start-10 row-start-1 relative overflow-hidden">
                             <Image
-                                src="/images/19ea7a51-adb2-4a49-bcb7-0bbc0116f4f2.png"
+                                src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381835/naya-glows/legacy/19ea7a51-adb2-4a49-bcb7-0bbc0116f4f2.png"
                                 alt="Naya product"
                                 fill
                                 className="object-cover"
@@ -168,7 +168,7 @@ export default function OurStoryPage() {
                         {/* Mid-left — nature girl */}
                         <div className="mosaic-img col-span-4 row-span-3 row-start-4 relative overflow-hidden">
                             <Image
-                                src="/images/img_6325.jpg"
+                                src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381871/naya-glows/legacy/img_6325.jpg"
                                 alt="Nature girl"
                                 fill
                                 className="object-cover"
@@ -178,7 +178,7 @@ export default function OurStoryPage() {
                         {/* Mid-right top — close skin texture */}
                         <div className="mosaic-img col-span-3 row-span-2 col-start-10 row-start-3 relative overflow-hidden">
                             <Image
-                                src="/images/img_6322.jpg"
+                                src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381858/naya-glows/legacy/img_6322.jpg"
                                 alt="Skin close-up"
                                 fill
                                 className="object-cover object-center"
@@ -188,7 +188,7 @@ export default function OurStoryPage() {
                         {/* Bottom-right — product flat */}
                         <div className="mosaic-img col-span-3 row-span-2 col-start-10 row-start-5 relative overflow-hidden">
                             <Image
-                                src="/images/img_6326.jpg"
+                                src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381873/naya-glows/legacy/img_6326.jpg"
                                 alt="Product detail"
                                 fill
                                 className="object-cover"
@@ -198,7 +198,7 @@ export default function OurStoryPage() {
                         {/* Bottom center fill */}
                         <div className="mosaic-img col-span-3 row-span-2 col-start-5 row-start-5 relative overflow-hidden">
                             <Image
-                                src="/images/img_6331.jpg"
+                                src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381879/naya-glows/legacy/img_6331.jpg"
                                 alt="Skincare routine"
                                 fill
                                 className="object-cover"
@@ -206,7 +206,7 @@ export default function OurStoryPage() {
                         </div>
                         <div className="mosaic-img col-span-2 row-span-2 col-start-8 row-start-5 relative overflow-hidden bg-[#2a1f16]">
                             <Image
-                                src="/images/img_6324.jpg"
+                                src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381867/naya-glows/legacy/img_6324.jpg"
                                 alt="Model"
                                 fill
                                 className="object-cover object-top"
@@ -256,7 +256,7 @@ export default function OurStoryPage() {
                 <RevealSection className="relative overflow-hidden" style={{ minHeight: "560px" }}>
                     <motion.div variants={fadeIn} custom={0} className="relative h-[560px] md:h-full">
                         <Image
-                            src="/images/founder-image.jpg"
+                            src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381852/naya-glows/legacy/founder-image.jpg"
                             alt="Susan Eze founder"
                             fill
                             className="object-cover object-top"
@@ -353,13 +353,13 @@ export default function OurStoryPage() {
                 <RevealSection>
                     <motion.div variants={fadeIn} custom={0} className="grid grid-cols-2 gap-3 h-[480px]">
                         <div className="relative overflow-hidden rounded-sm row-span-2">
-                            <Image src="/images/img_6323.jpg" alt="Skincare" fill className="object-cover" />
+                            <Image src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381863/naya-glows/legacy/img_6323.jpg" alt="Skincare" fill className="object-cover" />
                         </div>
                         <div className="relative overflow-hidden rounded-sm">
-                            <Image src="/images/nature-girl1.jpg" alt="Natural beauty" fill className="object-cover" />
+                            <Image src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381880/naya-glows/legacy/nature-girl1.jpg" alt="Natural beauty" fill className="object-cover" />
                         </div>
                         <div className="relative overflow-hidden rounded-sm">
-                            <Image src="/images/body-scrub-with-lemon-and-mint.png" alt="Body scrub" fill className="object-cover" />
+                            <Image src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381849/naya-glows/legacy/body-scrub-with-lemon-and-mint.png" alt="Body scrub" fill className="object-cover" />
                         </div>
                     </motion.div>
                 </RevealSection>
@@ -400,7 +400,7 @@ export default function OurStoryPage() {
             {/* ── LEMON / INGREDIENT BANNER ─────────────────────────── */}
             <section className="relative overflow-hidden" style={{ height: "420px" }}>
                 <Image
-                    src="/images/body-scrub-with-lemon-and-mint.png"
+                    src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381849/naya-glows/legacy/body-scrub-with-lemon-and-mint.png"
                     alt="Fresh ingredients"
                     fill
                     className="object-cover object-center"
@@ -428,7 +428,7 @@ export default function OurStoryPage() {
                 <RevealSection>
                     <motion.div variants={fadeIn} custom={0} className="relative h-[480px] overflow-hidden rounded-sm">
                         <Image
-                            src="/images/img_6325.jpg"
+                            src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381871/naya-glows/legacy/img_6325.jpg"
                             alt="Naya Glows mission"
                             fill
                             className="object-cover object-top"
@@ -518,7 +518,7 @@ export default function OurStoryPage() {
             {/* ── NEW ARRIVALS BANNER ────────────────────────────────── */}
             <section className="relative overflow-hidden" style={{ height: "480px" }}>
                 <Image
-                    src="/images/img_6322.jpg"
+                    src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381858/naya-glows/legacy/img_6322.jpg"
                     alt="Naya Glows skincare"
                     fill
                     className="object-cover object-center"

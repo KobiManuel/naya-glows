@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useSectionContent, useSectionLoading } from "../../store/useSectionContent";
+import {
+  useSectionContent,
+  useSectionLoading,
+} from "../../store/useSectionContent";
 import { defaultHeroContent } from "@/lib/content/homeHero";
 import HeroSkeleton from "./skeletons/HeroSkeleton";
 
@@ -15,7 +18,9 @@ const HOLD_MS = 1800;
 function useTypewriter(taglines: string[]) {
   const [taglineIndex, setTaglineIndex] = useState(0);
   const [text, setText] = useState("");
-  const [phase, setPhase] = useState<"typing" | "holding" | "deleting">("typing");
+  const [phase, setPhase] = useState<"typing" | "holding" | "deleting">(
+    "typing",
+  );
 
   useEffect(() => {
     if (taglines.length === 0) return;
@@ -23,7 +28,10 @@ function useTypewriter(taglines: string[]) {
 
     if (phase === "typing") {
       if (text.length < current.length) {
-        const t = setTimeout(() => setText(current.slice(0, text.length + 1)), TYPE_SPEED_MS);
+        const t = setTimeout(
+          () => setText(current.slice(0, text.length + 1)),
+          TYPE_SPEED_MS,
+        );
         return () => clearTimeout(t);
       }
       const t = setTimeout(() => setPhase("holding"), HOLD_MS);
@@ -78,7 +86,7 @@ export default function HeroBanner() {
           fill
           priority={i === 0}
           sizes="100vw"
-          className={`object-cover object-top absolute inset-0 transition-opacity duration-1000 ${
+          className={`object-cover object-center absolute inset-0 transition-opacity duration-1000 ${
             i === activeImage ? "opacity-100" : "opacity-0"
           }`}
         />

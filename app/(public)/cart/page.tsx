@@ -46,13 +46,13 @@ export default function CartPage() {
                   >
                     <Link
                       href={`/products/${item.slug}`}
-                      className="relative w-20 h-20 rounded-xl overflow-hidden bg-[#d4e8d0] flex-shrink-0"
+                      className="relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0"
                     >
                       <Image
                         src={item.image}
                         alt={item.name}
                         fill
-                        className="object-contain p-2"
+                        className="object-cover"
                       />
                     </Link>
 
@@ -105,7 +105,7 @@ export default function CartPage() {
 
               {/* Summary */}
               <div>
-                <GlassCard className="p-6 sticky top-28">
+                <GlassCard className="px-4 py-6 sm:p-6 sticky top-28">
                   <h2 className="text-sm font-semibold uppercase tracking-wide text-[#16241a]/50 mb-5">
                     Order Summary
                   </h2>

@@ -123,7 +123,7 @@ export default function Footer() {
                         <div className="flex items-center gap-3">
                             <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
                                 <Image
-                                    src="/images/naya-logo.png"
+                                    src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381892/naya-glows/legacy/naya-logo.png"
                                     alt="Naya Glows"
                                     width={32}
                                     height={32}

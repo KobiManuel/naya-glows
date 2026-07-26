@@ -164,7 +164,7 @@ export default function HeroIngredients() {
           style={{ bottom: "5%", left: "3%", transform: "rotate(-18deg)" }}
         >
           <Image
-            src="/images/body-scrub-with-lemon-and-mint.png"
+            src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381849/naya-glows/legacy/body-scrub-with-lemon-and-mint.png"
             alt="lemon decoration"
             width={280}
             height={280}
@@ -179,7 +179,7 @@ export default function HeroIngredients() {
           style={{ top: "3%", right: "2%", transform: "rotate(22deg)" }}
         >
           <Image
-            src="/images/body-scrub-with-lemon-and-mint.png"
+            src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381849/naya-glows/legacy/body-scrub-with-lemon-and-mint.png"
             alt="lemon decoration"
             width={260}
             height={260}
@@ -198,7 +198,7 @@ export default function HeroIngredients() {
           }}
         >
           <Image
-            src="/images/naya-radiance-body-scrub-in-focu.png"
+            src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381893/naya-glows/legacy/naya-radiance-body-scrub-in-focu.png"
             alt="Naya Radiance Exfoliating Body Scrub"
             width={700}
             height={700}

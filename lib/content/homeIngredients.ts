@@ -19,27 +19,27 @@ export const defaultIngredientsContent: IngredientsContent = {
     {
       name: "Kojic Acid",
       benefit: "Brightens & fades dark spots",
-      image: "/images/body-scrub-with-lemon-and-mint.png",
+      image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381849/naya-glows/legacy/body-scrub-with-lemon-and-mint.png",
     },
     {
       name: "Lemon Extract",
       benefit: "Evens skin tone & exfoliates",
-      image: "/images/body-scrub-with-lemon-and-mint.png",
+      image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381849/naya-glows/legacy/body-scrub-with-lemon-and-mint.png",
     },
     {
       name: "Niacinamide",
       benefit: "Controls oil & reduces redness",
-      image: "/images/body-scrub-with-lemon-and-mint.png",
+      image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381849/naya-glows/legacy/body-scrub-with-lemon-and-mint.png",
     },
     {
       name: "Hyaluronic Acid",
       benefit: "Deep lasting hydration",
-      image: "/images/body-scrub-with-lemon-and-mint.png",
+      image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381849/naya-glows/legacy/body-scrub-with-lemon-and-mint.png",
     },
     {
       name: "Green Tea Extract",
       benefit: "Antioxidant & anti-inflammatory",
-      image: "/images/body-scrub-with-lemon-and-mint.png",
+      image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381849/naya-glows/legacy/body-scrub-with-lemon-and-mint.png",
     },
   ],
 };

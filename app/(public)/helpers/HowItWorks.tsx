@@ -113,7 +113,7 @@ export default function HowItWorksSection() {
                                 {content.headingPart1}
                             </h2>
                             <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-white shadow-md flex-shrink-0 bg-[#ffe1d7]">
-                                <Image src="/images/img_6331.jpg" alt="step" width={44} height={44} className="object-cover w-full h-full" />
+                                <Image src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381879/naya-glows/legacy/img_6331.jpg" alt="step" width={44} height={44} className="object-cover w-full h-full" />
                             </div>
                             <h2 className="text-3xl sm:text-4xl lg:text-[2.6rem] font-semibold text-[#1a1a2e] tracking-tight">
                                 {content.headingPart2}

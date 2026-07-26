@@ -128,7 +128,7 @@ export default function WhyChooseSection() {
                             className="absolute bottom-0 left-1/2 -translate-x-1/2 h-full w-full max-w-[520px] z-10"
                         >
                             <Image
-                                src="/images/youthful2.png"
+                                src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381953/naya-glows/legacy/youthful2.png"
                                 alt="Naya radiant skin"
                                 fill
                                 className="object-contain object-bottom"
@@ -205,7 +205,7 @@ export default function WhyChooseSection() {
                                         style={{ marginLeft: i === 0 ? 0 : -8, zIndex: 4 - i }}
                                     >
                                         <Image
-                                            src="/images/youthful.png"
+                                            src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381952/naya-glows/legacy/youthful.png"
                                             alt="user"
                                             fill
                                             className="object-cover"

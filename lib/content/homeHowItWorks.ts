@@ -23,18 +23,18 @@ export const defaultHowItWorksContent: HowItWorksContent = {
       title: "Choose Your Product",
       description:
         "Browse our collection and pick what fits your skin, hair, or wellness needs",
-      image: "/images/img_6325.jpg",
+      image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381871/naya-glows/legacy/img_6325.jpg",
     },
     {
       title: "Place Your Order",
       description: "Fast and secure checkout — no subscriptions or hidden fees.",
-      image: "/images/img_6326.jpg",
+      image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381873/naya-glows/legacy/img_6326.jpg",
     },
     {
       title: "Get It Delivered",
       description:
         "Enjoy doorstep delivery in just a few days — start your transformation right away",
-      image: "/images/img_6328.jpg",
+      image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381876/naya-glows/legacy/img_6328.jpg",
     },
   ],
 };

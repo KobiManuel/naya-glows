@@ -5,6 +5,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
 import GlassCard from "../helpers/glass/GlassCard";
+import PageHeader from "../helpers/PageHeader";
 import { useSubmitConsultationMutation } from "../../store/userApi";
 import { getApiErrorMessage } from "../../store/apiError";
 import { isApiConfigured } from "@/lib/api";
@@ -59,7 +60,7 @@ export default function ConsultationPage() {
   if (submitted) {
     return (
       <main className="bg-gradient-to-b from-[#eafbf0] to-[#f4faf3] text-[#16241a] min-h-screen flex items-center justify-center px-5">
-        <GlassCard className="max-w-md w-full text-center py-16 px-8">
+        <GlassCard className="max-w-md w-full text-center py-16 px-6 sm:px-8">
           <div className="w-16 h-16 rounded-full bg-white/70 flex items-center justify-center mx-auto mb-6">
             <CheckCircle2 size={28} className="text-[#6a9a72]" />
           </div>
@@ -83,18 +84,21 @@ export default function ConsultationPage() {
     <main className="bg-gradient-to-b from-[#eafbf0] to-[#f4faf3] text-[#16241a] min-h-screen">
       <section className="pt-32 sm:pt-36 pb-24 px-5 sm:px-8 lg:px-12">
         <div className="max-w-[700px] mx-auto">
-          <p className="text-[11px] tracking-[0.3em] uppercase text-[#6a9a72] mb-3 font-medium text-center">
-            Personalized Support
-          </p>
-          <h1 className="text-[clamp(1.8rem,3.5vw,2.6rem)] font-light mb-3 text-center">
-            Book an Online Consultation
-          </h1>
-          <p className="text-sm text-[#16241a]/50 mb-10 text-center max-w-md mx-auto">
-            Tell us about your skin and goals — one of our specialists will
-            help you build a routine that actually works.
-          </p>
+          <PageHeader
+            eyebrow="Personalized Support"
+            heading="Book an Online Consultation"
+            subtitle="Tell us about your skin and goals — one of our specialists will help you build a routine that actually works."
+            images={[
+              {
+                src: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381880/naya-glows/legacy/nature-girl1.jpg",
+                alt: "Skincare consultation",
+                afterWord: 3,
+              },
+            ]}
+            className="mb-10"
+          />
 
-          <GlassCard className="p-6 sm:p-8">
+          <GlassCard className="px-4 py-6 sm:p-8">
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <input

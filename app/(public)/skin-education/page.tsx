@@ -56,7 +56,7 @@ export default function SkinEducationPage() {
       <section className="relative w-full h-[100dvh] min-h-[560px] overflow-hidden bg-[#10160f]">
         {videoFailed ? (
           <Image
-            src="/images/new/IMG_7557.JPG"
+            src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381923/naya-glows/legacy/new/img_7557.jpg"
             alt="Skincare routine"
             fill
             priority
@@ -66,8 +66,8 @@ export default function SkinEducationPage() {
           <video
             ref={videoRef}
             className="absolute inset-0 w-full h-full object-cover"
-            src="/images/new/41341302-C730-4F62-8BC1-1D03BC983A7D.MOV"
-            poster="/images/new/IMG_7557.JPG"
+            src="https://res.cloudinary.com/bhozkz7o/video/upload/v1784381904/naya-glows/legacy/new/41341302-c730-4f62-8bc1-1d03bc983a7d.mov"
+            poster="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381923/naya-glows/legacy/new/img_7557.jpg"
             autoPlay
             muted
             loop
@@ -133,7 +133,7 @@ export default function SkinEducationPage() {
           </div>
 
           {/* CTA */}
-          <GlassCard className="p-10 text-center">
+          <GlassCard className="px-6 py-10 text-center">
             <h2 className="text-xl sm:text-2xl font-light mb-3">
               Not sure where to start?
             </h2>

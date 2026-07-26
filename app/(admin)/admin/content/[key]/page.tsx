@@ -12,8 +12,10 @@ import ContactInfoForm from "../forms/ContactInfoForm";
 import BranchesForm from "../forms/BranchesForm";
 import BestSellersForm from "../forms/BestSellersForm";
 import CatalogHeroForm from "../forms/CatalogHeroForm";
+import FeaturedProductsForm from "../forms/FeaturedProductsForm";
 
 const forms: Record<string, React.ComponentType> = {
+  "home.featuredProducts": FeaturedProductsForm,
   "home.hero": HeroForm,
   "home.ingredients": IngredientsForm,
   "home.whyChoose": WhyChooseForm,

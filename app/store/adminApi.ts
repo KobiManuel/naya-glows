@@ -19,6 +19,14 @@ const rawBaseQuery = fetchBaseQuery({
   },
 });
 
+// A failed login attempt (wrong password) is not an expired session —
+// exempt it so the interceptor below doesn't fire a bogus "session expired"
+// toast and redirect while an admin is simply mistyping their password.
+function isAuthEndpoint(args: string | FetchArgs): boolean {
+  const url = typeof args === "string" ? args : args.url;
+  return url.includes("/auth/login");
+}
+
 // 401 interceptor: clears the admin session, toasts, and sends the admin
 // back to /admin/login — independent of userApi's interceptor so a
 // customer session in the same browser is never touched by an admin 401.
@@ -28,7 +36,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
   extraOptions,
 ) => {
   const result = await rawBaseQuery(args, api, extraOptions);
-  if (result.error?.status === 401) {
+  if (result.error?.status === 401 && !isAuthEndpoint(args)) {
     api.dispatch(clearAdminAuth());
     if (typeof window !== "undefined") {
       localStorage.removeItem(ADMIN_TOKEN_KEY);
@@ -97,6 +105,24 @@ export type EmailCampaignRow = {
 
 export type SettingsPayload = { usdToNgnRate: number; subscriptionDiscountPercent: number };
 
+export type BudgetSummary = {
+  currency: string;
+  paidOrderCount: number;
+  orderRevenue: number;
+  manualIncome: number;
+  manualExpense: number;
+  net: number;
+};
+
+export type BudgetEntryRow = {
+  id: string;
+  label: string;
+  amount: number;
+  type: "income" | "expense";
+  note: string | null;
+  createdAt: string;
+};
+
 export type ContentBlockRow = { id: string; key: string; data: unknown; updatedAt: string };
 
 export type ConsultationRow = {
@@ -134,6 +160,7 @@ export const adminApi = createApi({
     "ContactMessage",
     "NewsletterSubscriber",
     "EmailCampaign",
+    "BudgetEntry",
   ],
   endpoints: (builder) => ({
     login: builder.mutation<
@@ -246,6 +273,35 @@ export const adminApi = createApi({
       transformResponse: (res: { campaign: EmailCampaignRow }) => res.campaign,
       invalidatesTags: [{ type: "EmailCampaign", id: "LIST" }],
     }),
+
+    getBudgetSummary: builder.query<BudgetSummary, void>({
+      query: () => "/admin/budget/summary",
+      transformResponse: (res: { summary: BudgetSummary }) => res.summary,
+      providesTags: [{ type: "BudgetEntry", id: "SUMMARY" }],
+    }),
+    listBudgetEntries: builder.query<BudgetEntryRow[], void>({
+      query: () => "/admin/budget/entries",
+      transformResponse: (res: { entries: BudgetEntryRow[] }) => res.entries,
+      providesTags: [{ type: "BudgetEntry", id: "LIST" }],
+    }),
+    createBudgetEntry: builder.mutation<
+      BudgetEntryRow,
+      { label: string; amount: number; type: "income" | "expense"; note?: string }
+    >({
+      query: (body) => ({ url: "/admin/budget/entries", method: "POST", body }),
+      transformResponse: (res: { entry: BudgetEntryRow }) => res.entry,
+      invalidatesTags: [
+        { type: "BudgetEntry", id: "LIST" },
+        { type: "BudgetEntry", id: "SUMMARY" },
+      ],
+    }),
+    deleteBudgetEntry: builder.mutation<void, string>({
+      query: (id) => ({ url: `/admin/budget/entries/${id}`, method: "DELETE" }),
+      invalidatesTags: [
+        { type: "BudgetEntry", id: "LIST" },
+        { type: "BudgetEntry", id: "SUMMARY" },
+      ],
+    }),
   }),
 });
 
@@ -271,4 +327,8 @@ export const {
   useListNewsletterSubscribersQuery,
   useListEmailCampaignsQuery,
   useSendEmailCampaignMutation,
+  useGetBudgetSummaryQuery,
+  useListBudgetEntriesQuery,
+  useCreateBudgetEntryMutation,
+  useDeleteBudgetEntryMutation,
 } = adminApi;
