@@ -80,9 +80,19 @@ export const userApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ["SavedProducts", "MyOrders", "ReferralCodes", "Me"],
   endpoints: (builder) => ({
+    requestSignupOtp: builder.mutation<{ sent: boolean }, { email: string }>({
+      query: (body) => ({ url: "/auth/otp/request", method: "POST", body }),
+    }),
     register: builder.mutation<
       { user: AuthUser; token: string },
-      { email: string; password: string; name: string; country?: string; referralCode?: string }
+      {
+        email: string;
+        password: string;
+        name: string;
+        country?: string;
+        referralCode?: string;
+        otpCode: string;
+      }
     >({
       query: (body) => ({ url: "/auth/register", method: "POST", body }),
     }),
@@ -232,6 +242,7 @@ export const userApi = createApi({
 });
 
 export const {
+  useRequestSignupOtpMutation,
   useRegisterMutation,
   useLoginMutation,
   useGetMeQuery,

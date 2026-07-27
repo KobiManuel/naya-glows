@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState, type FormEvent } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import GlassCard from "../helpers/glass/GlassCard";
+import PasswordInput from "../../components/PasswordInput";
 import { useUserAuth } from "../../store/useUserAuth";
 import { getApiErrorMessage } from "../../store/apiError";
 import { countries } from "@/lib/countries";
@@ -12,17 +13,25 @@ import { isApiConfigured } from "@/lib/api";
 const inputClass =
   "w-full bg-white/70 border border-white/60 rounded-xl px-4 py-3 text-sm outline-none placeholder:text-[#16241a]/35 focus:border-[#8ab88e] transition-colors";
 
+type Mode = "signin" | "create";
+// "form" collects account details and requests the OTP; "otp" verifies it
+// and actually creates the account — nothing exists server-side until then.
+type CreateStep = "form" | "otp";
+
 function SignInForm() {
   const searchParams = useSearchParams();
-  const [mode, setMode] = useState<"signin" | "create">("signin");
+  const [mode, setMode] = useState<Mode>("signin");
+  const [createStep, setCreateStep] = useState<CreateStep>("form");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [country, setCountry] = useState("NG");
   const [referralCode, setReferralCode] = useState("");
+  const [otpCode, setOtpCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const { login, register } = useUserAuth();
+  const [resending, setResending] = useState(false);
+  const { login, register, requestSignupOtp } = useUserAuth();
   const router = useRouter();
 
   const backendReady = isApiConfigured();
@@ -37,6 +46,39 @@ function SignInForm() {
     }
   }, [searchParams]);
 
+  // Switching tabs starts that flow fresh — an error (or a half-finished
+  // OTP step) from the other tab has no business following you here.
+  const switchMode = (next: Mode) => {
+    setMode(next);
+    setCreateStep("form");
+    setOtpCode("");
+    setError(null);
+  };
+
+  const redirectAfterAuth = (role: string) => {
+    // A same-origin path the caller was bounced from (e.g. checkout,
+    // influencer/apply) takes priority over the default role-based landing
+    // page — only ever a relative path, never an external URL.
+    const redirect = searchParams.get("redirect");
+    if (redirect && redirect.startsWith("/")) {
+      router.push(redirect);
+    } else {
+      router.push(role === "INFLUENCER" ? "/influencer" : "/account");
+    }
+  };
+
+  const handleResend = async () => {
+    setError(null);
+    setResending(true);
+    try {
+      await requestSignupOtp(email);
+    } catch (err) {
+      setError(getApiErrorMessage(err));
+    } finally {
+      setResending(false);
+    }
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -50,25 +92,35 @@ function SignInForm() {
 
     setSubmitting(true);
     try {
-      const user =
-        mode === "signin"
-          ? await login(email, password)
-          : await register({ email, password, name, country, referralCode: referralCode || undefined });
-      // A same-origin path the caller was bounced from (e.g. checkout,
-      // influencer/apply) takes priority over the default role-based
-      // landing page — only ever a relative path, never an external URL.
-      const redirect = searchParams.get("redirect");
-      if (redirect && redirect.startsWith("/")) {
-        router.push(redirect);
-      } else {
-        router.push(user.role === "INFLUENCER" ? "/influencer" : "/account");
+      if (mode === "signin") {
+        const user = await login(email, password);
+        redirectAfterAuth(user.role);
+        return;
       }
+
+      if (createStep === "form") {
+        await requestSignupOtp(email);
+        setCreateStep("otp");
+        return;
+      }
+
+      const user = await register({
+        email,
+        password,
+        name,
+        country,
+        referralCode: referralCode || undefined,
+        otpCode,
+      });
+      redirectAfterAuth(user.role);
     } catch (err) {
       setError(getApiErrorMessage(err));
     } finally {
       setSubmitting(false);
     }
   };
+
+  const showingOtpStep = mode === "create" && createStep === "otp";
 
   return (
     <main className="bg-gradient-to-b from-[#eafbf0] to-[#f4faf3] text-[#16241a] min-h-screen">
@@ -99,7 +151,7 @@ function SignInForm() {
               <div className="flex items-center gap-1 bg-white/70 rounded-full p-1 mb-8 w-fit">
                 <button
                   type="button"
-                  onClick={() => setMode("signin")}
+                  onClick={() => switchMode("signin")}
                   className={`text-sm font-medium px-5 py-2 rounded-full transition-colors ${
                     mode === "signin" ? "bg-[#16241a] text-white" : "text-[#16241a]/60"
                   }`}
@@ -108,7 +160,7 @@ function SignInForm() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setMode("create")}
+                  onClick={() => switchMode("create")}
                   className={`text-sm font-medium px-5 py-2 rounded-full transition-colors ${
                     mode === "create" ? "bg-[#16241a] text-white" : "text-[#16241a]/60"
                   }`}
@@ -118,62 +170,108 @@ function SignInForm() {
               </div>
 
               <h1 className="text-2xl font-light mb-2">
-                {mode === "signin" ? "Welcome back" : "Join Naya Glows"}
+                {mode === "signin"
+                  ? "Welcome back"
+                  : showingOtpStep
+                    ? "Check your email"
+                    : "Join Naya Glows"}
               </h1>
               <p className="text-sm text-[#16241a]/50 mb-8">
                 {mode === "signin"
                   ? "Sign in to view your orders and saved products."
-                  : "Create an account to track orders and save favorites."}
+                  : showingOtpStep
+                    ? `We sent a 6-digit code to ${email}. Enter it below to finish creating your account.`
+                    : "Create an account to track orders and save favorites."}
               </p>
 
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                {mode === "create" && (
-                  <input
-                    required
-                    placeholder="Full name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className={inputClass}
-                  />
-                )}
-                <input
-                  required
-                  type="email"
-                  placeholder="Email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={inputClass}
-                />
-                <input
-                  required
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className={inputClass}
-                  minLength={8}
-                />
-                {mode === "create" && (
-                  <select
-                    required
-                    value={country}
-                    onChange={(e) => setCountry(e.target.value)}
-                    className={inputClass}
-                  >
-                    {countries.map((c) => (
-                      <option key={c.code} value={c.code}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                )}
-                {mode === "create" && (
-                  <input
-                    placeholder="Referral code (optional)"
-                    value={referralCode}
-                    onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
-                    className={inputClass}
-                  />
+                {mode === "create" && showingOtpStep ? (
+                  <>
+                    <input
+                      required
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      maxLength={6}
+                      placeholder="6-digit code"
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
+                      className={`${inputClass} text-center text-lg tracking-[0.5em] font-semibold`}
+                    />
+                    <div className="flex items-center justify-between text-xs text-[#16241a]/50">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCreateStep("form");
+                          setOtpCode("");
+                          setError(null);
+                        }}
+                        className="font-medium hover:text-[#16241a] transition-colors"
+                      >
+                        ← Back
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleResend}
+                        disabled={resending}
+                        className="font-medium hover:text-[#16241a] transition-colors disabled:opacity-50"
+                      >
+                        {resending ? "Sending…" : "Resend code"}
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {mode === "create" && (
+                      <input
+                        required
+                        placeholder="Full name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className={inputClass}
+                        autoComplete="name"
+                      />
+                    )}
+                    <input
+                      required
+                      type="email"
+                      placeholder="Email address"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className={inputClass}
+                      autoComplete="email"
+                    />
+                    <PasswordInput
+                      required
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className={inputClass}
+                      minLength={8}
+                      autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                    />
+                    {mode === "create" && (
+                      <select
+                        required
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                        className={inputClass}
+                      >
+                        {countries.map((c) => (
+                          <option key={c.code} value={c.code}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                    {mode === "create" && (
+                      <input
+                        placeholder="Referral code (optional)"
+                        value={referralCode}
+                        onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                        className={inputClass}
+                      />
+                    )}
+                  </>
                 )}
 
                 {error && <p className="text-xs text-[#c0574c]">{error}</p>}
@@ -187,7 +285,9 @@ function SignInForm() {
                     ? "Please wait…"
                     : mode === "signin"
                       ? "Sign In"
-                      : "Create Account"}
+                      : showingOtpStep
+                        ? "Verify & Create Account"
+                        : "Send Verification Code"}
                 </button>
               </form>
 

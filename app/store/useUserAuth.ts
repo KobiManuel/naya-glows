@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "./hooks";
 import {
   useLoginMutation,
   useRegisterMutation,
+  useRequestSignupOtpMutation,
   useUpgradeInfluencerMutation,
   useGetMeQuery,
 } from "./userApi";
@@ -17,6 +18,7 @@ export function useUserAuth() {
 
   const [loginMutation] = useLoginMutation();
   const [registerMutation] = useRegisterMutation();
+  const [requestSignupOtpMutation] = useRequestSignupOtpMutation();
   const [upgradeInfluencerMutation] = useUpgradeInfluencerMutation();
   const { data: meData, isLoading: meLoading } = useGetMeQuery(undefined, { skip: !token });
 
@@ -30,12 +32,17 @@ export function useUserAuth() {
     return res.user;
   };
 
+  const requestSignupOtp = async (email: string) => {
+    await requestSignupOtpMutation({ email }).unwrap();
+  };
+
   const register = async (input: {
     email: string;
     password: string;
     name: string;
     country?: string;
     referralCode?: string;
+    otpCode: string;
   }) => {
     const res = await registerMutation(input).unwrap();
     localStorage.setItem(USER_TOKEN_KEY, res.token);
@@ -59,5 +66,14 @@ export function useUserAuth() {
     dispatch(clearAuth());
   };
 
-  return { user: user ?? null, token, loading, login, register, upgradeInfluencer, logout };
+  return {
+    user: user ?? null,
+    token,
+    loading,
+    login,
+    register,
+    requestSignupOtp,
+    upgradeInfluencer,
+    logout,
+  };
 }

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAdminAuth } from "../../../store/useAdminAuth";
 import { getApiErrorMessage } from "../../../store/apiError";
 import { isApiConfigured } from "@/lib/api";
+import PasswordInput from "../../../components/PasswordInput";
 
 const inputClass =
   "w-full bg-white/10 border border-white/15 rounded-xl px-4 py-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-[#8ab88e] transition-colors";
@@ -60,13 +61,13 @@ export default function AdminLoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             className={inputClass}
           />
-          <input
+          <PasswordInput
             required
-            type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className={inputClass}
+            autoComplete="current-password"
           />
 
           {error && <p className="text-xs text-[#e28a7d]">{error}</p>}
