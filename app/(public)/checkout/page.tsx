@@ -108,7 +108,7 @@ export default function CheckoutPage() {
       return;
     }
 
-    const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+    const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY?.trim();
     if (!publicKey || !paystackReady || !window.PaystackPop) {
       toast.error("Payments are still loading — please wait a moment and try again.");
       return;
