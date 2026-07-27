@@ -23,7 +23,13 @@ export default function VideoShowcaseSection({
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoFailed, setVideoFailed] = useState(false);
+  const [videoPlaying, setVideoPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
+
+  // The caption only makes sense while there's no footage on screen yet
+  // (loading, or the poster/fallback image) — once the video is actually
+  // playing, it should speak for itself.
+  const showCaption = videoFailed || !videoPlaying;
 
   useEffect(() => {
     const reduceMotion = window.matchMedia(
@@ -47,11 +53,18 @@ export default function VideoShowcaseSection({
           loop
           playsInline
           onError={() => setVideoFailed(true)}
+          onPlaying={() => setVideoPlaying(true)}
+          onPause={() => setVideoPlaying(false)}
+          onWaiting={() => setVideoPlaying(false)}
         />
       )}
       <div className="absolute inset-0 bg-gradient-to-b from-[#10160f]/55 via-[#10160f]/15 to-[#10160f]/65 pointer-events-none" />
 
-      <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
+      <div
+        className={`relative z-10 h-full flex flex-col items-center justify-center text-center px-6 transition-opacity duration-700 ${
+          showCaption ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
         <p className="text-[10px] sm:text-xs tracking-[0.4em] uppercase text-[#c7ecc9] mb-5">
           {eyebrow}
         </p>

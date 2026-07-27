@@ -77,7 +77,7 @@ export default function ProductSpotlightSection() {
                 scrollTrigger: {
                     trigger: productRef.current,
                     start: "top center",  // Product center hits viewport center
-                    toggleActions: "play reverse play reverse",
+                    toggleActions: "play none none reverse",
                 }
             });
 

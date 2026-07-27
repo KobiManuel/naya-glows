@@ -41,7 +41,7 @@ export default function FeaturedSection() {
               trigger: el,
               start: "top 80%",
               end: "top 25%",
-              toggleActions: "play reverse play reverse",
+              toggleActions: "play none none reverse",
             },
           },
         );
