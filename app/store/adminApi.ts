@@ -123,6 +123,18 @@ export type BudgetEntryRow = {
   createdAt: string;
 };
 
+export type AdminInfluencerRow = {
+  id: string;
+  name: string;
+  email: string;
+  platform: string | null;
+  socialHandle: string | null;
+  bio: string | null;
+  createdAt: string;
+  codes: { code: string; signupCount: number }[];
+  totalSignups: number;
+};
+
 export type ContentBlockRow = { id: string; key: string; data: unknown; updatedAt: string };
 
 export type ConsultationRow = {
@@ -161,6 +173,7 @@ export const adminApi = createApi({
     "NewsletterSubscriber",
     "EmailCampaign",
     "BudgetEntry",
+    "Influencer",
   ],
   endpoints: (builder) => ({
     login: builder.mutation<
@@ -302,6 +315,12 @@ export const adminApi = createApi({
         { type: "BudgetEntry", id: "SUMMARY" },
       ],
     }),
+
+    listInfluencers: builder.query<AdminInfluencerRow[], void>({
+      query: () => "/admin/influencers",
+      transformResponse: (res: { influencers: AdminInfluencerRow[] }) => res.influencers,
+      providesTags: [{ type: "Influencer", id: "LIST" }],
+    }),
   }),
 });
 
@@ -331,4 +350,5 @@ export const {
   useListBudgetEntriesQuery,
   useCreateBudgetEntryMutation,
   useDeleteBudgetEntryMutation,
+  useListInfluencersQuery,
 } = adminApi;

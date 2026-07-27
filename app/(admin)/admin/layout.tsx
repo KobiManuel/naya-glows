@@ -17,6 +17,7 @@ import {
   MailPlus,
   Send,
   Settings,
+  Megaphone,
 } from "lucide-react";
 import { useAdminAuth } from "../../store/useAdminAuth";
 
@@ -27,6 +28,7 @@ const navItems = [
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/consultations", label: "Consultations", icon: CalendarHeart },
   { href: "/admin/wholesale", label: "Wholesale", icon: Building2 },
+  { href: "/admin/influencers", label: "Influencers", icon: Megaphone },
   { href: "/admin/contact-messages", label: "Contact Messages", icon: Mail },
   { href: "/admin/newsletter", label: "Newsletter", icon: MailPlus },
   { href: "/admin/email-campaigns", label: "Email Campaigns", icon: Send },

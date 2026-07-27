@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { Suspense, useEffect, useState, type FormEvent } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import GlassCard from "../helpers/glass/GlassCard";
 import { useUserAuth } from "../../store/useUserAuth";
 import { getApiErrorMessage } from "../../store/apiError";
@@ -12,18 +12,30 @@ import { isApiConfigured } from "@/lib/api";
 const inputClass =
   "w-full bg-white/70 border border-white/60 rounded-xl px-4 py-3 text-sm outline-none placeholder:text-[#16241a]/35 focus:border-[#8ab88e] transition-colors";
 
-export default function SignInPage() {
+function SignInForm() {
+  const searchParams = useSearchParams();
   const [mode, setMode] = useState<"signin" | "create">("signin");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [country, setCountry] = useState("NG");
+  const [referralCode, setReferralCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const { login, register } = useUserAuth();
   const router = useRouter();
 
   const backendReady = isApiConfigured();
+
+  // A referral link (e.g. shared by an influencer) looks like /signin?ref=CODE
+  // — prefill it and default straight to the Create Account tab.
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (ref) {
+      setReferralCode(ref.toUpperCase());
+      setMode("create");
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -38,12 +50,11 @@ export default function SignInPage() {
 
     setSubmitting(true);
     try {
-      if (mode === "signin") {
-        await login(email, password);
-      } else {
-        await register({ email, password, name, country });
-      }
-      router.push("/account");
+      const user =
+        mode === "signin"
+          ? await login(email, password)
+          : await register({ email, password, name, country, referralCode: referralCode || undefined });
+      router.push(user.role === "INFLUENCER" ? "/influencer" : "/account");
     } catch (err) {
       setError(getApiErrorMessage(err));
     } finally {
@@ -148,6 +159,14 @@ export default function SignInPage() {
                     ))}
                   </select>
                 )}
+                {mode === "create" && (
+                  <input
+                    placeholder="Referral code (optional)"
+                    value={referralCode}
+                    onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                    className={inputClass}
+                  />
+                )}
 
                 {error && <p className="text-xs text-[#c0574c]">{error}</p>}
 
@@ -176,5 +195,13 @@ export default function SignInPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<main className="bg-gradient-to-b from-[#eafbf0] to-[#f4faf3] min-h-screen" />}>
+      <SignInForm />
+    </Suspense>
   );
 }

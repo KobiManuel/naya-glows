@@ -10,6 +10,23 @@ import type { RootState } from "./store";
 import { clearAuth as clearUserAuth, USER_TOKEN_KEY, type AuthUser } from "./userAuthSlice";
 import type { Product } from "@/lib/products";
 
+export type ReferralCodeRow = {
+  id: string;
+  code: string;
+  createdAt: string;
+  signupCount: number;
+};
+
+export type InfluencerProfile = {
+  id: string;
+  name: string;
+  email: string;
+  platform: string | null;
+  socialHandle: string | null;
+  bio: string | null;
+  createdAt: string;
+};
+
 export type MyOrderRow = {
   id: string;
   status: string;
@@ -61,11 +78,11 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["SavedProducts", "MyOrders"],
+  tagTypes: ["SavedProducts", "MyOrders", "ReferralCodes"],
   endpoints: (builder) => ({
     register: builder.mutation<
       { user: AuthUser; token: string },
-      { email: string; password: string; name: string; country?: string }
+      { email: string; password: string; name: string; country?: string; referralCode?: string }
     >({
       query: (body) => ({ url: "/auth/register", method: "POST", body }),
     }),
@@ -92,6 +109,33 @@ export const userApi = createApi({
       query: () => "/orders/mine",
       transformResponse: (res: { orders: MyOrderRow[] }) => res.orders,
       providesTags: [{ type: "MyOrders", id: "LIST" }],
+    }),
+    registerInfluencer: builder.mutation<
+      { user: AuthUser; token: string },
+      {
+        email: string;
+        password: string;
+        name: string;
+        platform?: string;
+        socialHandle?: string;
+        bio?: string;
+      }
+    >({
+      query: (body) => ({ url: "/influencers/register", method: "POST", body }),
+    }),
+    getMyInfluencerProfile: builder.query<InfluencerProfile, void>({
+      query: () => "/influencers/me",
+      transformResponse: (res: { influencer: InfluencerProfile }) => res.influencer,
+    }),
+    listMyReferralCodes: builder.query<ReferralCodeRow[], void>({
+      query: () => "/influencers/codes",
+      transformResponse: (res: { codes: ReferralCodeRow[] }) => res.codes,
+      providesTags: [{ type: "ReferralCodes", id: "LIST" }],
+    }),
+    generateReferralCode: builder.mutation<ReferralCodeRow, void>({
+      query: () => ({ url: "/influencers/codes", method: "POST" }),
+      transformResponse: (res: { code: ReferralCodeRow }) => res.code,
+      invalidatesTags: [{ type: "ReferralCodes", id: "LIST" }],
     }),
     trackOrder: builder.query<
       {
@@ -190,6 +234,10 @@ export const {
   useGetMeQuery,
   useCreateOrderMutation,
   useListMyOrdersQuery,
+  useRegisterInfluencerMutation,
+  useGetMyInfluencerProfileQuery,
+  useListMyReferralCodesQuery,
+  useGenerateReferralCodeMutation,
   useInitializePaymentMutation,
   useVerifyPaymentQuery,
   useGetContentQuery,

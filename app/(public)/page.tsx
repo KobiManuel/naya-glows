@@ -11,6 +11,7 @@ import TestimonialsSection from "./helpers/TestiomonialsSection";
 import WhyChooseSection from "./helpers/WhyChooseUs";
 import BannerSection from "./helpers/BannerSection";
 import CategoriesSection from "./helpers/FaceBodySkin";
+import InfluencerSection from "./helpers/InfluencerSection";
 
 type Props = {};
 
@@ -26,6 +27,7 @@ const Main = (props: Props) => {
       <ProductSpotlightSection />
       <BestSellersSection />
       <TestimonialsSection />
+      <InfluencerSection />
       <CategoriesSection />
       <WhyChooseSection />
       {/* <BannerSection /> */}
