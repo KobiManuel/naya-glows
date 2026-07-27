@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useCart, itemUnitPrice } from "../../store/cartSlice";
 import { useSettings } from "../../store/useSettings";
+import { useUserAuth } from "../../store/useUserAuth";
 import GlassCard from "../helpers/glass/GlassCard";
 import { useCreateOrderMutation, useInitializePaymentMutation } from "../../store/userApi";
 import { getApiErrorMessage } from "../../store/apiError";
@@ -65,11 +66,21 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { items, subtotal } = useCart();
   const { subscriptionDiscountPercent } = useSettings();
+  const { user, loading: authLoading } = useUserAuth();
   const [form, setForm] = useState<ShippingForm>(emptyForm);
   const shipping = subtotal >= 75 || subtotal === 0 ? 0 : 6;
   const backendReady = isApiConfigured();
   const [paystackReady, setPaystackReady] = useState(false);
   const [openingPopup, setOpeningPopup] = useState(false);
+
+  // Payment now always requires a signed-in account (no guest checkout) —
+  // enforced server-side too (POST /orders is requireAuth), this just gives
+  // a same-page redirect instead of a failed order-creation call.
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace("/signin?redirect=/checkout");
+    }
+  }, [authLoading, user, router]);
 
   useEffect(() => {
     const saved = localStorage.getItem(SHIPPING_STORAGE_KEY);
@@ -107,7 +118,12 @@ export default function CheckoutPage() {
 
     try {
       const { order } = await createOrder({
-        items: items.map((i) => ({ slug: i.slug, qty: i.qty, isSubscription: i.isSubscription })),
+        items: items.map((i) => ({
+          slug: i.slug,
+          qty: i.qty,
+          isSubscription: i.isSubscription,
+          variantName: i.variantName,
+        })),
         shippingDetails: form,
       }).unwrap();
 
@@ -138,6 +154,10 @@ export default function CheckoutPage() {
       );
     }
   };
+
+  if (authLoading || !user) {
+    return <main className="bg-gradient-to-b from-[#eafbf0] to-[#f4faf3] min-h-screen" />;
+  }
 
   if (items.length === 0) {
     return (
@@ -259,7 +279,7 @@ export default function CheckoutPage() {
 
                 <div className="flex flex-col gap-3 mb-5">
                   {items.map((item) => (
-                    <div key={item.slug} className="flex items-center gap-3">
+                    <div key={item.slug + (item.variantName ?? "")} className="flex items-center gap-3">
                       <div className="relative w-12 h-12 flex-shrink-0">
                         <div className="absolute inset-0 rounded-lg overflow-hidden">
                           <Image src={item.image} alt={item.name} fill className="object-cover" />
@@ -270,6 +290,9 @@ export default function CheckoutPage() {
                       </div>
                       <p className="text-xs flex-1 line-clamp-2">
                         {item.name}
+                        {item.variantName && (
+                          <span className="text-[#16241a]/45"> — {item.variantName}</span>
+                        )}
                         {item.isSubscription && (
                           <span className="ml-1.5 text-[9px] font-semibold uppercase tracking-wide text-[#4f7957]">
                             (Subscribed)

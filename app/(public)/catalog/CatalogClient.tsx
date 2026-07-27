@@ -215,11 +215,11 @@ export default function CatalogClient({ products }: { products: Product[] }) {
               </GlassCard>
             )
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-1 sm:pb-0 sm:grid sm:grid-cols-3 lg:grid-cols-4 sm:gap-5 sm:overflow-visible -mx-5 px-5 sm:mx-0 sm:px-0">
               {filtered.map((product) => (
                 <div
                   key={product.slug}
-                  className="group relative rounded-[1.75rem] overflow-hidden aspect-[3/4] shadow-[0_8px_32px_rgba(0,0,0,0.18)]"
+                  className="group relative rounded-[1.75rem] overflow-hidden aspect-[0.68] sm:aspect-[3/4] shadow-[0_8px_32px_rgba(0,0,0,0.18)] flex-shrink-0 w-[72vw] max-w-[300px] snap-start sm:w-auto sm:max-w-none"
                 >
                   {/* The card IS the photo — no color fill behind it */}
                   <Link href={`/products/${product.slug}`} className="absolute inset-0">
@@ -271,23 +271,39 @@ export default function CatalogClient({ products }: { products: Product[] }) {
                     <div className="flex items-center justify-between">
                       <div>
                         <span className="text-sm font-bold text-white">
-                          ${product.price.toFixed(2)}
-                        </span>{" "}
-                        <span className="text-[11px] line-through text-white/45">
-                          ${product.originalPrice.toFixed(2)}
+                          {product.variants && product.variants.length > 0 ? "From " : ""}$
+                          {product.price.toFixed(2)}
                         </span>
-                      </div>
-                      <button
-                        onClick={(e) => handleAddToCart(product, e.currentTarget)}
-                        aria-label="Add to cart"
-                        className="w-9 h-9 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center hover:scale-105 transition-transform shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]"
-                      >
-                        {justAdded === product.slug ? (
-                          <Check size={14} className="text-[#4f7957]" />
-                        ) : (
-                          <ShoppingBag size={13} className="text-[#16241a]" />
+                        {product.originalPrice > product.price && (
+                          <>
+                            {" "}
+                            <span className="text-[11px] line-through text-white/45">
+                              ${product.originalPrice.toFixed(2)}
+                            </span>
+                          </>
                         )}
-                      </button>
+                      </div>
+                      {product.variants && product.variants.length > 0 ? (
+                        <Link
+                          href={`/products/${product.slug}`}
+                          aria-label="Choose a size"
+                          className="w-9 h-9 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center hover:scale-105 transition-transform shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]"
+                        >
+                          <ShoppingBag size={13} className="text-[#16241a]" />
+                        </Link>
+                      ) : (
+                        <button
+                          onClick={(e) => handleAddToCart(product, e.currentTarget)}
+                          aria-label="Add to cart"
+                          className="w-9 h-9 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center hover:scale-105 transition-transform shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]"
+                        >
+                          {justAdded === product.slug ? (
+                            <Check size={14} className="text-[#4f7957]" />
+                          ) : (
+                            <ShoppingBag size={13} className="text-[#16241a]" />
+                          )}
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>

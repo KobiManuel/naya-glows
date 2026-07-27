@@ -23,12 +23,28 @@ const ANGLE_OFFSET = -Math.PI / 2 + Math.PI / 5;
 const getScale = () => {
   if (typeof window === "undefined") return 1;
   const w = window.innerWidth;
-  if (w < 480) return 0.36;
-  if (w < 640) return 0.46;
-  if (w < 768) return 0.58;
-  if (w < 1024) return 0.72;
-  if (w < 1280) return 0.88;
-  return 1;
+  const h = window.innerHeight;
+
+  let widthScale = 1;
+  if (w < 480) widthScale = 0.36;
+  else if (w < 640) widthScale = 0.46;
+  else if (w < 768) widthScale = 0.58;
+  else if (w < 1024) widthScale = 0.72;
+  else if (w < 1280) widthScale = 0.88;
+
+  // Ring items sit at the viewport's vertical center and reach up to
+  // RING_RADIUS * scale away from it, plus their own icon+label height —
+  // on wide-but-short desktop windows a width-only scale let the top/bottom
+  // items and labels clip past the viewport edge. The item footprint itself
+  // is now much smaller (see the clamp() sizes below), so this only needs
+  // to be a light touch-up, not the primary fix — floored high so the ring
+  // still reads as expansive on ordinary laptop heights.
+  const itemHalfHeight = 95;
+  const verticalSafeMargin = 24;
+  const availableHalfHeight = h / 2 - itemHalfHeight - verticalSafeMargin;
+  const heightScale = Math.max(0.82, Math.min(1, availableHalfHeight / RING_RADIUS));
+
+  return Math.min(widthScale, heightScale);
 };
 
 export default function HeroIngredients() {
@@ -252,14 +268,14 @@ export default function HeroIngredients() {
                 top: "50%",
                 left: "50%",
                 transform: "translate(-50%, -50%) scale(0.3)",
-                width: "clamp(88px, 11vw, 160px)",
+                width: "clamp(80px, 9vw, 128px)",
               }}
             >
               <div
                 className="rounded-full border-2 border-[#c9a87c]/40 bg-white/80 shadow-xl flex-shrink-0 flex items-center justify-center overflow-hidden"
                 style={{
-                  width: "clamp(70px, 9.5vw, 160px)",
-                  height: "clamp(70px, 9.5vw, 160px)",
+                  width: "clamp(64px, 8vw, 116px)",
+                  height: "clamp(64px, 8vw, 116px)",
                 }}
               >
                 <Image
@@ -273,13 +289,13 @@ export default function HeroIngredients() {
               <div className="text-center">
                 <p
                   className="font-semibold text-[#1a1a1a] leading-tight"
-                  style={{ fontSize: "clamp(9px, 1.05vw, 14px)" }}
+                  style={{ fontSize: "clamp(9px, 0.95vw, 12.5px)" }}
                 >
                   {ing.name}
                 </p>
                 <p
                   className="text-[#5a4a3a]/60 leading-snug mt-1"
-                  style={{ fontSize: "clamp(8px, 0.85vw, 12px)" }}
+                  style={{ fontSize: "clamp(8px, 0.75vw, 11px)" }}
                 >
                   {ing.benefit}
                 </p>

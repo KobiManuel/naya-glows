@@ -60,7 +60,7 @@ export default function TransformationsSection() {
             ease: "power3.out",
             scrollTrigger: {
               trigger: el,
-              start: "top 95%",
+              start: "top 80%",
               end: "top 25%",
               toggleActions: "play reverse play reverse",
             },
@@ -252,7 +252,7 @@ export default function TransformationsSection() {
                 {/* AFTER (full — bottom layer) */}
                 <div className="absolute inset-0">
                   <Image
-                    src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381846/naya-glows/legacy/aging.png"
+                    src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381952/naya-glows/legacy/youthful.png"
                     alt="After — youthful skin"
                     fill
                     className="object-contain"
@@ -270,7 +270,7 @@ export default function TransformationsSection() {
                   style={{ width: `${sliderX}%` }}
                 >
                   <Image
-                    src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381952/naya-glows/legacy/youthful.png"
+                    src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381846/naya-glows/legacy/aging.png"
                     alt="Before — aging skin"
                     fill
                     className="object-contain"

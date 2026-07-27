@@ -40,7 +40,7 @@ export const defaultFeaturedProductsContent: FeaturedProductsContent = {
   label: "Featured Products",
   cards: [
     {
-      image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381835/naya-glows/legacy/19ea7a51-adb2-4a49-bcb7-0bbc0116f4f2.png",
+      image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381853/naya-glows/legacy/img_6205.jpg",
       title: "Radiance Boost Serum",
       description:
         "Brightens skin tone, evens complexion, and provides deep lasting hydration with Niacinamide & Hyaluronic Acid.",
@@ -50,7 +50,7 @@ export const defaultFeaturedProductsContent: FeaturedProductsContent = {
       secondaryCtaHref: "/products/radiance-boost-serum",
     },
     {
-      image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381851/naya-glows/legacy/eca30ff9-62ea-4126-8301-03d590c8250d.png",
+      image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1784381835/naya-glows/legacy/19ea7a51-adb2-4a49-bcb7-0bbc0116f4f2.png",
       title: "Exfoliating Body Scrub",
       description:
         "Gently exfoliates dead skin, brightens dull skin, and smooths rough texture with Kojic Acid & Lemon.",

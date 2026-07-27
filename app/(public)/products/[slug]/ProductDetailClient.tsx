@@ -17,16 +17,21 @@ export default function ProductDetailClient({
   product: Product;
   related: Product[];
 }) {
+  const hasVariants = Boolean(product.variants && product.variants.length > 0);
+  const [selectedVariant, setSelectedVariant] = useState(
+    hasVariants ? product.variants![0] : undefined,
+  );
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [isSubscription, setIsSubscription] = useState(false);
   const { addItem } = useCart();
   const { subscriptionDiscountPercent } = useSettings();
 
-  const subscriptionPrice = product.price * (1 - subscriptionDiscountPercent / 100);
+  const activePrice = selectedVariant ? selectedVariant.price : product.price;
+  const subscriptionPrice = activePrice * (1 - subscriptionDiscountPercent / 100);
 
   const handleAddToCart = (sourceEl: HTMLElement) => {
-    addItem(product, qty, isSubscription);
+    addItem(product, qty, isSubscription, selectedVariant);
     triggerCartFly(product.image, sourceEl);
     setAdded(true);
     setTimeout(() => setAdded(false), 1600);
@@ -71,12 +76,34 @@ export default function ProductDetailClient({
 
               <div className="flex items-center gap-3 mb-3">
                 <span className="text-2xl font-bold">
-                  ${(isSubscription ? subscriptionPrice : product.price).toFixed(2)}
+                  ${(isSubscription ? subscriptionPrice : activePrice).toFixed(2)}
                 </span>
-                <span className="text-base line-through text-[#16241a]/30">
-                  ${product.originalPrice.toFixed(2)}
-                </span>
+                {product.originalPrice > activePrice && (
+                  <span className="text-base line-through text-[#16241a]/30">
+                    ${product.originalPrice.toFixed(2)}
+                  </span>
+                )}
               </div>
+
+              {/* Size selector */}
+              {hasVariants && (
+                <div className="flex items-center gap-2 mb-5">
+                  {product.variants!.map((variant) => (
+                    <button
+                      key={variant.name}
+                      type="button"
+                      onClick={() => setSelectedVariant(variant)}
+                      className={`text-sm font-semibold px-4 py-2 rounded-full border transition-colors ${
+                        selectedVariant?.name === variant.name
+                          ? "bg-[#16241a] text-white border-[#16241a]"
+                          : "bg-white/60 text-[#16241a]/70 border-white/60 hover:border-[#8ab88e]"
+                      }`}
+                    >
+                      {variant.name} · ${variant.price.toFixed(2)}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {/* Subscribe & save */}
               <label className="flex items-start gap-3 bg-white/50 border border-white/60 rounded-2xl p-4 mb-8 cursor-pointer hover:bg-white/70 transition-colors">
@@ -166,7 +193,9 @@ export default function ProductDetailClient({
                         {r.name}
                       </p>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold">${r.price.toFixed(2)}</span>
+                        <span className="text-sm font-bold">
+                          {r.variants && r.variants.length > 0 ? "From " : ""}${r.price.toFixed(2)}
+                        </span>
                         <ArrowRight size={14} className="text-[#6a9a72]" />
                       </div>
                     </GlassCard>

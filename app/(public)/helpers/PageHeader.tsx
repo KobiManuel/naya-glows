@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { Fragment, useEffect, useRef, type ReactNode } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 
@@ -68,14 +68,14 @@ export default function PageHeader({
   const words = heading.split(" ");
 
   return (
-    <div ref={ref} className={`text-center ${className}`}>
+    <div ref={ref} className={`text-center max-w-4xl mx-auto ${className}`}>
       {accent && <div className="ph-accent flex justify-center mb-3">{accent}</div>}
       <p className="ph-eyebrow text-[11px] tracking-[0.3em] uppercase text-[#6a9a72] mb-3 font-medium">
         {eyebrow}
       </p>
       <h1 className="text-[clamp(2.2rem,5vw,3.6rem)] font-light leading-tight mb-4">
         {words.map((word, i) => (
-          <span key={i}>
+          <Fragment key={i}>
             <span className="ph-word inline-block mr-[0.28em] last:mr-0">{word}</span>
             {images
               ?.filter((img) => img.afterWord === i)
@@ -88,7 +88,7 @@ export default function PageHeader({
                   <Image src={img.src} alt={img.alt} fill className="object-cover object-center" />
                 </span>
               ))}
-          </span>
+          </Fragment>
         ))}
       </h1>
       {subtitle && (

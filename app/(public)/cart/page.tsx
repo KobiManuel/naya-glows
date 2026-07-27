@@ -41,7 +41,7 @@ export default function CartPage() {
               <div className="lg:col-span-2 flex flex-col gap-4">
                 {items.map((item) => (
                   <GlassCard
-                    key={item.slug}
+                    key={item.slug + (item.variantName ?? "")}
                     className="flex items-center gap-4 p-4"
                   >
                     <Link
@@ -60,6 +60,9 @@ export default function CartPage() {
                       <Link href={`/products/${item.slug}`}>
                         <p className="text-sm font-semibold leading-snug mb-1 line-clamp-1 hover:text-[#6a9a72] transition-colors">
                           {item.name}
+                          {item.variantName && (
+                            <span className="text-[#16241a]/45 font-normal"> — {item.variantName}</span>
+                          )}
                         </p>
                       </Link>
                       <p className="text-sm text-[#16241a]/60 flex items-center gap-2">
@@ -74,7 +77,7 @@ export default function CartPage() {
 
                     <div className="flex items-center gap-3 bg-white/70 border border-white/60 rounded-full px-3 py-2 flex-shrink-0">
                       <button
-                        onClick={() => updateQty(item.slug, item.qty - 1)}
+                        onClick={() => updateQty(item.slug, item.qty - 1, item.variantName)}
                         aria-label="Decrease quantity"
                         className="w-6 h-6 rounded-full bg-white flex items-center justify-center"
                       >
@@ -84,7 +87,7 @@ export default function CartPage() {
                         {item.qty}
                       </span>
                       <button
-                        onClick={() => updateQty(item.slug, item.qty + 1)}
+                        onClick={() => updateQty(item.slug, item.qty + 1, item.variantName)}
                         aria-label="Increase quantity"
                         className="w-6 h-6 rounded-full bg-white flex items-center justify-center"
                       >
@@ -93,7 +96,7 @@ export default function CartPage() {
                     </div>
 
                     <button
-                      onClick={() => removeItem(item.slug)}
+                      onClick={() => removeItem(item.slug, item.variantName)}
                       aria-label="Remove item"
                       className="w-8 h-8 rounded-full bg-white/60 flex items-center justify-center flex-shrink-0 hover:bg-white transition-colors"
                     >

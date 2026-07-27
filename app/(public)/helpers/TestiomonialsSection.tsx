@@ -37,7 +37,7 @@ export default function TestimonialsSection() {
                         ease: "power3.out",
                         scrollTrigger: {
                             trigger: el,
-                            start: "top 95%",
+                            start: "top 80%",
                             end: "top 25%",
                             toggleActions: "play reverse play reverse",
                         },
@@ -124,7 +124,7 @@ export default function TestimonialsSection() {
                                 {/* ── HOVER BG IMAGE (CSS-only reveal via group-hover) ── */}
                                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                                     <Image
-                                        src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381952/naya-glows/legacy/youthful.png"
+                                        src={t.photo}
                                         alt={t.name}
                                         fill
                                         className="object-cover transition-transform duration-700 ease-out scale-105 group-hover:scale-100"
@@ -138,7 +138,7 @@ export default function TestimonialsSection() {
                                     {/* Avatar */}
                                     <div className="relative w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-md mb-3 flex-shrink-0">
                                         <Image
-                                            src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381952/naya-glows/legacy/youthful.png"
+                                            src={t.photo}
                                             alt={t.name}
                                             fill
                                             className="object-cover"

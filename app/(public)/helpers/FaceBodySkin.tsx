@@ -32,7 +32,7 @@ export default function CategoriesSection() {
                         ease: "power3.out",
                         scrollTrigger: {
                             trigger: el,
-                            start: "top 100%",
+                            start: "top 80%",
                             end: "top 25%",
                             toggleActions: "play reverse play reverse",
                         },

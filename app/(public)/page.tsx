@@ -12,6 +12,8 @@ import WhyChooseSection from "./helpers/WhyChooseUs";
 import BannerSection from "./helpers/BannerSection";
 import CategoriesSection from "./helpers/FaceBodySkin";
 import InfluencerSection from "./helpers/InfluencerSection";
+import VideoShowcaseSection from "./helpers/VideoShowcaseSection";
+import SignatureShowcaseSection from "./helpers/SignatureShowcaseSection";
 
 type Props = {};
 
@@ -21,12 +23,27 @@ const Main = (props: Props) => {
       <HeroBanner />
       <HeroIngredients />
       <FeaturedSection />
+      <VideoShowcaseSection
+        src="https://res.cloudinary.com/bhozkz7o/video/upload/v1784381904/naya-glows/legacy/new/41341302-c730-4f62-8bc1-1d03bc983a7d.mov"
+        poster="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381916/naya-glows/legacy/new/img_7419.jpg"
+        eyebrow="Naya Glows"
+        heading="Clean, intentional skincare — made to be felt, not just seen."
+        subtext="Every formula starts with a real ingredient story. Watch a glimpse of ours."
+      />
       <TransformationsSection />
       <CatalogSection />
       <HowItWorksSection />
       <ProductSpotlightSection />
+      <SignatureShowcaseSection />
       <BestSellersSection />
       <TestimonialsSection />
+      <VideoShowcaseSection
+        src="https://res.cloudinary.com/bhozkz7o/video/upload/v1785160487/naya-glows/recent/customer-testimonial-video.mov"
+        poster="https://res.cloudinary.com/bhozkz7o/image/upload/v1785160476/naya-glows/recent/customer-ugc-testimonial-scrub.jpg"
+        eyebrow="In Their Words"
+        heading="Real customers, real routines, real glow."
+        subtext="No script, no filter — just what happens when Naya becomes part of your routine."
+      />
       <InfluencerSection />
       <CategoriesSection />
       <WhyChooseSection />

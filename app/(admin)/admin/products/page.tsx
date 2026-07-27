@@ -28,6 +28,7 @@ const emptyForm: Omit<Product, "categoryAccent"> & { categoryAccent: string } = 
   tagline: "",
   description: "",
   benefits: [],
+  variants: [],
 };
 
 export default function AdminProductsPage() {
@@ -53,11 +54,21 @@ export default function AdminProductsPage() {
 
   const openEdit = (product: Product) => {
     setEditing(product.slug);
-    setForm({ ...product, categoryAccent: product.categoryAccent || "" });
+    setForm({ ...product, categoryAccent: product.categoryAccent || "", variants: product.variants ?? [] });
     setBenefitsText(product.benefits.join(", "));
     setError(null);
     setShowForm(true);
   };
+
+  const addVariantRow = () =>
+    setForm((f) => ({ ...f, variants: [...(f.variants ?? []), { name: "", price: 0 }] }));
+  const updateVariantRow = (index: number, patch: Partial<{ name: string; price: number }>) =>
+    setForm((f) => ({
+      ...f,
+      variants: (f.variants ?? []).map((v, i) => (i === index ? { ...v, ...patch } : v)),
+    }));
+  const removeVariantRow = (index: number) =>
+    setForm((f) => ({ ...f, variants: (f.variants ?? []).filter((_, i) => i !== index) }));
 
   const handleUpload = async (file: File) => {
     try {
@@ -76,6 +87,10 @@ export default function AdminProductsPage() {
     e.preventDefault();
     setError(null);
 
+    const cleanVariants = (form.variants ?? [])
+      .filter((v) => v.name.trim())
+      .map((v) => ({ name: v.name.trim(), price: Number(v.price) }));
+
     const payload = {
       ...form,
       price: Number(form.price),
@@ -84,6 +99,7 @@ export default function AdminProductsPage() {
         .split(",")
         .map((b) => b.trim())
         .filter(Boolean),
+      variants: cleanVariants.length > 0 ? cleanVariants : null,
     };
 
     try {
@@ -159,7 +175,9 @@ export default function AdminProductsPage() {
                     <span className="font-medium">{p.name}</span>
                   </td>
                   <td className="p-4 text-[#16241a]/60">{p.category}</td>
-                  <td className="p-4">${p.price.toFixed(2)}</td>
+                  <td className="p-4">
+                    {p.variants && p.variants.length > 0 ? "From " : ""}${p.price.toFixed(2)}
+                  </td>
                   <td className="p-4">
                     <div className="flex items-center gap-2">
                       <button
@@ -262,6 +280,60 @@ export default function AdminProductsPage() {
                 Original Price is the pre-discount &quot;was&quot; price shown struck through on
                 the storefront — set it equal to Price if there&apos;s no discount.
               </p>
+
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-semibold uppercase tracking-wide text-[#16241a]/50">
+                    Size Variants (optional)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={addVariantRow}
+                    className="text-xs font-semibold text-[#4f7957] hover:underline"
+                  >
+                    + Add size
+                  </button>
+                </div>
+                {(form.variants ?? []).length === 0 ? (
+                  <p className="text-xs text-[#16241a]/40">
+                    No sizes — this product sells at the single Price above.
+                  </p>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    {(form.variants ?? []).map((variant, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <input
+                          placeholder="Name (e.g. Small)"
+                          value={variant.name}
+                          onChange={(e) => updateVariantRow(i, { name: e.target.value })}
+                          className={`${inputClass} flex-1`}
+                        />
+                        <input
+                          type="number"
+                          step="0.01"
+                          placeholder="Price ($)"
+                          value={variant.price || ""}
+                          onChange={(e) => updateVariantRow(i, { price: Number(e.target.value) })}
+                          className={`${inputClass} w-28`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeVariantRow(i)}
+                          aria-label="Remove size"
+                          className="w-8 h-8 rounded-full bg-white/70 flex items-center justify-center hover:bg-white flex-shrink-0"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p className="text-xs text-[#16241a]/40 mt-1.5">
+                  When set, customers pick a size on the product page and its price is charged
+                  instead of the base Price above.
+                </p>
+              </div>
+
               <input
                 required
                 placeholder="Tagline"

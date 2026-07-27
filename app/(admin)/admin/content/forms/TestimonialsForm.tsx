@@ -15,6 +15,7 @@ import {
 
 const blankTestimonial: Testimonial = {
   name: "",
+  photo: "",
   rating: 5,
   quote: "",
   tags: [],
@@ -92,6 +93,11 @@ export default function TestimonialsForm() {
               onChange={(v) => updateTestimonial(i, "rating", v)}
             />
           </div>
+          <ImageField
+            label="Customer photo"
+            value={t.photo}
+            onChange={(v) => updateTestimonial(i, "photo", v)}
+          />
           <TextAreaField
             label="Quote"
             value={t.quote}

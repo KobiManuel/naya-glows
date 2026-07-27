@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "./hooks";
 import {
   useLoginMutation,
   useRegisterMutation,
-  useRegisterInfluencerMutation,
+  useUpgradeInfluencerMutation,
   useGetMeQuery,
 } from "./userApi";
 import { setCredentials, clearAuth, USER_TOKEN_KEY } from "./userAuthSlice";
@@ -17,7 +17,7 @@ export function useUserAuth() {
 
   const [loginMutation] = useLoginMutation();
   const [registerMutation] = useRegisterMutation();
-  const [registerInfluencerMutation] = useRegisterInfluencerMutation();
+  const [upgradeInfluencerMutation] = useUpgradeInfluencerMutation();
   const { data: meData, isLoading: meLoading } = useGetMeQuery(undefined, { skip: !token });
 
   const user = meData?.user ?? storedUser;
@@ -43,15 +43,12 @@ export function useUserAuth() {
     return res.user;
   };
 
-  const registerInfluencer = async (input: {
-    email: string;
-    password: string;
-    name: string;
+  const upgradeInfluencer = async (input: {
     platform?: string;
     socialHandle?: string;
     bio?: string;
   }) => {
-    const res = await registerInfluencerMutation(input).unwrap();
+    const res = await upgradeInfluencerMutation(input).unwrap();
     localStorage.setItem(USER_TOKEN_KEY, res.token);
     dispatch(setCredentials(res));
     return res.user;
@@ -62,5 +59,5 @@ export function useUserAuth() {
     dispatch(clearAuth());
   };
 
-  return { user: user ?? null, token, loading, login, register, registerInfluencer, logout };
+  return { user: user ?? null, token, loading, login, register, upgradeInfluencer, logout };
 }

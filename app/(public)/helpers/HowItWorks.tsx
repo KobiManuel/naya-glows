@@ -72,7 +72,7 @@ export default function HowItWorksSection() {
                         ease: "power3.out",
                         scrollTrigger: {
                             trigger: el,
-                            start: "top 95%",
+                            start: "top 80%",
                             end: "top 25%",
                             toggleActions: "play reverse play reverse",
                         },
@@ -126,7 +126,7 @@ export default function HowItWorksSection() {
 
                     {/* ── Centered connector row ───────────────────────────────────── */}
                     <div ref={connectorRef} className="flex items-center justify-center mb-10 px-2 max-[700px]:hidden">
-                        <div className="flex items-center gap-0 min-w-1/2 mx-auto">
+                        <div className="flex items-center justify-center gap-0 min-w-1/2 mx-auto">
 
                             {steps.map((step, i) => (
                                 <div key={i} className="flex items-center" style={{ flex: i < steps.length - 1 ? "0 0 auto" : "0 0 auto" }}>

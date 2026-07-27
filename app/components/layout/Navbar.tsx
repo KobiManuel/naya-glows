@@ -318,11 +318,11 @@ export default function Navbar() {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-              className="overflow-hidden hidden lg:block"
+              className="overflow-hidden hidden lg:block w-[80%] mx-auto"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
-              <div className="bg-white/95 rounded-2xl w-[80%] mx-auto backdrop-blur-md border-t border-black/5 shadow-2xl">
+              <div className="bg-white/95 rounded-2xl backdrop-blur-md border-t border-black/5 shadow-2xl">
                 <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-10">
                   <p className="text-[11px] uppercase tracking-[0.2em] text-black/40 font-medium mb-8">
                     Explore

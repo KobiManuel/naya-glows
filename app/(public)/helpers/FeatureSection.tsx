@@ -39,7 +39,7 @@ export default function FeaturedSection() {
             ease: "power3.out",
             scrollTrigger: {
               trigger: el,
-              start: "top 95%",
+              start: "top 80%",
               end: "top 25%",
               toggleActions: "play reverse play reverse",
             },

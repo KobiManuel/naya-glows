@@ -54,7 +54,15 @@ function SignInForm() {
         mode === "signin"
           ? await login(email, password)
           : await register({ email, password, name, country, referralCode: referralCode || undefined });
-      router.push(user.role === "INFLUENCER" ? "/influencer" : "/account");
+      // A same-origin path the caller was bounced from (e.g. checkout,
+      // influencer/apply) takes priority over the default role-based
+      // landing page — only ever a relative path, never an external URL.
+      const redirect = searchParams.get("redirect");
+      if (redirect && redirect.startsWith("/")) {
+        router.push(redirect);
+      } else {
+        router.push(user.role === "INFLUENCER" ? "/influencer" : "/account");
+      }
     } catch (err) {
       setError(getApiErrorMessage(err));
     } finally {

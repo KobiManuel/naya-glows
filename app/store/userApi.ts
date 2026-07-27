@@ -78,7 +78,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["SavedProducts", "MyOrders", "ReferralCodes"],
+  tagTypes: ["SavedProducts", "MyOrders", "ReferralCodes", "Me"],
   endpoints: (builder) => ({
     register: builder.mutation<
       { user: AuthUser; token: string },
@@ -94,11 +94,17 @@ export const userApi = createApi({
     }),
     getMe: builder.query<{ user: AuthUser }, void>({
       query: () => "/auth/me",
+      providesTags: ["Me"],
     }),
     createOrder: builder.mutation<
       { order: { id: string } },
       {
-        items: { slug: string; qty: number; isSubscription?: boolean }[];
+        items: {
+          slug: string;
+          qty: number;
+          isSubscription?: boolean;
+          variantName?: string;
+        }[];
         shippingDetails: Record<string, string>;
       }
     >({
@@ -110,18 +116,15 @@ export const userApi = createApi({
       transformResponse: (res: { orders: MyOrderRow[] }) => res.orders,
       providesTags: [{ type: "MyOrders", id: "LIST" }],
     }),
-    registerInfluencer: builder.mutation<
+    // Upgrades the currently signed-in customer to an influencer — there is
+    // no separate influencer account/registration, this appends an
+    // Influencer profile to whichever account the caller is authed as.
+    upgradeInfluencer: builder.mutation<
       { user: AuthUser; token: string },
-      {
-        email: string;
-        password: string;
-        name: string;
-        platform?: string;
-        socialHandle?: string;
-        bio?: string;
-      }
+      { platform?: string; socialHandle?: string; bio?: string }
     >({
-      query: (body) => ({ url: "/influencers/register", method: "POST", body }),
+      query: (body) => ({ url: "/influencers/upgrade", method: "POST", body }),
+      invalidatesTags: ["Me"],
     }),
     getMyInfluencerProfile: builder.query<InfluencerProfile, void>({
       query: () => "/influencers/me",
@@ -234,7 +237,7 @@ export const {
   useGetMeQuery,
   useCreateOrderMutation,
   useListMyOrdersQuery,
-  useRegisterInfluencerMutation,
+  useUpgradeInfluencerMutation,
   useGetMyInfluencerProfileQuery,
   useListMyReferralCodesQuery,
   useGenerateReferralCodeMutation,

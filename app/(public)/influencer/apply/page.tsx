@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -34,18 +34,27 @@ const benefits = [
 
 export default function InfluencerApplyPage() {
   const router = useRouter();
-  const { registerInfluencer } = useUserAuth();
+  const { user, loading: authLoading, upgradeInfluencer } = useUserAuth();
   const backendReady = isApiConfigured();
 
   const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
     platform: "Instagram",
     socialHandle: "",
     bio: "",
   });
   const [submitting, setSubmitting] = useState(false);
+
+  // Becoming an influencer is always an upgrade to the account you're
+  // already signed into — never a separate registration — so signing in
+  // first is required, and an existing influencer has nothing to apply for.
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) {
+      router.replace("/signin?redirect=/influencer/apply");
+    } else if (user.role === "INFLUENCER") {
+      router.replace("/influencer");
+    }
+  }, [authLoading, user, router]);
 
   const updateField =
     (field: keyof typeof form) =>
@@ -60,10 +69,7 @@ export default function InfluencerApplyPage() {
     }
     setSubmitting(true);
     try {
-      await registerInfluencer({
-        name: form.name,
-        email: form.email,
-        password: form.password,
+      await upgradeInfluencer({
         platform: form.platform,
         socialHandle: form.socialHandle || undefined,
         bio: form.bio || undefined,
@@ -76,6 +82,10 @@ export default function InfluencerApplyPage() {
       setSubmitting(false);
     }
   };
+
+  if (authLoading || !user || user.role === "INFLUENCER") {
+    return <main className="bg-gradient-to-b from-[#eafbf0] to-[#f4faf3] min-h-screen" />;
+  }
 
   return (
     <main className="bg-gradient-to-b from-[#eafbf0] to-[#f4faf3] text-[#16241a] min-h-screen">
@@ -122,34 +132,13 @@ export default function InfluencerApplyPage() {
           </div>
 
           <GlassCard className="px-4 py-6 sm:p-8 order-1 lg:order-2">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-[#16241a]/50 mb-6">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-[#16241a]/50 mb-1">
               Apply Now
             </h2>
+            <p className="text-xs text-[#16241a]/45 mb-5">
+              Applying as {user.name} ({user.email})
+            </p>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <input
-                required
-                placeholder="Full name"
-                value={form.name}
-                onChange={updateField("name")}
-                className={inputClass}
-              />
-              <input
-                required
-                type="email"
-                placeholder="Email address"
-                value={form.email}
-                onChange={updateField("email")}
-                className={inputClass}
-              />
-              <input
-                required
-                type="password"
-                minLength={8}
-                placeholder="Password"
-                value={form.password}
-                onChange={updateField("password")}
-                className={inputClass}
-              />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <select value={form.platform} onChange={updateField("platform")} className={inputClass}>
                   <option>Instagram</option>

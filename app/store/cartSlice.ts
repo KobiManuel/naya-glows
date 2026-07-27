@@ -12,11 +12,18 @@ export type CartItem = {
   image: string;
   qty: number;
   isSubscription: boolean;
+  variantName?: string;
 };
 
 type CartState = { items: CartItem[] };
 
 const initialState: CartState = { items: [] };
+
+// Two different sizes of the same product are separate cart lines, so a
+// cart item's real identity is (slug, variantName) — not slug alone.
+function sameLine(item: Pick<CartItem, "slug" | "variantName">, slug: string, variantName?: string) {
+  return item.slug === slug && item.variantName === variantName;
+}
 
 const cartSlice = createSlice({
   name: "cart",
@@ -27,37 +34,49 @@ const cartSlice = createSlice({
     },
     addItem(
       state,
-      action: PayloadAction<{ product: Product; qty: number; isSubscription?: boolean }>,
+      action: PayloadAction<{
+        product: Product;
+        qty: number;
+        isSubscription?: boolean;
+        variantName?: string;
+        variantPrice?: number;
+      }>,
     ) {
-      const { product, qty, isSubscription = false } = action.payload;
-      const existing = state.items.find((i) => i.slug === product.slug);
+      const { product, qty, isSubscription = false, variantName, variantPrice } = action.payload;
+      const existing = state.items.find((i) => sameLine(i, product.slug, variantName));
       if (existing) {
         existing.qty += qty;
       } else {
         state.items.push({
           slug: product.slug,
           name: product.name,
-          price: product.price,
+          price: variantPrice ?? product.price,
           image: product.image,
           qty,
           isSubscription,
+          variantName,
         });
       }
     },
-    removeItem(state, action: PayloadAction<string>) {
-      state.items = state.items.filter((i) => i.slug !== action.payload);
+    removeItem(state, action: PayloadAction<{ slug: string; variantName?: string }>) {
+      const { slug, variantName } = action.payload;
+      state.items = state.items.filter((i) => !sameLine(i, slug, variantName));
     },
-    updateQty(state, action: PayloadAction<{ slug: string; qty: number }>) {
-      const { slug, qty } = action.payload;
+    updateQty(
+      state,
+      action: PayloadAction<{ slug: string; qty: number; variantName?: string }>,
+    ) {
+      const { slug, qty, variantName } = action.payload;
       if (qty < 1) {
-        state.items = state.items.filter((i) => i.slug !== slug);
+        state.items = state.items.filter((i) => !sameLine(i, slug, variantName));
         return;
       }
-      const item = state.items.find((i) => i.slug === slug);
+      const item = state.items.find((i) => sameLine(i, slug, variantName));
       if (item) item.qty = qty;
     },
-    toggleSubscription(state, action: PayloadAction<string>) {
-      const item = state.items.find((i) => i.slug === action.payload);
+    toggleSubscription(state, action: PayloadAction<{ slug: string; variantName?: string }>) {
+      const { slug, variantName } = action.payload;
+      const item = state.items.find((i) => sameLine(i, slug, variantName));
       if (item) item.isSubscription = !item.isSubscription;
     },
     clearCart(state) {
@@ -96,11 +115,27 @@ export function useCart() {
   const items = useAppSelector((state) => state.cart.items);
   const { subscriptionDiscountPercent } = useSettings();
 
-  const addItem = (product: Product, qty = 1, isSubscription = false) =>
-    dispatch(addItemAction({ product, qty, isSubscription }));
-  const removeItem = (slug: string) => dispatch(removeItemAction(slug));
-  const updateQty = (slug: string, qty: number) => dispatch(updateQtyAction({ slug, qty }));
-  const toggleSubscription = (slug: string) => dispatch(toggleSubscriptionAction(slug));
+  const addItem = (
+    product: Product,
+    qty = 1,
+    isSubscription = false,
+    variant?: { name: string; price: number },
+  ) =>
+    dispatch(
+      addItemAction({
+        product,
+        qty,
+        isSubscription,
+        variantName: variant?.name,
+        variantPrice: variant?.price,
+      }),
+    );
+  const removeItem = (slug: string, variantName?: string) =>
+    dispatch(removeItemAction({ slug, variantName }));
+  const updateQty = (slug: string, qty: number, variantName?: string) =>
+    dispatch(updateQtyAction({ slug, qty, variantName }));
+  const toggleSubscription = (slug: string, variantName?: string) =>
+    dispatch(toggleSubscriptionAction({ slug, variantName }));
   const clearCart = () => dispatch(clearCartAction());
 
   const subtotal = items.reduce(
