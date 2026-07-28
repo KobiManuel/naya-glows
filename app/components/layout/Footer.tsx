@@ -121,12 +121,12 @@ export default function Footer() {
                     {/* Brand column */}
                     <div className="lg:col-span-2 space-y-6">
                         <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                            <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center">
                                 <Image
                                     src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381892/naya-glows/legacy/naya-logo.png"
                                     alt="Naya Glows"
-                                    width={32}
-                                    height={32}
+                                    width={42}
+                                    height={42}
                                     className="object-contain"
                                 />
                             </div>

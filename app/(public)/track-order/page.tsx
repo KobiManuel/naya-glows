@@ -66,7 +66,7 @@ function TrackOrderForm() {
           <input
             required
             name="orderId"
-            placeholder="Order ID"
+            placeholder="e.g. cm2x9f8a10000ab12cd34ef56"
             value={orderId}
             onChange={(e) => setOrderId(e.target.value)}
             className={`${inputClass} sm:col-span-2`}

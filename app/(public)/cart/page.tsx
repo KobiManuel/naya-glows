@@ -5,11 +5,13 @@ import Link from "next/link";
 import { Minus, Plus, X, ShoppingBag } from "lucide-react";
 import { useCart, itemUnitPrice } from "../../store/cartSlice";
 import { useSettings } from "../../store/useSettings";
+import { useCurrencyDisplay } from "../../store/useCurrencyDisplay";
 import GlassCard from "../helpers/glass/GlassCard";
 
 export default function CartPage() {
   const { items, updateQty, removeItem, subtotal } = useCart();
   const { subscriptionDiscountPercent } = useSettings();
+  const { format: formatPrice } = useCurrencyDisplay();
 
   return (
     <main className="bg-gradient-to-b from-[#eafbf0] to-[#f4faf3] text-[#16241a] min-h-screen">
@@ -66,7 +68,7 @@ export default function CartPage() {
                         </p>
                       </Link>
                       <p className="text-sm text-[#16241a]/60 flex items-center gap-2">
-                        ${itemUnitPrice(item, subscriptionDiscountPercent).toFixed(2)}
+                        {formatPrice(itemUnitPrice(item, subscriptionDiscountPercent))}
                         {item.isSubscription && (
                           <span className="text-[10px] font-semibold uppercase tracking-wide text-[#4f7957] bg-[#d4e8d0] px-2 py-0.5 rounded-full">
                             Subscribed
@@ -114,19 +116,19 @@ export default function CartPage() {
                   </h2>
                   <div className="flex items-center justify-between text-sm mb-2">
                     <span className="text-[#16241a]/60">Subtotal</span>
-                    <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                    <span className="font-semibold">{formatPrice(subtotal)}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm mb-5">
                     <span className="text-[#16241a]/60">Shipping</span>
                     <span className="font-semibold">
-                      {subtotal >= 75 ? "Free" : "$6.00"}
+                      {subtotal >= 75 ? "Free" : formatPrice(6)}
                     </span>
                   </div>
                   <div className="w-full h-px bg-[#16241a]/10 mb-5" />
                   <div className="flex items-center justify-between text-base font-bold mb-6">
                     <span>Total</span>
                     <span>
-                      ${(subtotal + (subtotal >= 75 || subtotal === 0 ? 0 : 6)).toFixed(2)}
+                      {formatPrice(subtotal + (subtotal >= 75 || subtotal === 0 ? 0 : 6))}
                     </span>
                   </div>
                   <Link

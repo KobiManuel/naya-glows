@@ -34,7 +34,12 @@ const benefits = [
 
 export default function InfluencerApplyPage() {
   const router = useRouter();
-  const { user, loading: authLoading, upgradeInfluencer } = useUserAuth();
+  const {
+    user,
+    loading: authLoading,
+    upgradeInfluencer,
+    upgradingInfluencer: submitting,
+  } = useUserAuth();
   const backendReady = isApiConfigured();
 
   const [form, setForm] = useState({
@@ -42,7 +47,6 @@ export default function InfluencerApplyPage() {
     socialHandle: "",
     bio: "",
   });
-  const [submitting, setSubmitting] = useState(false);
 
   // Becoming an influencer is always an upgrade to the account you're
   // already signed into — never a separate registration — so signing in
@@ -67,7 +71,6 @@ export default function InfluencerApplyPage() {
       toast.error("Influencer registration isn't connected yet (NEXT_PUBLIC_API_URL isn't set).");
       return;
     }
-    setSubmitting(true);
     try {
       await upgradeInfluencer({
         platform: form.platform,
@@ -78,8 +81,6 @@ export default function InfluencerApplyPage() {
       router.push("/influencer");
     } catch (err) {
       toast.error(getApiErrorMessage(err, "Couldn't complete your application. Please try again."));
-    } finally {
-      setSubmitting(false);
     }
   };
 

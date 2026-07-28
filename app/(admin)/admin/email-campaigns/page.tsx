@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Image from "next/image";
 import { toast } from "sonner";
-import { Send } from "lucide-react";
+import { Send, Upload, X } from "lucide-react";
 import {
   useListEmailCampaignsQuery,
   useListNewsletterSubscribersQuery,
   useSendEmailCampaignMutation,
+  useUploadImageMutation,
 } from "../../../store/adminApi";
 import { getApiErrorMessage } from "../../../store/apiError";
 
@@ -17,18 +19,36 @@ export default function AdminEmailCampaignsPage() {
   const { data: campaigns, isLoading } = useListEmailCampaignsQuery();
   const { data: subscribers } = useListNewsletterSubscribersQuery();
   const [sendCampaign, { isLoading: sending }] = useSendEmailCampaignMutation();
+  const [uploadImage, { isLoading: uploading }] = useUploadImageMutation();
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
 
   const recipientCount = subscribers?.length ?? 0;
+
+  const handleUpload = async (file: File) => {
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      const res = await uploadImage(body).unwrap();
+      setImageUrls((urls) => [...urls, res.url]);
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, "Image upload failed."));
+    }
+  };
+
+  const removeImage = (url: string) => {
+    setImageUrls((urls) => urls.filter((u) => u !== url));
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      await sendCampaign({ subject, message }).unwrap();
+      await sendCampaign({ subject, message, imageUrls: imageUrls.length > 0 ? imageUrls : undefined }).unwrap();
       toast.success(`Campaign sent to ${recipientCount} subscriber(s).`);
       setSubject("");
       setMessage("");
+      setImageUrls([]);
     } catch (err) {
       toast.error(getApiErrorMessage(err, "Couldn't send the campaign."));
     }
@@ -68,9 +88,43 @@ export default function AdminEmailCampaignsPage() {
               className={`${inputClass} resize-none`}
             />
           </div>
+          <div>
+            <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[#16241a]/50 mb-2">
+              <Upload size={12} />
+              Images (optional, shown above the message)
+            </label>
+            {imageUrls.length > 0 && (
+              <div className="flex flex-wrap gap-3 mb-3">
+                {imageUrls.map((url) => (
+                  <div key={url} className="relative w-16 h-16 rounded-lg overflow-hidden bg-[#d4e8d0]">
+                    <Image src={url} alt="" fill className="object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(url)}
+                      aria-label="Remove image"
+                      className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80"
+                    >
+                      <X size={11} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleUpload(file);
+                e.target.value = "";
+              }}
+              className="text-xs"
+            />
+            {uploading && <span className="text-xs text-[#16241a]/40 ml-2">Uploading…</span>}
+          </div>
           <button
             type="submit"
-            disabled={sending || recipientCount === 0}
+            disabled={sending || uploading || recipientCount === 0}
             className="self-start flex items-center gap-2 bg-[#16241a] text-white text-sm font-semibold px-6 py-3 rounded-full hover:bg-[#233324] transition-colors disabled:opacity-60"
           >
             <Send size={14} />

@@ -8,7 +8,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useCart, itemUnitPrice } from "../../store/cartSlice";
 import { useSettings } from "../../store/useSettings";
+import { useCurrencyDisplay } from "../../store/useCurrencyDisplay";
 import { useUserAuth } from "../../store/useUserAuth";
+import { SHIPPING_STORAGE_KEY } from "../../store/userAuthSlice";
 import GlassCard from "../helpers/glass/GlassCard";
 import { useCreateOrderMutation, useInitializePaymentMutation } from "../../store/userApi";
 import { getApiErrorMessage } from "../../store/apiError";
@@ -57,21 +59,26 @@ const emptyForm: ShippingForm = {
   zip: "",
 };
 
-// Purely a convenience prefill for next time — client-side only, no payment
-// data involved, so localStorage (rather than a server round-trip) is the
-// right level of persistence here.
-const SHIPPING_STORAGE_KEY = "naya-glows-shipping-details";
-
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, subtotal } = useCart();
   const { subscriptionDiscountPercent } = useSettings();
+  const { format: formatPrice } = useCurrencyDisplay();
   const { user, loading: authLoading } = useUserAuth();
   const [form, setForm] = useState<ShippingForm>(emptyForm);
   const shipping = subtotal >= 75 || subtotal === 0 ? 0 : 6;
   const backendReady = isApiConfigured();
   const [paystackReady, setPaystackReady] = useState(false);
   const [openingPopup, setOpeningPopup] = useState(false);
+
+  // Next's <Script afterInteractive> only fires onLoad once per page load —
+  // if this page was already visited earlier in the session (script tag
+  // already present from that visit), a fresh mount never re-fires it, so
+  // without this check "Pay" could stay disabled indefinitely on a second
+  // visit even though Paystack's SDK is already sitting on window.
+  useEffect(() => {
+    if (window.PaystackPop) setPaystackReady(true);
+  }, []);
 
   // Payment now always requires a signed-in account (no guest checkout) —
   // enforced server-side too (POST /orders is requireAuth), this just gives
@@ -91,6 +98,15 @@ export default function CheckoutPage() {
       // Malformed/old data — ignore and keep the empty form.
     }
   }, []);
+
+  // The remembered blob above is intentionally account-agnostic (it's just
+  // "whatever was last typed in this browser"), which is exactly how a
+  // stale email from a previous account ended up on someone else's order.
+  // Checkout requires sign-in now, so the email is always the signed-in
+  // account's — overriding whatever the remembered blob has, not merging.
+  useEffect(() => {
+    if (user?.email) setForm((f) => ({ ...f, email: user.email }));
+  }, [user?.email]);
 
   const [createOrder, { isLoading: creatingOrder }] = useCreateOrderMutation();
   const [initializePayment, { isLoading: initializingPayment }] = useInitializePaymentMutation();
@@ -300,7 +316,7 @@ export default function CheckoutPage() {
                         )}
                       </p>
                       <p className="text-xs font-semibold flex-shrink-0">
-                        ${(itemUnitPrice(item, subscriptionDiscountPercent) * item.qty).toFixed(2)}
+                        {formatPrice(itemUnitPrice(item, subscriptionDiscountPercent) * item.qty)}
                       </p>
                     </div>
                   ))}
@@ -309,16 +325,16 @@ export default function CheckoutPage() {
                 <div className="w-full h-px bg-[#16241a]/10 mb-4" />
                 <div className="flex items-center justify-between text-sm mb-2">
                   <span className="text-[#16241a]/60">Subtotal</span>
-                  <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                  <span className="font-semibold">{formatPrice(subtotal)}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm mb-5">
                   <span className="text-[#16241a]/60">Shipping</span>
-                  <span className="font-semibold">{shipping === 0 ? "Free" : "$6.00"}</span>
+                  <span className="font-semibold">{shipping === 0 ? "Free" : formatPrice(6)}</span>
                 </div>
                 <div className="w-full h-px bg-[#16241a]/10 mb-5" />
                 <div className="flex items-center justify-between text-base font-bold mb-6">
                   <span>Total</span>
-                  <span>${(subtotal + shipping).toFixed(2)}</span>
+                  <span>{formatPrice(subtotal + shipping)}</span>
                 </div>
 
                 <button
@@ -337,7 +353,13 @@ export default function CheckoutPage() {
       <Script
         src="https://js.paystack.co/v1/inline.js"
         strategy="afterInteractive"
-        onLoad={() => setPaystackReady(true)}
+        // Paystack's own script does some internal setup after the file
+        // itself finishes executing — calling .setup()/.openIframe() in
+        // that narrow window is the likeliest explanation for an
+        // intermittent "invalid key" that clears up moments later with no
+        // code or env change (this file never varies the key by request).
+        // A short buffer after onLoad is cheap insurance against that race.
+        onLoad={() => setTimeout(() => setPaystackReady(true), 300)}
       />
     </main>
   );

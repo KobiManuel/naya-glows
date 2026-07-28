@@ -14,8 +14,7 @@ export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const { login, logout } = useAdminAuth();
+  const { login, loggingIn: submitting, logout } = useAdminAuth();
   const router = useRouter();
   const backendReady = isApiConfigured();
 
@@ -28,7 +27,6 @@ export default function AdminLoginPage() {
       return;
     }
 
-    setSubmitting(true);
     try {
       const user = await login(email, password);
       if (user.role !== "ADMIN") {
@@ -39,8 +37,6 @@ export default function AdminLoginPage() {
       router.push("/admin");
     } catch (err) {
       setError(getApiErrorMessage(err));
-    } finally {
-      setSubmitting(false);
     }
   };
 

@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowRight } from "lucide-react";
+import { getProductBySlug } from "@/lib/products";
+import { useCurrencyDisplay } from "../../store/useCurrencyDisplay";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -31,80 +33,71 @@ const arrowContainerColors = [
   "#b4addd"
 ]
 
-const products = [
+// Curated display labels + the "recent/" photoshoot image for each card —
+// the only section authorized to use those photos (per an earlier explicit
+// instruction). Price/originalPrice/fullName are deliberately NOT hardcoded
+// here anymore — they're pulled live from lib/products.ts by slug below, so
+// this section can never drift out of sync with real pricing again.
+const catalogCards = [
   {
+    slug: "radiance-boost-serum",
     category: "Radiance",
     name: "Boost Serum",
-    fullName: "Radiance Boost Serum",
-    price: "$34.99",
-    originalPrice: "$44.99",
     image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1785160441/naya-glows/recent/radiance-boost-serum.png",
-    href: "/products/radiance-boost-serum",
   },
   {
+    slug: "clarifying-foam-cleanser",
     category: "Clarifying",
     name: "Foaming Cleanser",
-    fullName: "Clarifying Foaming Cleanser",
-    price: "$28.99",
-    originalPrice: "$36.99",
     image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1785160441/naya-glows/recent/clarifying-foaming-cleanser.png",
-    href: "/products/clarifying-foam-cleanser",
   },
   {
+    slug: "radiance-barrier-face-oil",
     category: "Naya",
     name: "Barrier Face Oil",
-    fullName: "Naya Barrier Face Oil",
-    price: "$38.99",
-    originalPrice: "$49.99",
     image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1785160447/naya-glows/recent/naya-barrier-face-oil.png",
-    href: "/products/radiance-barrier-face-oil",
   },
   {
+    slug: "acne-correcting-serum",
     category: "Glow Renewal",
     name: "Serum (Acne Treatment)",
-    fullName: "Glow Renewal Serum (Acne Treatment)",
-    price: "$34.99",
-    originalPrice: "$44.99",
     image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1785160450/naya-glows/recent/glow-renewal-serum-acne-treatment.png",
-    href: "/products/acne-correcting-serum",
   },
   {
+    slug: "exfoliating-body-scrub",
     category: "Radiant",
     name: "Body Scrub",
-    fullName: "Radiant Exfoliating Body Scrub",
-    price: "$29.99",
-    originalPrice: "$39.99",
     image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1785160444/naya-glows/recent/radiance-exfoliating-body-scrub.png",
-    href: "/products/exfoliating-body-scrub",
   },
   {
+    slug: "pigment-corrector-face-cream",
     category: "Pigment",
     name: "Corrector Cream",
-    fullName: "Pigment Corrector Face Cream",
-    price: "$36.99",
-    originalPrice: "$46.99",
     image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1785160451/naya-glows/recent/pigment-corrector-face-cream.png",
-    href: "/products/pigment-corrector-face-cream",
   },
   {
+    slug: "radiance-balance-toner",
     category: "Radiant",
     name: "Balance Toner",
-    fullName: "Radiant Balance Toner",
-    price: "$24.99",
-    originalPrice: "$32.99",
     image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1785160454/naya-glows/recent/radiance-balance-toner-alt1.png",
-    href: "/products/radiance-balance-toner",
   },
   {
+    slug: "luminous-glow-body-oil",
     category: "Luminous",
     name: "Glow Oil",
-    fullName: "Luminous Glow Oil",
-    price: "$32.99",
-    originalPrice: "$42.99",
     image: "https://res.cloudinary.com/bhozkz7o/image/upload/v1785160445/naya-glows/recent/luminous-glow-body-oil.png",
-    href: "/products/luminous-glow-body-oil",
   },
 ];
+
+type DisplayCard = {
+  category: string;
+  name: string;
+  fullName: string;
+  price: string;
+  originalPrice: string;
+  image: string;
+  href: string;
+};
 
 function ProductCard({
   product,
@@ -112,7 +105,7 @@ function ProductCard({
   arrowBgColor,
   animRef,
 }: {
-  product: (typeof products)[0];
+  product: DisplayCard;
   bgColor: string;
   animRef: (el: HTMLDivElement | null) => void;
   arrowBgColor: string;
@@ -164,10 +157,15 @@ function ProductCard({
         <div className="group-hover:opacity-0 ">
           <span className="text-base font-bold transition-colors duration-300 text-[#1a1a2e] group-hover:text-white">
             {product.price}
-          </span>{" "}
-          <span className="text-sm line-through transition-colors duration-300 text-[#1a1a2e]/35 group-hover:text-white/50">
-            {product.originalPrice}
           </span>
+          {product.originalPrice && (
+            <>
+              {" "}
+              <span className="text-sm line-through transition-colors duration-300 text-[#1a1a2e]/35 group-hover:text-white/50">
+                {product.originalPrice}
+              </span>
+            </>
+          )}
         </div>
 
         {/* Arrow button — uses white overlay for hover bg to allow smooth CSS transition */}
@@ -190,6 +188,28 @@ export default function CatalogSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const { format: formatPrice } = useCurrencyDisplay();
+
+  const products = useMemo<DisplayCard[]>(
+    () =>
+      catalogCards.flatMap((card) => {
+        const product = getProductBySlug(card.slug);
+        if (!product) return [];
+        return [
+          {
+            category: card.category,
+            name: card.name,
+            fullName: product.name,
+            price: formatPrice(product.price),
+            originalPrice:
+              product.originalPrice > product.price ? formatPrice(product.originalPrice) : "",
+            image: card.image,
+            href: `/products/${card.slug}`,
+          },
+        ];
+      }),
+    [formatPrice],
+  );
 
   useEffect(() => {
     const ctx = gsap.context(() => {

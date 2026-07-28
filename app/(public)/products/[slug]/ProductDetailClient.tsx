@@ -4,9 +4,10 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, Check, ArrowRight, Repeat } from "lucide-react";
-import type { Product } from "@/lib/products";
+import { isInStock, type Product } from "@/lib/products";
 import { useCart } from "../../../store/cartSlice";
 import { useSettings } from "../../../store/useSettings";
+import { useCurrencyDisplay } from "../../../store/useCurrencyDisplay";
 import { triggerCartFly } from "../../../store/cartFlyBus";
 import GlassCard from "../../helpers/glass/GlassCard";
 
@@ -26,11 +27,14 @@ export default function ProductDetailClient({
   const [isSubscription, setIsSubscription] = useState(false);
   const { addItem } = useCart();
   const { subscriptionDiscountPercent } = useSettings();
+  const { format: formatPrice } = useCurrencyDisplay();
 
   const activePrice = selectedVariant ? selectedVariant.price : product.price;
   const subscriptionPrice = activePrice * (1 - subscriptionDiscountPercent / 100);
+  const inStock = isInStock(product);
 
   const handleAddToCart = (sourceEl: HTMLElement) => {
+    if (!inStock) return;
     addItem(product, qty, isSubscription, selectedVariant);
     triggerCartFly(product.image, sourceEl);
     setAdded(true);
@@ -56,10 +60,15 @@ export default function ProductDetailClient({
                 src={product.image}
                 alt={product.name}
                 fill
-                className="object-cover"
+                className={`object-cover ${inStock ? "" : "grayscale opacity-70"}`}
                 priority
               />
               <div className="absolute inset-0 bg-gradient-to-b from-white/15 via-transparent to-black/10 pointer-events-none" />
+              {!inStock && (
+                <span className="absolute top-4 left-4 z-10 text-xs uppercase tracking-[0.2em] font-bold text-white bg-[#c0574c] px-3.5 py-1.5 rounded-full shadow-sm">
+                  Out of Stock
+                </span>
+              )}
             </div>
 
             {/* Details */}
@@ -76,11 +85,11 @@ export default function ProductDetailClient({
 
               <div className="flex items-center gap-3 mb-3">
                 <span className="text-2xl font-bold">
-                  ${(isSubscription ? subscriptionPrice : activePrice).toFixed(2)}
+                  {formatPrice(isSubscription ? subscriptionPrice : activePrice)}
                 </span>
                 {product.originalPrice > activePrice && (
                   <span className="text-base line-through text-[#16241a]/30">
-                    ${product.originalPrice.toFixed(2)}
+                    {formatPrice(product.originalPrice)}
                   </span>
                 )}
               </div>
@@ -99,7 +108,7 @@ export default function ProductDetailClient({
                           : "bg-white/60 text-[#16241a]/70 border-white/60 hover:border-[#8ab88e]"
                       }`}
                     >
-                      {variant.name} · ${variant.price.toFixed(2)}
+                      {variant.name} · {formatPrice(variant.price)}
                     </button>
                   ))}
                 </div>
@@ -119,7 +128,7 @@ export default function ProductDetailClient({
                     Subscribe &amp; Save {Math.round(subscriptionDiscountPercent)}%
                   </p>
                   <p className="text-xs text-[#16241a]/50 mt-1">
-                    ${subscriptionPrice.toFixed(2)} per order — cancel anytime.
+                    {formatPrice(subscriptionPrice)} per order — cancel anytime.
                   </p>
                 </div>
               </label>
@@ -156,11 +165,14 @@ export default function ProductDetailClient({
 
                 <button
                   onClick={(e) => handleAddToCart(e.currentTarget)}
-                  className="relative flex items-center gap-2 bg-gradient-to-r from-[#8ab88e] to-[#4f7957] text-white text-sm font-semibold px-7 py-3.5 rounded-full hover:brightness-105 transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] overflow-hidden"
+                  disabled={!inStock}
+                  className="relative flex items-center gap-2 bg-gradient-to-r from-[#8ab88e] to-[#4f7957] text-white text-sm font-semibold px-7 py-3.5 rounded-full hover:brightness-105 transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:brightness-100"
                 >
                   <span className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent pointer-events-none" />
                   <span className="relative flex items-center gap-2">
-                    {added ? (
+                    {!inStock ? (
+                      "Out of Stock"
+                    ) : added ? (
                       <>
                         Added <Check size={15} />
                       </>
@@ -186,15 +198,23 @@ export default function ProductDetailClient({
                           src={r.image}
                           alt={r.name}
                           fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          className={`object-cover group-hover:scale-105 transition-transform duration-500 ${
+                            isInStock(r) ? "" : "grayscale opacity-70"
+                          }`}
                         />
+                        {!isInStock(r) && (
+                          <span className="absolute top-2 left-2 z-10 text-[9px] uppercase tracking-wide font-bold text-white bg-[#c0574c] px-2 py-1 rounded-full">
+                            Out of Stock
+                          </span>
+                        )}
                       </div>
                       <p className="text-sm font-semibold leading-snug mb-1 line-clamp-2">
                         {r.name}
                       </p>
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-bold">
-                          {r.variants && r.variants.length > 0 ? "From " : ""}${r.price.toFixed(2)}
+                          {r.variants && r.variants.length > 0 ? "From " : ""}
+                          {formatPrice(r.price)}
                         </span>
                         <ArrowRight size={14} className="text-[#6a9a72]" />
                       </div>

@@ -24,6 +24,9 @@ export type Product = {
   // Optional size variants (e.g. Small/Big) — when present, the storefront
   // requires picking one and its price overrides `price` above.
   variants?: ProductVariant[] | null;
+  // Undefined/missing means in stock — only an explicit `false` (from the
+  // backend, once an admin marks it) takes a product out of purchase.
+  inStock?: boolean;
 };
 
 // Naira is this business's real, canonical currency (Paystack always
@@ -348,6 +351,10 @@ export const skincareCategories: ProductCategory[] = [
   "Cleanse & Tone",
   "Body Care",
 ];
+
+export function isInStock(product: Pick<Product, "inStock">): boolean {
+  return product.inStock !== false;
+}
 
 export function getProductBySlug(slug: string): Product | undefined {
   return products.find((p) => p.slug === slug);

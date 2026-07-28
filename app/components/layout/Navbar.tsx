@@ -206,8 +206,8 @@ export default function Navbar() {
                 <Image
                   src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381892/naya-glows/legacy/naya-logo.png"
                   alt="Naya Glows"
-                  width={26}
-                  height={26}
+                  width={34}
+                  height={34}
                   className="object-contain"
                   priority
                 />
@@ -450,8 +450,8 @@ export default function Navbar() {
                     <Image
                       src="https://res.cloudinary.com/bhozkz7o/image/upload/v1784381892/naya-glows/legacy/naya-logo.png"
                       alt="Naya Glows"
-                      width={22}
-                      height={22}
+                      width={30}
+                      height={30}
                       className="object-contain"
                     />
                   </div>

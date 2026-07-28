@@ -1,10 +1,17 @@
 "use client";
 
+import { useState, type FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { User, Package, Heart, LogOut, MapPin, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { User, Package, Heart, LogOut, MapPin, X, Pencil, KeyRound } from "lucide-react";
 import GlassCard from "../helpers/glass/GlassCard";
+import PasswordInput from "../../components/PasswordInput";
 import { useUserAuth } from "../../store/useUserAuth";
+import { useCurrencyDisplay } from "../../store/useCurrencyDisplay";
+import { getApiErrorMessage } from "../../store/apiError";
+import { countries } from "@/lib/countries";
 import {
   useListSavedProductsQuery,
   useToggleSavedProductMutation,
@@ -19,15 +26,158 @@ const statusStyles: Record<string, string> = {
   CANCELLED: "bg-[#e5e5e5] text-[#666]",
 };
 
+const inputClass =
+  "w-full bg-white/70 border border-white/60 rounded-xl px-4 py-3 text-sm outline-none placeholder:text-[#16241a]/35 focus:border-[#8ab88e] transition-colors";
+
+function EditProfileModal({
+  onClose,
+  currentName,
+  currentEmail,
+  currentCountry,
+}: {
+  onClose: () => void;
+  currentName: string;
+  currentEmail: string;
+  currentCountry: string | null;
+}) {
+  const { updateProfile, updatingProfile: saving } = useUserAuth();
+  const [name, setName] = useState(currentName);
+  const [email, setEmail] = useState(currentEmail);
+  const [country, setCountry] = useState(currentCountry ?? "NG");
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    try {
+      await updateProfile({ name, email, country });
+      toast.success("Profile updated");
+      onClose();
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, "Couldn't update your profile. Please try again."));
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-5">
+      <GlassCard className="max-w-sm w-full py-8 px-6">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-lg font-semibold">Edit Profile</h2>
+          <button onClick={onClose} aria-label="Close">
+            <X size={18} />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <input
+            required
+            placeholder="Full name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className={inputClass}
+          />
+          <input
+            required
+            type="email"
+            placeholder="Email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={inputClass}
+          />
+          <select value={country} onChange={(e) => setCountry(e.target.value)} className={inputClass}>
+            {countries.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+          <button
+            type="submit"
+            disabled={saving}
+            className="mt-2 bg-[#16241a] text-white text-sm font-semibold px-6 py-3 rounded-full hover:bg-[#233324] transition-colors disabled:opacity-60"
+          >
+            {saving ? "Saving…" : "Save Changes"}
+          </button>
+        </form>
+      </GlassCard>
+    </div>
+  );
+}
+
+function ChangePasswordModal({ onClose }: { onClose: () => void }) {
+  const { changePassword, changingPassword: saving } = useUserAuth();
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    try {
+      await changePassword(currentPassword, newPassword);
+      toast.success("Password updated");
+      onClose();
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, "Couldn't update your password. Please try again."));
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-5">
+      <GlassCard className="max-w-sm w-full py-8 px-6">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-lg font-semibold">Change Password</h2>
+          <button onClick={onClose} aria-label="Close">
+            <X size={18} />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <PasswordInput
+            required
+            placeholder="Current password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            className={inputClass}
+            autoComplete="current-password"
+          />
+          <PasswordInput
+            required
+            minLength={8}
+            placeholder="New password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            className={inputClass}
+            autoComplete="new-password"
+          />
+          <button
+            type="submit"
+            disabled={saving}
+            className="mt-2 bg-[#16241a] text-white text-sm font-semibold px-6 py-3 rounded-full hover:bg-[#233324] transition-colors disabled:opacity-60"
+          >
+            {saving ? "Updating…" : "Update Password"}
+          </button>
+        </form>
+      </GlassCard>
+    </div>
+  );
+}
+
 export default function AccountPage() {
+  const router = useRouter();
   const { user, loading, logout } = useUserAuth();
+  const { format: formatPrice } = useCurrencyDisplay();
   const { data: savedProducts = [] } = useListSavedProductsQuery(undefined, {
     skip: !isApiConfigured() || !user,
   });
-  const [toggleSavedProduct] = useToggleSavedProductMutation();
+  const [toggleSavedProduct, { isLoading: togglingSaved, originalArgs: togglingSavedArgs }] =
+    useToggleSavedProductMutation();
   const { data: myOrders = [] } = useListMyOrdersQuery(undefined, {
     skip: !isApiConfigured() || !user,
   });
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
+
+  const confirmLogout = () => {
+    setShowLogoutConfirm(false);
+    logout();
+    router.push("/");
+  };
 
   if (loading) {
     return (
@@ -75,13 +225,29 @@ export default function AccountPage() {
                 </p>
               )}
             </div>
-            <button
-              onClick={logout}
-              className="flex items-center gap-2 text-sm font-medium text-[#16241a]/60 hover:text-[#16241a] transition-colors"
-            >
-              <LogOut size={15} />
-              Sign Out
-            </button>
+            <div className="flex items-center gap-4 flex-wrap">
+              <button
+                onClick={() => setShowEditProfile(true)}
+                className="flex items-center gap-2 text-sm font-medium text-[#16241a]/60 hover:text-[#16241a] transition-colors"
+              >
+                <Pencil size={14} />
+                Edit Profile
+              </button>
+              <button
+                onClick={() => setShowChangePassword(true)}
+                className="flex items-center gap-2 text-sm font-medium text-[#16241a]/60 hover:text-[#16241a] transition-colors"
+              >
+                <KeyRound size={14} />
+                Change Password
+              </button>
+              <button
+                onClick={() => setShowLogoutConfirm(true)}
+                className="flex items-center gap-2 text-sm font-medium text-[#16241a]/60 hover:text-[#16241a] transition-colors"
+              >
+                <LogOut size={15} />
+                Sign Out
+              </button>
+            </div>
           </GlassCard>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -167,12 +333,13 @@ export default function AccountPage() {
                             {product.name}
                           </p>
                         </Link>
-                        <p className="text-xs text-[#16241a]/50">${product.price.toFixed(2)}</p>
+                        <p className="text-xs text-[#16241a]/50">{formatPrice(product.price)}</p>
                       </div>
                       <button
                         onClick={() => toggleSavedProduct({ slug: product.slug })}
+                        disabled={togglingSaved && togglingSavedArgs?.slug === product.slug}
                         aria-label="Remove from saved products"
-                        className="w-7 h-7 rounded-full bg-white/60 flex items-center justify-center flex-shrink-0 hover:bg-white transition-colors"
+                        className="w-7 h-7 rounded-full bg-white/60 flex items-center justify-center flex-shrink-0 hover:bg-white transition-colors disabled:opacity-60"
                       >
                         <X size={12} />
                       </button>
@@ -184,6 +351,47 @@ export default function AccountPage() {
           </div>
         </div>
       </section>
+
+      {showEditProfile && (
+        <EditProfileModal
+          onClose={() => setShowEditProfile(false)}
+          currentName={user.name}
+          currentEmail={user.email}
+          currentCountry={user.country}
+        />
+      )}
+
+      {showChangePassword && (
+        <ChangePasswordModal onClose={() => setShowChangePassword(false)} />
+      )}
+
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-5">
+          <GlassCard className="max-w-sm w-full text-center py-8 px-6">
+            <div className="w-12 h-12 rounded-full bg-white/70 flex items-center justify-center mx-auto mb-4">
+              <LogOut size={18} className="text-[#c0574c]" />
+            </div>
+            <h2 className="text-lg font-semibold mb-2">Sign out?</h2>
+            <p className="text-sm text-[#16241a]/50 mb-6">
+              You&apos;ll need to sign in again to view your orders and saved products.
+            </p>
+            <div className="flex items-center justify-center gap-3">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="text-sm font-semibold border border-[#16241a]/20 text-[#16241a] px-6 py-2.5 rounded-full hover:bg-[#16241a]/5 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmLogout}
+                className="text-sm font-semibold bg-[#c0574c] text-white px-6 py-2.5 rounded-full hover:bg-[#a84740] transition-colors"
+              >
+                Sign Out
+              </button>
+            </div>
+          </GlassCard>
+        </div>
+      )}
     </main>
   );
 }

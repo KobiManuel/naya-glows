@@ -37,6 +37,12 @@ const Main = (props: Props) => {
       <ProductSpotlightSection />
       <SignatureShowcaseSection />
       <BestSellersSection />
+      <ImageShowcaseSection
+        image="https://res.cloudinary.com/bhozkz7o/image/upload/v1785160476/naya-glows/recent/customer-ugc-testimonial-scrub.jpg"
+        eyebrow="Naya Glows"
+        heading="This is what consistency looks like."
+        subtext="One more glimpse from the people already living the Naya routine."
+      />
       <TestimonialsSection />
       <VideoShowcaseSection
         src="https://res.cloudinary.com/bhozkz7o/video/upload/v1785160487/naya-glows/recent/customer-testimonial-video.mov"
@@ -44,12 +50,6 @@ const Main = (props: Props) => {
         eyebrow="In Their Words"
         heading="Real customers, real routines, real glow."
         subtext="No script, no filter — just what happens when Naya becomes part of your routine."
-      />
-      <ImageShowcaseSection
-        image="https://res.cloudinary.com/bhozkz7o/image/upload/v1785160476/naya-glows/recent/customer-ugc-testimonial-scrub.jpg"
-        eyebrow="Naya Glows"
-        heading="This is what consistency looks like."
-        subtext="One more glimpse from the people already living the Naya routine."
       />
       <InfluencerSection />
       <CategoriesSection />

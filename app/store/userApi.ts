@@ -106,6 +106,34 @@ export const userApi = createApi({
       query: () => "/auth/me",
       providesTags: ["Me"],
     }),
+    updateProfile: builder.mutation<
+      { user: AuthUser },
+      { name?: string; email?: string; country?: string }
+    >({
+      query: (body) => ({ url: "/auth/me", method: "PATCH", body }),
+      invalidatesTags: ["Me"],
+    }),
+    changePassword: builder.mutation<
+      { ok: boolean },
+      { currentPassword: string; newPassword: string }
+    >({
+      query: (body) => ({ url: "/auth/me/password", method: "PATCH", body }),
+    }),
+    requestPasswordReset: builder.mutation<{ sent: boolean }, { email: string }>({
+      query: (body) => ({ url: "/auth/password-reset/request", method: "POST", body }),
+    }),
+    confirmPasswordReset: builder.mutation<
+      { ok: boolean },
+      { email: string; otpCode: string; newPassword: string }
+    >({
+      query: (body) => ({ url: "/auth/password-reset/confirm", method: "POST", body }),
+    }),
+    // Mirrors the signed-in customer's cart server-side purely so the
+    // backend can notice an abandoned one and send a reminder — see
+    // StoreHydrator.tsx, which calls this whenever the cart changes.
+    syncCart: builder.mutation<{ ok: boolean }, { items: { slug: string; name: string; qty: number }[] }>({
+      query: (body) => ({ url: "/cart", method: "PUT", body }),
+    }),
     createOrder: builder.mutation<
       { order: { id: string } },
       {
@@ -246,6 +274,11 @@ export const {
   useRegisterMutation,
   useLoginMutation,
   useGetMeQuery,
+  useUpdateProfileMutation,
+  useChangePasswordMutation,
+  useRequestPasswordResetMutation,
+  useConfirmPasswordResetMutation,
+  useSyncCartMutation,
   useCreateOrderMutation,
   useListMyOrdersQuery,
   useUpgradeInfluencerMutation,

@@ -1,14 +1,16 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Search, Heart, ShoppingBag, Check, Sparkles, Droplet } from "lucide-react";
-import { skincareCategories, type Product, type ProductCategory } from "@/lib/products";
+import { isInStock, skincareCategories, type Product, type ProductCategory } from "@/lib/products";
 import { useCart } from "../../store/cartSlice";
 import { triggerCartFly } from "../../store/cartFlyBus";
 import { useUserAuth } from "../../store/useUserAuth";
+import { useCurrencyDisplay } from "../../store/useCurrencyDisplay";
 import { useListSavedProductsQuery, useToggleSavedProductMutation } from "../../store/userApi";
 import { isApiConfigured } from "@/lib/api";
 import { useSectionContent } from "../../store/useSectionContent";
@@ -20,18 +22,81 @@ import { AppHomeScreen, ProductDetailScreen } from "../helpers/glass/PhoneScreen
 type FilterValue = "All" | ProductCategory;
 type Collection = "Skincare" | "Scent";
 
-export default function CatalogClient({ products }: { products: Product[] }) {
+// Matches the short slugs already linked from Footer.tsx (?category=serums
+// etc.) plus "scent" for the top-level Scent collection — the single source
+// of truth for every /catalog?category=... link anywhere in the app.
+const CATEGORY_PARAM_TO_STATE: Record<string, { collection: Collection; filter: FilterValue }> = {
+  serums: { collection: "Skincare", filter: "Face Serums" },
+  creams: { collection: "Skincare", filter: "Face Creams" },
+  cleansers: { collection: "Skincare", filter: "Cleanse & Tone" },
+  body: { collection: "Skincare", filter: "Body Care" },
+  scent: { collection: "Scent", filter: "All" },
+};
+
+const FILTER_TO_CATEGORY_PARAM: Partial<Record<FilterValue, string>> = {
+  "Face Serums": "serums",
+  "Face Creams": "creams",
+  "Cleanse & Tone": "cleansers",
+  "Body Care": "body",
+};
+
+function CatalogClientInner({ products }: { products: Product[] }) {
   const heroContent = useSectionContent("catalog.hero", defaultCatalogHeroContent);
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [collection, setCollection] = useState<Collection>("Skincare");
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<FilterValue>("All");
   const [justAdded, setJustAdded] = useState<string | null>(null);
+
+  // Reacts to both the initial load AND any later client-side navigation to
+  // /catalog?category=... (e.g. a Footer link clicked while already here) —
+  // useSearchParams' value changes without a full remount in that case.
+  useEffect(() => {
+    const categoryParam = searchParams.get("category")?.toLowerCase();
+    if (!categoryParam) return;
+    const mapped = CATEGORY_PARAM_TO_STATE[categoryParam];
+    if (mapped) {
+      setCollection(mapped.collection);
+      setFilter(mapped.filter);
+    }
+  }, [searchParams]);
+
+  // Keeps the URL in sync with whatever's selected so every /catalog
+  // collection/filter state is a real, shareable, back-button-friendly link
+  // — not just an incoming-link concern.
+  const syncCategoryParam = (nextCollection: Collection, nextFilter: FilterValue) => {
+    const params = new URLSearchParams(searchParams.toString());
+    const slug =
+      nextCollection === "Scent" ? "scent" : FILTER_TO_CATEGORY_PARAM[nextFilter];
+    if (slug) {
+      params.set("category", slug);
+    } else {
+      params.delete("category");
+    }
+    const qs = params.toString();
+    router.replace(qs ? `/catalog?${qs}` : "/catalog", { scroll: false });
+  };
+
+  const handleSetCollection = (next: Collection) => {
+    const nextFilter: FilterValue = next === "Scent" ? "All" : filter;
+    setCollection(next);
+    if (next === "Scent") setFilter("All");
+    syncCategoryParam(next, nextFilter);
+  };
+
+  const handleSetFilter = (next: FilterValue) => {
+    setFilter(next);
+    syncCategoryParam(collection, next);
+  };
   const { addItem } = useCart();
-  const { user } = useUserAuth();
+  const { user, loading: authLoading } = useUserAuth();
+  const { format: formatPrice } = useCurrencyDisplay();
   const { data: savedProducts } = useListSavedProductsQuery(undefined, {
     skip: !isApiConfigured() || !user,
   });
-  const [toggleSavedProduct] = useToggleSavedProductMutation();
+  const [toggleSavedProduct, { isLoading: togglingWishlist, originalArgs: wishlistArgs }] =
+    useToggleSavedProductMutation();
   const wishlist = useMemo(
     () => new Set((savedProducts ?? []).map((p) => p.slug)),
     [savedProducts],
@@ -49,6 +114,11 @@ export default function CatalogClient({ products }: { products: Product[] }) {
   }, [products, query, filter, isScent]);
 
   const toggleWishlist = (slug: string) => {
+    // Auth is still resolving on first load (token hydration + the /me
+    // request) — a real "not signed in" is only knowable once that settles,
+    // otherwise an actually-signed-in visitor can get a false "sign in
+    // first" toast if they click within that first moment.
+    if (authLoading) return;
     if (!user) {
       toast.error("Sign in to save favorites.");
       return;
@@ -59,6 +129,7 @@ export default function CatalogClient({ products }: { products: Product[] }) {
   };
 
   const handleAddToCart = (product: Product, sourceEl: HTMLElement) => {
+    if (!isInStock(product)) return;
     addItem(product);
     triggerCartFly(product.image, sourceEl);
     setJustAdded(product.slug);
@@ -82,7 +153,7 @@ export default function CatalogClient({ products }: { products: Product[] }) {
                 }`}
             >
               <button
-                onClick={() => setCollection("Skincare")}
+                onClick={() => handleSetCollection("Skincare")}
                 className={`flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-full transition-colors ${!isScent
                     ? "bg-[#16241a] text-white"
                     : isScent
@@ -94,7 +165,7 @@ export default function CatalogClient({ products }: { products: Product[] }) {
                 {heroContent.skincareToggleLabel}
               </button>
               <button
-                onClick={() => setCollection("Scent")}
+                onClick={() => handleSetCollection("Scent")}
                 className={`flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-full transition-colors ${isScent ? "bg-white text-[#0e0e0e]" : "text-[#16241a]/60 hover:text-[#16241a]"
                   }`}
               >
@@ -169,7 +240,7 @@ export default function CatalogClient({ products }: { products: Product[] }) {
             {(["All", ...skincareCategories] as FilterValue[]).map((c) => (
               <button
                 key={c}
-                onClick={() => setFilter(c)}
+                onClick={() => handleSetFilter(c)}
                 className={`flex-shrink-0 text-sm font-medium px-5 py-2.5 rounded-full transition-colors whitespace-nowrap ${filter === c
                     ? "bg-[#16241a] text-white"
                     : "bg-white/60 text-[#16241a]/70 hover:bg-white/90"
@@ -227,7 +298,9 @@ export default function CatalogClient({ products }: { products: Product[] }) {
                       src={product.image}
                       alt={product.name}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      className={`object-cover group-hover:scale-105 transition-transform duration-500 ${
+                        isInStock(product) ? "" : "grayscale opacity-70"
+                      }`}
                     />
                   </Link>
 
@@ -239,11 +312,18 @@ export default function CatalogClient({ products }: { products: Product[] }) {
                     {product.category}
                   </span>
 
+                  {!isInStock(product) && (
+                    <span className="absolute top-3 left-1/2 -translate-x-1/2 z-20 text-[9px] uppercase tracking-wide font-bold text-white bg-[#c0574c] px-3 py-1 rounded-full shadow-sm">
+                      Out of Stock
+                    </span>
+                  )}
+
                   {/* Wishlist */}
                   <button
                     onClick={() => toggleWishlist(product.slug)}
+                    disabled={togglingWishlist && wishlistArgs?.slug === product.slug}
                     aria-label="Toggle wishlist"
-                    className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/25 backdrop-blur-md border border-white/40 flex items-center justify-center hover:bg-white/40 transition-colors"
+                    className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/25 backdrop-blur-md border border-white/40 flex items-center justify-center hover:bg-white/40 transition-colors disabled:opacity-60"
                   >
                     <Heart
                       size={13}
@@ -271,19 +351,26 @@ export default function CatalogClient({ products }: { products: Product[] }) {
                     <div className="flex items-center justify-between">
                       <div>
                         <span className="text-sm font-bold text-white">
-                          {product.variants && product.variants.length > 0 ? "From " : ""}$
-                          {product.price.toFixed(2)}
+                          {product.variants && product.variants.length > 0 ? "From " : ""}
+                          {formatPrice(product.price)}
                         </span>
                         {product.originalPrice > product.price && (
                           <>
                             {" "}
                             <span className="text-[11px] line-through text-white/45">
-                              ${product.originalPrice.toFixed(2)}
+                              {formatPrice(product.originalPrice)}
                             </span>
                           </>
                         )}
                       </div>
-                      {product.variants && product.variants.length > 0 ? (
+                      {!isInStock(product) ? (
+                        <span
+                          aria-label="Out of stock"
+                          className="w-9 h-9 rounded-full bg-white/30 backdrop-blur-md flex items-center justify-center cursor-not-allowed"
+                        >
+                          <ShoppingBag size={13} className="text-white/50" />
+                        </span>
+                      ) : product.variants && product.variants.length > 0 ? (
                         <Link
                           href={`/products/${product.slug}`}
                           aria-label="Choose a size"
@@ -313,5 +400,13 @@ export default function CatalogClient({ products }: { products: Product[] }) {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function CatalogClient({ products }: { products: Product[] }) {
+  return (
+    <Suspense fallback={null}>
+      <CatalogClientInner products={products} />
+    </Suspense>
   );
 }

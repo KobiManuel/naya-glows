@@ -12,7 +12,7 @@ import {
   useUploadImageMutation,
 } from "../../../store/adminApi";
 import { getApiErrorMessage } from "../../../store/apiError";
-import { categories, type Product } from "@/lib/products";
+import { categories, isInStock, type Product } from "@/lib/products";
 
 const inputClass =
   "w-full bg-white/70 border border-white/60 rounded-xl px-3.5 py-2.5 text-sm outline-none placeholder:text-[#16241a]/35 focus:border-[#8ab88e] transition-colors";
@@ -29,14 +29,21 @@ const emptyForm: Omit<Product, "categoryAccent"> & { categoryAccent: string } = 
   description: "",
   benefits: [],
   variants: [],
+  inStock: true,
 };
 
 export default function AdminProductsPage() {
   const { data: products, isLoading } = useListProductsQuery();
-  const [createProduct] = useCreateProductMutation();
-  const [updateProduct] = useUpdateProductMutation();
-  const [deleteProduct] = useDeleteProductMutation();
+  const [createProduct, { isLoading: creating }] = useCreateProductMutation();
+  const [updateProduct, { isLoading: updating, originalArgs: updatingArgs }] =
+    useUpdateProductMutation();
+  // originalArgs (the slug the in-flight call was made with) is RTK Query's
+  // own way to tell *which* row's delete is pending — no separate useState
+  // needed to track that.
+  const [deleteProduct, { isLoading: deleting, originalArgs: deletingSlug }] =
+    useDeleteProductMutation();
   const [uploadImage, { isLoading: uploading }] = useUploadImageMutation();
+  const saving = creating || updating;
 
   const [editing, setEditing] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
@@ -54,10 +61,23 @@ export default function AdminProductsPage() {
 
   const openEdit = (product: Product) => {
     setEditing(product.slug);
-    setForm({ ...product, categoryAccent: product.categoryAccent || "", variants: product.variants ?? [] });
+    setForm({
+      ...product,
+      categoryAccent: product.categoryAccent || "",
+      variants: product.variants ?? [],
+      inStock: isInStock(product),
+    });
     setBenefitsText(product.benefits.join(", "));
     setError(null);
     setShowForm(true);
+  };
+
+  const toggleStock = async (product: Product) => {
+    try {
+      await updateProduct({ slug: product.slug, inStock: !isInStock(product) }).unwrap();
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, "Couldn't update stock status."));
+    }
   };
 
   const addVariantRow = () =>
@@ -160,6 +180,7 @@ export default function AdminProductsPage() {
                 <th className="p-4 font-medium">Product</th>
                 <th className="p-4 font-medium">Category</th>
                 <th className="p-4 font-medium">Price</th>
+                <th className="p-4 font-medium">Stock</th>
                 <th className="p-4 font-medium w-24">Actions</th>
               </tr>
             </thead>
@@ -179,6 +200,20 @@ export default function AdminProductsPage() {
                     {p.variants && p.variants.length > 0 ? "From " : ""}${p.price.toFixed(2)}
                   </td>
                   <td className="p-4">
+                    <button
+                      type="button"
+                      onClick={() => toggleStock(p)}
+                      disabled={updating && updatingArgs?.slug === p.slug}
+                      className={`text-[10px] font-semibold uppercase px-2.5 py-1 rounded-full transition-colors disabled:opacity-50 ${
+                        isInStock(p)
+                          ? "bg-[#d4e8d0] text-[#4f7957] hover:bg-[#c3ddbe]"
+                          : "bg-[#f5d9d5] text-[#c0574c] hover:bg-[#f0c6c0]"
+                      }`}
+                    >
+                      {isInStock(p) ? "In Stock" : "Out of Stock"}
+                    </button>
+                  </td>
+                  <td className="p-4">
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => openEdit(p)}
@@ -189,8 +224,9 @@ export default function AdminProductsPage() {
                       </button>
                       <button
                         onClick={() => handleDelete(p.slug)}
+                        disabled={deleting && deletingSlug === p.slug}
                         aria-label="Delete"
-                        className="w-7 h-7 rounded-full bg-white/70 flex items-center justify-center hover:bg-white"
+                        className="w-7 h-7 rounded-full bg-white/70 flex items-center justify-center hover:bg-white disabled:opacity-40"
                       >
                         <Trash2 size={12} />
                       </button>
@@ -280,6 +316,16 @@ export default function AdminProductsPage() {
                 Original Price is the pre-discount &quot;was&quot; price shown struck through on
                 the storefront — set it equal to Price if there&apos;s no discount.
               </p>
+
+              <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={form.inStock ?? true}
+                  onChange={(e) => setForm((f) => ({ ...f, inStock: e.target.checked }))}
+                  className="w-4 h-4 accent-[#4f7957]"
+                />
+                In stock
+              </label>
 
               <div>
                 <div className="flex items-center justify-between mb-1.5">
@@ -383,9 +429,10 @@ export default function AdminProductsPage() {
 
               <button
                 type="submit"
-                className="mt-2 bg-[#16241a] text-white text-sm font-semibold px-6 py-3 rounded-full"
+                disabled={saving}
+                className="mt-2 bg-[#16241a] text-white text-sm font-semibold px-6 py-3 rounded-full disabled:opacity-60"
               >
-                {editing ? "Save Changes" : "Create Product"}
+                {saving ? "Saving…" : editing ? "Save Changes" : "Create Product"}
               </button>
             </form>
           </div>

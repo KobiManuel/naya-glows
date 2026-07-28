@@ -37,3 +37,9 @@ export const { setCredentials, hydrateToken, clearAuth } = userAuthSlice.actions
 export default userAuthSlice.reducer;
 
 export const USER_TOKEN_KEY = "naya-glows-user-token";
+
+// The checkout page's "remember my shipping details" convenience prefill —
+// keyed here (not in checkout/page.tsx) so useUserAuth's logout can clear
+// it too. It holds PII (name, email, phone, address) tied to whoever last
+// checked out in this browser, so it must not survive a sign-out.
+export const SHIPPING_STORAGE_KEY = "naya-glows-shipping-details";

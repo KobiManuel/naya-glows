@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState, type FormEvent } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import GlassCard from "../helpers/glass/GlassCard";
 import PasswordInput from "../../components/PasswordInput";
@@ -29,12 +30,37 @@ function SignInForm() {
   const [referralCode, setReferralCode] = useState("");
   const [otpCode, setOtpCode] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [resending, setResending] = useState(false);
-  const { login, register, requestSignupOtp } = useUserAuth();
+  const {
+    user,
+    loading: authLoading,
+    login,
+    loggingIn,
+    register,
+    registering,
+    requestSignupOtp,
+    requestingSignupOtp,
+  } = useUserAuth();
+  // The submit button triggers exactly one of these three mutations
+  // depending on mode/step, and they never overlap in a single click, so
+  // OR-ing their individual isLoading flags gives one accurate "busy" signal
+  // without a separate useState to keep in sync.
+  const submitting = loggingIn || registering || requestingSignupOtp;
+  const resending = requestingSignupOtp;
   const router = useRouter();
 
   const backendReady = isApiConfigured();
+
+  // Already signed in — this page has nothing to offer, and letting a
+  // signed-in visitor sit on the sign-in/create-account form is confusing.
+  useEffect(() => {
+    if (authLoading || !user) return;
+    const redirect = searchParams.get("redirect");
+    if (redirect && redirect.startsWith("/")) {
+      router.replace(redirect);
+    } else {
+      router.replace(user.role === "INFLUENCER" ? "/influencer" : "/account");
+    }
+  }, [authLoading, user, router, searchParams]);
 
   // A referral link (e.g. shared by an influencer) looks like /signin?ref=CODE
   // — prefill it and default straight to the Create Account tab.
@@ -69,13 +95,10 @@ function SignInForm() {
 
   const handleResend = async () => {
     setError(null);
-    setResending(true);
     try {
       await requestSignupOtp(email);
     } catch (err) {
       setError(getApiErrorMessage(err));
-    } finally {
-      setResending(false);
     }
   };
 
@@ -90,7 +113,6 @@ function SignInForm() {
       return;
     }
 
-    setSubmitting(true);
     try {
       if (mode === "signin") {
         const user = await login(email, password);
@@ -115,12 +137,17 @@ function SignInForm() {
       redirectAfterAuth(user.role);
     } catch (err) {
       setError(getApiErrorMessage(err));
-    } finally {
-      setSubmitting(false);
     }
   };
 
   const showingOtpStep = mode === "create" && createStep === "otp";
+
+  // Loading (auth still resolving) or already signed in (the effect above
+  // is about to redirect away) — either way, the form has nothing useful
+  // to show right now.
+  if (authLoading || user) {
+    return <main className="bg-gradient-to-b from-[#eafbf0] to-[#f4faf3] min-h-screen" />;
+  }
 
   return (
     <main className="bg-gradient-to-b from-[#eafbf0] to-[#f4faf3] text-[#16241a] min-h-screen">
@@ -249,6 +276,14 @@ function SignInForm() {
                       minLength={8}
                       autoComplete={mode === "signin" ? "current-password" : "new-password"}
                     />
+                    {mode === "signin" && (
+                      <Link
+                        href="/forgot-password"
+                        className="text-xs font-medium text-[#16241a]/50 hover:text-[#16241a] transition-colors -mt-2 self-end"
+                      >
+                        Forgot password?
+                      </Link>
+                    )}
                     {mode === "create" && (
                       <select
                         required

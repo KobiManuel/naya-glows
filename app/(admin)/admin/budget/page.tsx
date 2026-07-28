@@ -42,7 +42,8 @@ export default function AdminBudgetPage() {
   const { data: summary, isLoading: summaryLoading } = useGetBudgetSummaryQuery();
   const { data: entries, isLoading: entriesLoading } = useListBudgetEntriesQuery();
   const [createEntry, { isLoading: creating }] = useCreateBudgetEntryMutation();
-  const [deleteEntry] = useDeleteBudgetEntryMutation();
+  const [deleteEntry, { isLoading: deleting, originalArgs: deletingId }] =
+    useDeleteBudgetEntryMutation();
 
   const [label, setLabel] = useState("");
   const [amount, setAmount] = useState("");
@@ -217,8 +218,9 @@ export default function AdminBudgetPage() {
                   <td className="p-4">
                     <button
                       onClick={() => handleDelete(entry.id)}
+                      disabled={deleting && deletingId === entry.id}
                       aria-label="Delete entry"
-                      className="w-7 h-7 rounded-full bg-white/60 flex items-center justify-center hover:bg-white transition-colors"
+                      className="w-7 h-7 rounded-full bg-white/60 flex items-center justify-center hover:bg-white transition-colors disabled:opacity-40"
                     >
                       <Trash2 size={12} />
                     </button>
