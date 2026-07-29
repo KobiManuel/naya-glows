@@ -33,7 +33,7 @@ export type MyOrderRow = {
   currency: string;
   total: number;
   createdAt: string;
-  items: { qty: number; isSubscription: boolean; product: { name: string } }[];
+  items: { qty: number; isSubscription: boolean; product: { name: string; image: string } }[];
 };
 
 const rawBaseQuery = fetchBaseQuery({

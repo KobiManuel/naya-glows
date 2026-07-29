@@ -1,21 +1,41 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type MouseEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { User, Package, Heart, LogOut, MapPin, X, Pencil, KeyRound } from "lucide-react";
+import {
+  User,
+  Package,
+  Heart,
+  LogOut,
+  MapPin,
+  X,
+  Pencil,
+  KeyRound,
+  Repeat,
+  Sparkles,
+  Truck,
+  ShoppingBag,
+  Megaphone,
+  ArrowUpRight,
+  Leaf,
+} from "lucide-react";
 import GlassCard from "../helpers/glass/GlassCard";
+import ProductGridCard from "../helpers/ProductGridCard";
 import PasswordInput from "../../components/PasswordInput";
 import { useUserAuth } from "../../store/useUserAuth";
 import { useCurrencyDisplay } from "../../store/useCurrencyDisplay";
+import { useCart } from "../../store/cartSlice";
+import { triggerCartFly } from "../../store/cartFlyBus";
 import { getApiErrorMessage } from "../../store/apiError";
 import { countries } from "@/lib/countries";
 import {
   useListSavedProductsQuery,
   useToggleSavedProductMutation,
   useListMyOrdersQuery,
+  useListMyProductSubscriptionsQuery,
 } from "../../store/userApi";
 import { isApiConfigured } from "@/lib/api";
 
@@ -25,6 +45,10 @@ const statusStyles: Record<string, string> = {
   FAILED: "bg-[#f5d9d5] text-[#c0574c]",
   CANCELLED: "bg-[#e5e5e5] text-[#666]",
 };
+
+// The "Pay Once, Save More" promo gradient every stat tile now shares — a
+// deliberately dark, single brand surface instead of one color per card.
+const darkGradient = "bg-gradient-to-br from-[#16241a] to-[#2d4530]";
 
 const inputClass =
   "w-full bg-white/70 border border-white/60 rounded-xl px-4 py-3 text-sm outline-none placeholder:text-[#16241a]/35 focus:border-[#8ab88e] transition-colors";
@@ -169,9 +193,21 @@ export default function AccountPage() {
   const { data: myOrders = [] } = useListMyOrdersQuery(undefined, {
     skip: !isApiConfigured() || !user,
   });
+  const { data: mySubscriptions = [] } = useListMyProductSubscriptionsQuery(undefined, {
+    skip: !isApiConfigured() || !user,
+  });
+  const { addItem } = useCart();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [justAdded, setJustAdded] = useState<string | null>(null);
+
+  const handleAddSavedToCart = (product: (typeof savedProducts)[number], e: MouseEvent<HTMLButtonElement>) => {
+    addItem(product);
+    triggerCartFly(product.image, e.currentTarget);
+    setJustAdded(product.slug);
+    setTimeout(() => setJustAdded(null), 1400);
+  };
 
   // Optimistic — the item disappears from this list instantly (see
   // toggleSavedProduct's onQueryStarted in userApi.ts), rolled back
@@ -219,21 +255,34 @@ export default function AccountPage() {
     );
   }
 
+  const countryName = countries.find((c) => c.code === user.country)?.name ?? user.country;
+  const memberSinceYear = new Date(user.createdAt).getFullYear();
+
+  const quickLinks = [
+    { label: "Track Order", icon: Truck, href: "/track-order" },
+    { label: "Shop Catalog", icon: ShoppingBag, href: "/catalog" },
+    { label: "Subscribe & Save Big", icon: Repeat, href: "/subscribe-save" },
+    user.role === "INFLUENCER"
+      ? { label: "Influencer Dashboard", icon: Megaphone, href: "/influencer" }
+      : { label: "Become an Influencer", icon: Megaphone, href: "/influencer/apply" },
+  ];
+
   return (
     <main className="bg-gradient-to-b from-[#eafbf0] to-[#f4faf3] text-[#16241a] min-h-screen">
       <section className="pt-32 sm:pt-36 pb-24 px-5 sm:px-8 lg:px-12">
         <div className="max-w-[900px] mx-auto">
-          <GlassCard className="px-5 py-8 sm:p-8 flex items-center gap-5 mb-8 flex-wrap">
-            <div className="w-16 h-16 rounded-full bg-[#16241a] flex items-center justify-center flex-shrink-0">
-              <User size={24} className="text-white" />
+          {/* Greeting header */}
+          <GlassCard className="px-5 py-8 sm:p-8 flex items-center gap-5 mb-6 flex-wrap">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#8ab88e] to-[#16241a] flex items-center justify-center flex-shrink-0 text-white text-xl font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]">
+              {user.name.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-lg font-semibold">{user.name}</p>
+              <p className="text-lg font-semibold">Hey, {user.name.split(" ")[0]}</p>
               <p className="text-sm text-[#16241a]/50">{user.email}</p>
               {user.country && (
                 <p className="text-xs text-[#6a9a72] flex items-center gap-1 mt-1">
                   <MapPin size={11} />
-                  {user.country} · {user.currency}
+                  {countryName} · {user.currency}
                 </p>
               )}
             </div>
@@ -262,6 +311,79 @@ export default function AccountPage() {
             </div>
           </GlassCard>
 
+          {/* Stat tiles — same dark brand gradient as the promo banner below */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+            {[
+              { label: "Orders", value: myOrders.length, icon: Package },
+              { label: "Saved Products", value: savedProducts.length, icon: Heart },
+              { label: "Reorder Discounts", value: mySubscriptions.length, icon: Repeat },
+              { label: "Member Since", value: memberSinceYear, icon: Sparkles },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className={`${darkGradient} rounded-2xl p-4 sm:p-5 flex flex-col justify-between min-h-[110px]`}
+              >
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center mb-3">
+                  <stat.icon size={14} className="text-white" />
+                </div>
+                <div>
+                  <p className="text-xl font-bold leading-none text-white">{stat.value}</p>
+                  <p className="text-xs text-white/50 mt-1.5">{stat.label}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Subscribe & Save Big promo banner — abstract leaf motif is what
+              sets this card apart from the stat tiles sharing its gradient */}
+          <Link
+            href="/subscribe-save"
+            className={`group relative overflow-hidden rounded-2xl ${darkGradient} px-6 py-7 sm:px-8 sm:py-8 mb-8 flex items-center justify-between gap-6 flex-wrap`}
+          >
+            <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-20 blur-2xl bg-[#aed4b4]" />
+            <Leaf
+              size={150}
+              strokeWidth={1}
+              className="absolute -bottom-10 -left-8 text-white/10 rotate-[25deg] pointer-events-none"
+            />
+            <Leaf
+              size={80}
+              strokeWidth={1}
+              className="absolute top-4 right-28 text-white/10 -rotate-[15deg] pointer-events-none hidden sm:block"
+            />
+            <div className="relative z-10 max-w-sm">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#8ab88e] mb-2">
+                Pay Once, Save More
+              </p>
+              <h2 className="text-white text-lg sm:text-xl font-semibold mb-1.5">
+                Subscribe &amp; Save Big
+              </h2>
+              <p className="text-white/60 text-sm leading-relaxed">
+                Commit to 3, 6, or 12 months upfront and unlock the biggest discount we offer.
+              </p>
+            </div>
+            <span className="relative z-10 flex items-center gap-2 bg-white text-[#16241a] text-sm font-semibold px-5 py-2.5 rounded-full flex-shrink-0 group-hover:gap-3 transition-all">
+              Explore Plans
+              <ArrowUpRight size={15} />
+            </span>
+          </Link>
+
+          {/* Quick links — glass pills, no per-item color */}
+          <div className="flex gap-3 overflow-x-auto hide-scrollbar mb-8 -mx-5 px-5 sm:mx-0 sm:px-0">
+            {quickLinks.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className="flex items-center gap-2.5 rounded-full pl-2 pr-4 py-2 flex-shrink-0 bg-white/50 backdrop-blur-md border border-white/60 shadow-[0_4px_16px_rgba(22,36,26,0.1)] hover:bg-white/70 transition-colors"
+              >
+                <span className="w-7 h-7 rounded-full bg-white/60 flex items-center justify-center flex-shrink-0">
+                  <link.icon size={13} className="text-[#4f7957]" />
+                </span>
+                <span className="text-xs font-semibold whitespace-nowrap">{link.label}</span>
+              </Link>
+            ))}
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <GlassCard className="px-5 py-8 sm:p-8">
               <div className="w-10 h-10 rounded-full bg-white/70 flex items-center justify-center mb-4">
@@ -281,30 +403,54 @@ export default function AccountPage() {
                   </Link>
                 </>
               ) : (
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-1">
                   {myOrders.map((order) => {
-                    const itemCount = order.items.reduce((sum, i) => sum + i.qty, 0);
+                    const stackItems = order.items.slice(0, 3);
+                    const overflowCount = order.items.length - stackItems.length;
                     return (
                       <Link
                         key={order.id}
                         href={`/track-order?id=${encodeURIComponent(order.id)}&email=${encodeURIComponent(user.email)}`}
-                        className="flex items-center justify-between gap-3 hover:opacity-80 transition-opacity"
+                        className="flex items-center gap-3 py-2 max-[350px]:flex-col max-[350px]:items-start max-[350px]:gap-2 hover:opacity-80 transition-opacity"
                       >
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium leading-snug">
-                            {itemCount} item(s) · {order.currency} {order.total.toLocaleString()}
-                          </p>
-                          <p className="text-xs text-[#16241a]/45">
-                            {new Date(order.createdAt).toLocaleDateString()}
-                          </p>
+                        <div className="flex items-center -space-x-3 flex-shrink-0">
+                          {stackItems.map((item, idx) => (
+                            <div
+                              key={idx}
+                              className="relative w-9 h-9 rounded-full ring-2 ring-[#f4faf3] bg-white overflow-hidden"
+                              style={{ zIndex: stackItems.length - idx }}
+                            >
+                              <Image
+                                src={item.product.image}
+                                alt={item.product.name}
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                          ))}
+                          {overflowCount > 0 && (
+                            <div className="relative w-9 h-9 rounded-full ring-2 ring-[#f4faf3] bg-[#16241a] text-white text-[10px] font-semibold flex items-center justify-center">
+                              +{overflowCount}
+                            </div>
+                          )}
                         </div>
-                        <span
-                          className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-full flex-shrink-0 ${
-                            statusStyles[order.status] ?? "bg-white/60 text-[#16241a]/60"
-                          }`}
-                        >
-                          {order.status}
-                        </span>
+                        <div className="flex items-center justify-between gap-3 min-w-0 flex-1 w-full">
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium leading-snug truncate">
+                              {order.currency} {order.total.toLocaleString()}
+                            </p>
+                            <p className="text-xs text-[#16241a]/45 truncate">
+                              {new Date(order.createdAt).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <span
+                            className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-full flex-shrink-0 ${
+                              statusStyles[order.status] ?? "bg-white/60 text-[#16241a]/60"
+                            }`}
+                          >
+                            {order.status}
+                          </span>
+                        </div>
                       </Link>
                     );
                   })}
@@ -330,32 +476,18 @@ export default function AccountPage() {
                   </Link>
                 </>
               ) : (
-                <div className="flex flex-col gap-3">
+                <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-1 sm:pb-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible">
                   {savedProducts.map((product) => (
-                    <div key={product.slug} className="flex items-center gap-3">
-                      <Link
-                        href={`/products/${product.slug}`}
-                        className="relative w-12 h-12 rounded-lg overflow-hidden bg-[#d4e8d0] flex-shrink-0"
-                      >
-                        <Image src={product.image} alt={product.name} fill className="object-cover" />
-                      </Link>
-                      <div className="flex-1 min-w-0">
-                        <Link href={`/products/${product.slug}`}>
-                          <p className="text-sm font-medium leading-snug line-clamp-1 hover:text-[#6a9a72] transition-colors">
-                            {product.name}
-                          </p>
-                        </Link>
-                        <p className="text-xs text-[#16241a]/50">{formatPrice(product.price)}</p>
-                      </div>
-                      <button
-                        onClick={() => handleUnsave(product.slug)}
-                        disabled={togglingSaved && togglingSavedArgs?.slug === product.slug}
-                        aria-label="Remove from saved products"
-                        className="w-7 h-7 rounded-full bg-white/60 flex items-center justify-center flex-shrink-0 hover:bg-white transition-colors disabled:opacity-60"
-                      >
-                        <X size={12} />
-                      </button>
-                    </div>
+                    <ProductGridCard
+                      key={product.slug}
+                      product={product}
+                      formatPrice={formatPrice}
+                      wishlisted
+                      onToggleWishlist={() => handleUnsave(product.slug)}
+                      wishlistDisabled={togglingSaved && togglingSavedArgs?.slug === product.slug}
+                      onAddToCart={(e) => handleAddSavedToCart(product, e)}
+                      justAdded={justAdded === product.slug}
+                    />
                   ))}
                 </div>
               )}

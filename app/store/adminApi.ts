@@ -76,7 +76,6 @@ export const TRACKING_STAGES = [
   { key: "PLACED", label: "Order Placed" },
   { key: "PROCESSING", label: "Processing" },
   { key: "DISPATCHED", label: "Dispatched" },
-  { key: "OUT_FOR_DELIVERY", label: "Out for Delivery" },
   { key: "DELIVERED", label: "Delivered" },
 ] as const;
 
