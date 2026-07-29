@@ -14,7 +14,11 @@ import { useSettings } from "./useSettings";
 export function useCurrencyDisplay() {
   const { user } = useUserAuth();
   const { usdToNgnRate } = useSettings();
-  const isNaira = user?.country === "NG";
+  // Naira is the default — a signed-out visitor or a signed-in account with
+  // no country on file has given no *positive* evidence of being anywhere
+  // else, so they get the business's real currency. USD only kicks in once
+  // an account's country is confirmed to be something other than Nigeria.
+  const isNaira = !user?.country || user.country === "NG";
 
   const format = (ngn: number) => {
     if (isNaira) {
