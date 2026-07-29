@@ -6,6 +6,7 @@ import { Minus, Plus, X, ShoppingBag } from "lucide-react";
 import { useCart, itemUnitPrice } from "../../store/cartSlice";
 import { useSettings } from "../../store/useSettings";
 import { useCurrencyDisplay } from "../../store/useCurrencyDisplay";
+import { FREE_SHIPPING_THRESHOLD_NGN, FLAT_SHIPPING_NGN } from "@/lib/products";
 import GlassCard from "../helpers/glass/GlassCard";
 
 export default function CartPage() {
@@ -121,14 +122,19 @@ export default function CartPage() {
                   <div className="flex items-center justify-between text-sm mb-5">
                     <span className="text-[#16241a]/60">Shipping</span>
                     <span className="font-semibold">
-                      {subtotal >= 75 ? "Free" : formatPrice(6)}
+                      {subtotal >= FREE_SHIPPING_THRESHOLD_NGN ? "Free" : formatPrice(FLAT_SHIPPING_NGN)}
                     </span>
                   </div>
                   <div className="w-full h-px bg-[#16241a]/10 mb-5" />
                   <div className="flex items-center justify-between text-base font-bold mb-6">
                     <span>Total</span>
                     <span>
-                      {formatPrice(subtotal + (subtotal >= 75 || subtotal === 0 ? 0 : 6))}
+                      {formatPrice(
+                        subtotal +
+                          (subtotal >= FREE_SHIPPING_THRESHOLD_NGN || subtotal === 0
+                            ? 0
+                            : FLAT_SHIPPING_NGN),
+                      )}
                     </span>
                   </div>
                   <Link

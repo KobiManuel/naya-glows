@@ -3,23 +3,24 @@
 import { useUserAuth } from "./useUserAuth";
 import { useSettings } from "./useSettings";
 
-// Every price everywhere in this app is stored/computed in USD — this is
+// Every price everywhere in this app is stored/computed in Naira — the
+// admin's real price list and what Paystack actually charges — so this is
 // the one place that decides how to *display* it: Nigeria-based accounts
 // (and signed-out visitors, since we can't know their location without an
-// account) see Naira converted at the admin-editable rate; everyone else
-// sees the raw USD figure. Orders are still always charged in NGN via
-// Paystack regardless (see orders.service.ts) — this only affects what's
-// shown on screen before checkout.
+// account) see the raw Naira figure; everyone else sees it converted to
+// USD at the admin-editable rate. Orders are still always charged in NGN
+// via Paystack regardless (see orders.service.ts) — this only affects
+// what's shown on screen before checkout.
 export function useCurrencyDisplay() {
   const { user } = useUserAuth();
   const { usdToNgnRate } = useSettings();
   const isNaira = user?.country === "NG";
 
-  const format = (usd: number) => {
+  const format = (ngn: number) => {
     if (isNaira) {
-      return `₦${Math.round(usd * usdToNgnRate).toLocaleString()}`;
+      return `₦${Math.round(ngn).toLocaleString()}`;
     }
-    return `$${usd.toFixed(2)}`;
+    return `$${(ngn / usdToNgnRate).toFixed(2)}`;
   };
 
   return { format, isNaira, usdToNgnRate };

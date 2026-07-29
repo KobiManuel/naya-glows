@@ -173,6 +173,18 @@ export default function AccountPage() {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
 
+  // Optimistic — the item disappears from this list instantly (see
+  // toggleSavedProduct's onQueryStarted in userApi.ts), rolled back
+  // automatically if the request fails; unwrap() here only catches that
+  // failure to toast it.
+  const handleUnsave = async (slug: string) => {
+    try {
+      await toggleSavedProduct({ slug }).unwrap();
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, "Couldn't update your saved products. Please try again."));
+    }
+  };
+
   const confirmLogout = () => {
     setShowLogoutConfirm(false);
     logout();
@@ -336,7 +348,7 @@ export default function AccountPage() {
                         <p className="text-xs text-[#16241a]/50">{formatPrice(product.price)}</p>
                       </div>
                       <button
-                        onClick={() => toggleSavedProduct({ slug: product.slug })}
+                        onClick={() => handleUnsave(product.slug)}
                         disabled={togglingSaved && togglingSavedArgs?.slug === product.slug}
                         aria-label="Remove from saved products"
                         className="w-7 h-7 rounded-full bg-white/60 flex items-center justify-center flex-shrink-0 hover:bg-white transition-colors disabled:opacity-60"

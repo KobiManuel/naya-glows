@@ -72,7 +72,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Naya Glows | Radiance-Boosting Skincare",
-    description: "Clean, potent skincare for brighter, healthier skin. Free shipping on orders $75+",
+    description: "Clean, potent skincare for brighter, healthier skin. Free shipping on orders ₦120,000+",
     images: ["https://res.cloudinary.com/bhozkz7o/image/upload/v1784381893/naya-glows/legacy/naya-radiance-body-scrub-in-focu.png"],
     creator: "@nayaglows",
     site: "@nayaglows",

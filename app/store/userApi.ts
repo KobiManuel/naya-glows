@@ -257,8 +257,31 @@ export const userApi = createApi({
     >({
       query: () => "/settings/public",
     }),
-    toggleSavedProduct: builder.mutation<{ saved: boolean }, { slug: string }>({
-      query: (body) => ({ url: "/saved-products/toggle", method: "POST", body }),
+    // `product` (the full row to show immediately if this is a *save*, not
+    // an unsave) never leaves the client — only `slug` is sent to the
+    // server. Optimistic: the heart/saved-list updates the instant it's
+    // clicked, via a direct cache patch; if the request fails, the patch is
+    // rolled back so the like effect disappears again instead of lying
+    // about the actual saved state.
+    toggleSavedProduct: builder.mutation<{ saved: boolean }, { slug: string; product?: Product }>({
+      query: ({ slug }) => ({ url: "/saved-products/toggle", method: "POST", body: { slug } }),
+      async onQueryStarted({ slug, product }, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          userApi.util.updateQueryData("listSavedProducts", undefined, (draft) => {
+            const idx = draft.findIndex((p) => p.slug === slug);
+            if (idx >= 0) {
+              draft.splice(idx, 1);
+            } else if (product) {
+              draft.push(product);
+            }
+          }),
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
       invalidatesTags: [{ type: "SavedProducts", id: "LIST" }],
     }),
     listSavedProducts: builder.query<Product[], void>({

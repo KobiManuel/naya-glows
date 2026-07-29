@@ -113,7 +113,7 @@ function CatalogClientInner({ products }: { products: Product[] }) {
     });
   }, [products, query, filter, isScent]);
 
-  const toggleWishlist = (slug: string) => {
+  const toggleWishlist = async (product: Product) => {
     // Auth is still resolving on first load (token hydration + the /me
     // request) — a real "not signed in" is only knowable once that settles,
     // otherwise an actually-signed-in visitor can get a false "sign in
@@ -123,9 +123,15 @@ function CatalogClientInner({ products }: { products: Product[] }) {
       toast.error("Sign in to save favorites.");
       return;
     }
-    toggleSavedProduct({ slug }).catch(() => {
+    // Optimistic — the heart/saved-list flips instantly (see
+    // toggleSavedProduct's onQueryStarted in userApi.ts), and unwraps here
+    // only to catch a real failure and toast it; the cache patch itself is
+    // already rolled back automatically in that case.
+    try {
+      await toggleSavedProduct({ slug: product.slug, product }).unwrap();
+    } catch {
       toast.error("Couldn't update your saved products. Please try again.");
-    });
+    }
   };
 
   const handleAddToCart = (product: Product, sourceEl: HTMLElement) => {
@@ -320,7 +326,7 @@ function CatalogClientInner({ products }: { products: Product[] }) {
 
                   {/* Wishlist */}
                   <button
-                    onClick={() => toggleWishlist(product.slug)}
+                    onClick={() => toggleWishlist(product)}
                     disabled={togglingWishlist && wishlistArgs?.slug === product.slug}
                     aria-label="Toggle wishlist"
                     className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/25 backdrop-blur-md border border-white/40 flex items-center justify-center hover:bg-white/40 transition-colors disabled:opacity-60"

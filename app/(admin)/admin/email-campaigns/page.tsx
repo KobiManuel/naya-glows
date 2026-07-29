@@ -44,8 +44,22 @@ export default function AdminEmailCampaignsPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      await sendCampaign({ subject, message, imageUrls: imageUrls.length > 0 ? imageUrls : undefined }).unwrap();
-      toast.success(`Campaign sent to ${recipientCount} subscriber(s).`);
+      const { sentCount, failedCount } = await sendCampaign({
+        subject,
+        message,
+        imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
+      }).unwrap();
+      if (failedCount === 0) {
+        toast.success(`Campaign sent to ${sentCount} subscriber(s).`);
+      } else if (sentCount === 0) {
+        toast.error(
+          `Campaign failed to send to all ${failedCount} subscriber(s) — check the email provider configuration.`,
+        );
+      } else {
+        toast.error(
+          `Sent to ${sentCount} subscriber(s), but failed for ${failedCount} — check server logs.`,
+        );
+      }
       setSubject("");
       setMessage("");
       setImageUrls([]);
@@ -110,17 +124,27 @@ export default function AdminEmailCampaignsPage() {
                 ))}
               </div>
             )}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) handleUpload(file);
-                e.target.value = "";
-              }}
-              className="text-xs"
-            />
-            {uploading && <span className="text-xs text-[#16241a]/40 ml-2">Uploading…</span>}
+            <label
+              className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-full border transition-all active:scale-95 ${
+                uploading
+                  ? "bg-white/40 border-white/60 text-[#16241a]/40 cursor-not-allowed"
+                  : "bg-white/70 border-white/60 text-[#16241a] cursor-pointer hover:bg-white hover:border-[#8ab88e]"
+              }`}
+            >
+              <Upload size={12} />
+              {uploading ? "Uploading…" : "Choose image"}
+              <input
+                type="file"
+                accept="image/*"
+                disabled={uploading}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleUpload(file);
+                  e.target.value = "";
+                }}
+                className="hidden"
+              />
+            </label>
           </div>
           <button
             type="submit"

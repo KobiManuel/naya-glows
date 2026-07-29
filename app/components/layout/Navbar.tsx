@@ -8,6 +8,8 @@ import { motion, AnimatePresence, useAnimationControls } from "framer-motion";
 import { CART_LANDED_EVENT } from "../../store/cartFlyBus";
 import { useCart } from "../../store/cartSlice";
 import { useUserAuth } from "../../store/useUserAuth";
+import { useCurrencyDisplay } from "../../store/useCurrencyDisplay";
+import { FREE_SHIPPING_THRESHOLD_NGN } from "@/lib/products";
 import {
   Search,
   User,
@@ -141,6 +143,7 @@ export default function Navbar() {
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { itemCount } = useCart();
   const { user } = useUserAuth();
+  const { format: formatPrice } = useCurrencyDisplay();
   const cartIconControls = useAnimationControls();
 
   useEffect(() => {
@@ -188,7 +191,7 @@ export default function Navbar() {
     <>
       {/* Announcement bar */}
       <div className="w-full bg-[#1a1a1a] text-white text-center text-xs max-[800px]:text-[9px] tracking-[0.18em] uppercase py-2 font-light">
-        Free shipping on orders over $75 &nbsp;·&nbsp; Use code{" "}
+        Free shipping on orders over {formatPrice(FREE_SHIPPING_THRESHOLD_NGN)} &nbsp;·&nbsp; Use code{" "}
         <span className="font-medium">GLOW15</span> for 15% off your first order
       </div>
 

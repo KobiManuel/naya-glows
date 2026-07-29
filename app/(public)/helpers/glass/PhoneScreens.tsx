@@ -1,10 +1,14 @@
+"use client";
+
 import Image from "next/image";
 import { products, categories } from "@/lib/products";
+import { useCurrencyDisplay } from "../../../store/useCurrencyDisplay";
 import { Search, SlidersHorizontal, Heart, Home, User, ShoppingBag } from "lucide-react";
 
 const homeItems = products.slice(0, 4);
 
 export function AppHomeScreen() {
+  const { format: formatPrice } = useCurrencyDisplay();
   return (
     <div className="w-full h-full flex flex-col bg-gradient-to-b from-[#eafbf0] to-[#dcefe0] px-3 pt-8 pb-2 text-[#16241a]">
       {/* Greeting bar */}
@@ -61,7 +65,7 @@ export function AppHomeScreen() {
               <p className="text-[6.5px] font-semibold text-white leading-tight line-clamp-1 mb-0.5">
                 {p.name}
               </p>
-              <p className="text-[7.5px] font-bold text-white">${p.price.toFixed(2)}</p>
+              <p className="text-[7.5px] font-bold text-white">{formatPrice(p.price)}</p>
             </div>
           </div>
         ))}
@@ -79,6 +83,7 @@ export function AppHomeScreen() {
 }
 
 export function ProductDetailScreen() {
+  const { format: formatPrice } = useCurrencyDisplay();
   const product = products[0];
   return (
     <div className="w-full h-full flex flex-col bg-[#16241a] text-[#16241a]">
@@ -111,7 +116,7 @@ export function ProductDetailScreen() {
             </span>
           </div>
           <span className="text-[10px] font-semibold text-[#4f7957]">
-            ${product.price.toFixed(2)}
+            {formatPrice(product.price)}
           </span>
         </div>
 

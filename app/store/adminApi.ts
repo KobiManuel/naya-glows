@@ -282,11 +282,10 @@ export const adminApi = createApi({
       providesTags: [{ type: "EmailCampaign", id: "LIST" }],
     }),
     sendEmailCampaign: builder.mutation<
-      EmailCampaignRow,
+      { campaign: EmailCampaignRow; sentCount: number; failedCount: number },
       { subject: string; message: string; imageUrls?: string[] }
     >({
       query: (body) => ({ url: "/admin/email-campaigns/send", method: "POST", body }),
-      transformResponse: (res: { campaign: EmailCampaignRow }) => res.campaign,
       invalidatesTags: [{ type: "EmailCampaign", id: "LIST" }],
     }),
 

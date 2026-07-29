@@ -15,6 +15,7 @@ import GlassCard from "../helpers/glass/GlassCard";
 import { useCreateOrderMutation, useInitializePaymentMutation } from "../../store/userApi";
 import { getApiErrorMessage } from "../../store/apiError";
 import { isApiConfigured } from "@/lib/api";
+import { FREE_SHIPPING_THRESHOLD_NGN, FLAT_SHIPPING_NGN } from "@/lib/products";
 
 // Paystack's Inline JS SDK — opens its own modal/iframe on top of the page
 // instead of redirecting away, so the customer never leaves the site.
@@ -66,7 +67,7 @@ export default function CheckoutPage() {
   const { format: formatPrice } = useCurrencyDisplay();
   const { user, loading: authLoading } = useUserAuth();
   const [form, setForm] = useState<ShippingForm>(emptyForm);
-  const shipping = subtotal >= 75 || subtotal === 0 ? 0 : 6;
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD_NGN || subtotal === 0 ? 0 : FLAT_SHIPPING_NGN;
   const backendReady = isApiConfigured();
   const [paystackReady, setPaystackReady] = useState(false);
   const [openingPopup, setOpeningPopup] = useState(false);
@@ -329,7 +330,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex items-center justify-between text-sm mb-5">
                   <span className="text-[#16241a]/60">Shipping</span>
-                  <span className="font-semibold">{shipping === 0 ? "Free" : formatPrice(6)}</span>
+                  <span className="font-semibold">{shipping === 0 ? "Free" : formatPrice(FLAT_SHIPPING_NGN)}</span>
                 </div>
                 <div className="w-full h-px bg-[#16241a]/10 mb-5" />
                 <div className="flex items-center justify-between text-base font-bold mb-6">

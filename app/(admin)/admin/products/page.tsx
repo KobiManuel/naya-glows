@@ -197,7 +197,8 @@ export default function AdminProductsPage() {
                   </td>
                   <td className="p-4 text-[#16241a]/60">{p.category}</td>
                   <td className="p-4">
-                    {p.variants && p.variants.length > 0 ? "From " : ""}${p.price.toFixed(2)}
+                    {p.variants && p.variants.length > 0 ? "From " : ""}₦
+                    {p.price.toLocaleString()}
                   </td>
                   <td className="p-4">
                     <button
@@ -283,12 +284,13 @@ export default function AdminProductsPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wide text-[#16241a]/50 mb-1.5">
-                    Price ($)
+                    Price (₦)
                   </label>
                   <input
                     required
                     type="number"
-                    step="0.01"
+                    step="1"
+                    min="0"
                     placeholder="Price"
                     value={form.price || ""}
                     onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))}
@@ -297,12 +299,13 @@ export default function AdminProductsPage() {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wide text-[#16241a]/50 mb-1.5">
-                    Original Price ($)
+                    Original Price (₦)
                   </label>
                   <input
                     required
                     type="number"
-                    step="0.01"
+                    step="1"
+                    min="0"
                     placeholder="Original price"
                     value={form.originalPrice || ""}
                     onChange={(e) =>
@@ -313,8 +316,10 @@ export default function AdminProductsPage() {
                 </div>
               </div>
               <p className="text-xs text-[#16241a]/40 -mt-1">
-                Original Price is the pre-discount &quot;was&quot; price shown struck through on
-                the storefront — set it equal to Price if there&apos;s no discount.
+                Prices are in Naira — this is what Paystack actually charges. USD is shown to
+                non-Nigeria visitors only, converted at the rate set in Settings, purely for
+                display. Original Price is the pre-discount &quot;was&quot; price shown struck
+                through on the storefront — set it equal to Price if there&apos;s no discount.
               </p>
 
               <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
@@ -356,8 +361,9 @@ export default function AdminProductsPage() {
                         />
                         <input
                           type="number"
-                          step="0.01"
-                          placeholder="Price ($)"
+                          step="1"
+                          min="0"
+                          placeholder="Price (₦)"
                           value={variant.price || ""}
                           onChange={(e) => updateVariantRow(i, { price: Number(e.target.value) })}
                           className={`${inputClass} w-28`}
