@@ -9,6 +9,9 @@ import { useCart } from "../../../store/cartSlice";
 import { useSettings } from "../../../store/useSettings";
 import { useCurrencyDisplay } from "../../../store/useCurrencyDisplay";
 import { triggerCartFly } from "../../../store/cartFlyBus";
+import { useUserAuth } from "../../../store/useUserAuth";
+import { useListMyProductSubscriptionsQuery } from "../../../store/userApi";
+import { isApiConfigured } from "@/lib/api";
 import GlassCard from "../../helpers/glass/GlassCard";
 
 export default function ProductDetailClient({
@@ -24,18 +27,31 @@ export default function ProductDetailClient({
   );
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
-  const [isSubscription, setIsSubscription] = useState(false);
+  // Intent to enroll in the reorder-discount program on THIS purchase —
+  // only meaningful the very first time (see mySubscription below); once
+  // unlocked, there's nothing left to opt into and this is ignored.
+  const [subscribeIntent, setSubscribeIntent] = useState(false);
   const { addItem } = useCart();
   const { subscriptionDiscountPercent } = useSettings();
   const { format: formatPrice } = useCurrencyDisplay();
+  const { user } = useUserAuth();
+  const { data: mySubscriptions } = useListMyProductSubscriptionsQuery(undefined, {
+    skip: !isApiConfigured() || !user,
+  });
+  const mySubscription = mySubscriptions?.find((s) => s.product.slug === product.slug);
 
   const activePrice = selectedVariant ? selectedVariant.price : product.price;
-  const subscriptionPrice = activePrice * (1 - subscriptionDiscountPercent / 100);
+  // Once unlocked, every reorder is automatically discounted server-side
+  // (see orders.service.ts) — shown here too so the price on this page
+  // already matches what checkout will actually charge.
+  const displayPrice = mySubscription
+    ? activePrice * (1 - mySubscription.discountPercent / 100)
+    : activePrice;
   const inStock = isInStock(product);
 
   const handleAddToCart = (sourceEl: HTMLElement) => {
     if (!inStock) return;
-    addItem(product, qty, isSubscription, selectedVariant);
+    addItem(product, qty, subscribeIntent, selectedVariant);
     triggerCartFly(product.image, sourceEl);
     setAdded(true);
     setTimeout(() => setAdded(false), 1600);
@@ -84,12 +100,15 @@ export default function ProductDetailClient({
               </p>
 
               <div className="flex items-center gap-3 mb-3">
-                <span className="text-2xl font-bold">
-                  {formatPrice(isSubscription ? subscriptionPrice : activePrice)}
-                </span>
+                <span className="text-2xl font-bold">{formatPrice(displayPrice)}</span>
                 {product.originalPrice > activePrice && (
                   <span className="text-base line-through text-[#16241a]/30">
                     {formatPrice(product.originalPrice)}
+                  </span>
+                )}
+                {mySubscription && (
+                  <span className="text-[10px] font-semibold uppercase tracking-wide text-white bg-[#4f7957] px-2.5 py-1 rounded-full">
+                    {Math.round(mySubscription.discountPercent)}% reorder discount applied
                   </span>
                 )}
               </div>
@@ -114,24 +133,44 @@ export default function ProductDetailClient({
                 </div>
               )}
 
-              {/* Subscribe & save */}
-              <label className="flex items-start gap-3 bg-white/50 border border-white/60 rounded-2xl p-4 mb-8 cursor-pointer hover:bg-white/70 transition-colors">
-                <input
-                  type="checkbox"
-                  checked={isSubscription}
-                  onChange={(e) => setIsSubscription(e.target.checked)}
-                  className="mt-0.5 w-4 h-4 accent-[#4f7957] flex-shrink-0"
-                />
-                <div>
-                  <p className="text-sm font-semibold flex items-center gap-2">
-                    <Repeat size={14} className="text-[#4f7957]" />
-                    Subscribe &amp; Save {Math.round(subscriptionDiscountPercent)}%
-                  </p>
-                  <p className="text-xs text-[#16241a]/50 mt-1">
-                    {formatPrice(subscriptionPrice)} per order — cancel anytime.
-                  </p>
+              {/* Subscribe & save — Subscription A: a standing reorder
+                  discount unlocked after the first, full-price purchase.
+                  Once unlocked there's nothing left to opt into, so this
+                  becomes a status readout instead of a checkbox. */}
+              {mySubscription ? (
+                <div className="flex items-start gap-3 bg-[#eafbf0] border border-[#8ab88e]/40 rounded-2xl p-4 mb-8">
+                  <Repeat size={16} className="text-[#4f7957] mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-[#4f7957]">
+                      You've unlocked {Math.round(mySubscription.discountPercent)}% off this product
+                    </p>
+                    <p className="text-xs text-[#16241a]/50 mt-1">
+                      Applied automatically to every reorder — your code is{" "}
+                      <span className="font-mono font-semibold">{mySubscription.code}</span>.
+                    </p>
+                  </div>
                 </div>
-              </label>
+              ) : (
+                <label className="flex items-start gap-3 bg-white/50 border border-white/60 rounded-2xl p-4 mb-8 cursor-pointer hover:bg-white/70 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={subscribeIntent}
+                    onChange={(e) => setSubscribeIntent(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 accent-[#4f7957] flex-shrink-0"
+                  />
+                  <div>
+                    <p className="text-sm font-semibold flex items-center gap-2">
+                      <Repeat size={14} className="text-[#4f7957]" />
+                      Subscribe to this product
+                    </p>
+                    <p className="text-xs text-[#16241a]/50 mt-1">
+                      This order stays full price — but it unlocks{" "}
+                      {Math.round(subscriptionDiscountPercent)}% off every time you reorder this
+                      product after today.
+                    </p>
+                  </div>
+                </label>
+              )}
 
               {/* Benefits */}
               <ul className="space-y-2 mb-8">

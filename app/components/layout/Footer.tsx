@@ -28,6 +28,7 @@ const footerLinks = {
         { name: "Face Creams", href: "/catalog?category=creams" },
         { name: "Cleanse & Tone", href: "/catalog?category=cleansers" },
         { name: "Body Care", href: "/catalog?category=body" },
+        { name: "Subscribe & Save Big", href: "/subscribe-save" },
     ],
     Learn: [
         { name: "Our Story", href: "/our-story" },

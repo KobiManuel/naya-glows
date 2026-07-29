@@ -1,9 +1,12 @@
 "use client";
 
+import { useMemo } from "react";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Product } from "@/lib/products";
 import { useAppDispatch, useAppSelector } from "./hooks";
-import { useSettings } from "./useSettings";
+import { useUserAuth } from "./useUserAuth";
+import { useListMyProductSubscriptionsQuery } from "./userApi";
+import { isApiConfigured } from "@/lib/api";
 
 export type CartItem = {
   slug: string;
@@ -98,22 +101,30 @@ export default cartSlice.reducer;
 
 export const CART_STORAGE_KEY = "naya-glows-cart";
 
-// Mirrors the server-side discount in
-// backend/src/modules/orders/orders.service.ts (which reads the same
-// admin-configurable Setting) — the client only ever shows a *preview* of
-// what will be charged; the actual order total is always recomputed
-// server-side from the real price and the same Setting.
-export function itemUnitPrice(
-  item: Pick<CartItem, "price" | "isSubscription">,
-  discountPercent: number,
-) {
-  return item.isSubscription ? item.price * (1 - discountPercent / 100) : item.price;
+// Mirrors the server-side "Subscription A" standing discount in
+// backend/src/modules/orders/orders.service.ts — applied per-product once
+// the customer already has an active ProductSubscription for it (never
+// based on this cart item's own `isSubscription`, which is just this
+// order's *intent* to enroll, not a price change). The client only ever
+// shows a *preview*; the actual order total is always recomputed
+// server-side from the real, current subscription state.
+export function itemUnitPrice(item: Pick<CartItem, "slug" | "price">, discountBySlug: Map<string, number>) {
+  const discountPercent = discountBySlug.get(item.slug);
+  return discountPercent ? item.price * (1 - discountPercent / 100) : item.price;
 }
 
 export function useCart() {
   const dispatch = useAppDispatch();
   const items = useAppSelector((state) => state.cart.items);
-  const { subscriptionDiscountPercent } = useSettings();
+  const { user } = useUserAuth();
+  const { data: mySubscriptions } = useListMyProductSubscriptionsQuery(undefined, {
+    skip: !isApiConfigured() || !user,
+  });
+  const discountBySlug = useMemo(() => {
+    const map = new Map<string, number>();
+    (mySubscriptions ?? []).forEach((s) => map.set(s.product.slug, s.discountPercent));
+    return map;
+  }, [mySubscriptions]);
 
   const addItem = (
     product: Product,
@@ -139,7 +150,7 @@ export function useCart() {
   const clearCart = () => dispatch(clearCartAction());
 
   const subtotal = items.reduce(
-    (sum, i) => sum + itemUnitPrice(i, subscriptionDiscountPercent) * i.qty,
+    (sum, i) => sum + itemUnitPrice(i, discountBySlug) * i.qty,
     0,
   );
   const itemCount = items.reduce((sum, i) => sum + i.qty, 0);
@@ -153,5 +164,6 @@ export function useCart() {
     clearCart,
     subtotal,
     itemCount,
+    discountBySlug,
   };
 }

@@ -100,10 +100,18 @@ export type EmailCampaignRow = {
   subject: string;
   html: string;
   recipientCount: number;
+  audience: "subscribers" | "allUsers";
   createdAt: string;
 };
 
-export type SettingsPayload = { usdToNgnRate: number; subscriptionDiscountPercent: number };
+export type SettingsPayload = {
+  usdToNgnRate: number;
+  subscriptionDiscountPercent: number;
+  subscriptionB3MonthPercent: number;
+  subscriptionB6MonthPercent: number;
+  subscriptionB12MonthPercent: number;
+  subscriptionBFulfillmentMode: "immediate" | "recurring";
+};
 
 export type BudgetSummary = {
   currency: string;
@@ -136,6 +144,29 @@ export type AdminInfluencerRow = {
 };
 
 export type ContentBlockRow = { id: string; key: string; data: unknown; updatedAt: string };
+
+export type AdminProductSubscriptionRow = {
+  id: string;
+  code: string;
+  discountPercent: number;
+  createdAt: string;
+  user: { name: string; email: string };
+  product: { name: string; slug: string };
+};
+
+export type AdminSubscriptionPlanRow = {
+  id: string;
+  term: "THREE_MONTH" | "SIX_MONTH" | "TWELVE_MONTH";
+  fulfillmentMode: "immediate" | "recurring";
+  items: { slug: string; name: string; qtyPerMonth: number }[];
+  discountPercent: number;
+  totalPaid: number;
+  status: "ACTIVE" | "CANCELLED" | "COMPLETED";
+  remainingShipments: number;
+  nextShipmentDate: string | null;
+  createdAt: string;
+  user: { name: string; email: string };
+};
 
 export type ConsultationRow = {
   id: string;
@@ -283,7 +314,7 @@ export const adminApi = createApi({
     }),
     sendEmailCampaign: builder.mutation<
       { campaign: EmailCampaignRow; sentCount: number; failedCount: number },
-      { subject: string; message: string; imageUrls?: string[] }
+      { subject: string; message: string; imageUrls?: string[]; audience: "subscribers" | "allUsers" }
     >({
       query: (body) => ({ url: "/admin/email-campaigns/send", method: "POST", body }),
       invalidatesTags: [{ type: "EmailCampaign", id: "LIST" }],
@@ -323,6 +354,13 @@ export const adminApi = createApi({
       transformResponse: (res: { influencers: AdminInfluencerRow[] }) => res.influencers,
       providesTags: [{ type: "Influencer", id: "LIST" }],
     }),
+
+    listAdminSubscriptions: builder.query<
+      { productSubscriptions: AdminProductSubscriptionRow[]; plans: AdminSubscriptionPlanRow[] },
+      void
+    >({
+      query: () => "/admin/subscriptions",
+    }),
   }),
 });
 
@@ -353,4 +391,5 @@ export const {
   useCreateBudgetEntryMutation,
   useDeleteBudgetEntryMutation,
   useListInfluencersQuery,
+  useListAdminSubscriptionsQuery,
 } = adminApi;

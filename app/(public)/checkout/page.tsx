@@ -7,7 +7,6 @@ import Script from "next/script";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useCart, itemUnitPrice } from "../../store/cartSlice";
-import { useSettings } from "../../store/useSettings";
 import { useCurrencyDisplay } from "../../store/useCurrencyDisplay";
 import { useUserAuth } from "../../store/useUserAuth";
 import { SHIPPING_STORAGE_KEY } from "../../store/userAuthSlice";
@@ -62,8 +61,7 @@ const emptyForm: ShippingForm = {
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, subtotal } = useCart();
-  const { subscriptionDiscountPercent } = useSettings();
+  const { items, subtotal, discountBySlug } = useCart();
   const { format: formatPrice } = useCurrencyDisplay();
   const { user, loading: authLoading } = useUserAuth();
   const [form, setForm] = useState<ShippingForm>(emptyForm);
@@ -310,14 +308,20 @@ export default function CheckoutPage() {
                         {item.variantName && (
                           <span className="text-[#16241a]/45"> — {item.variantName}</span>
                         )}
-                        {item.isSubscription && (
+                        {discountBySlug.has(item.slug) ? (
                           <span className="ml-1.5 text-[9px] font-semibold uppercase tracking-wide text-[#4f7957]">
-                            (Subscribed)
+                            (Discount applied)
                           </span>
+                        ) : (
+                          item.isSubscription && (
+                            <span className="ml-1.5 text-[9px] font-semibold uppercase tracking-wide text-[#6a9a72]">
+                              (Unlocks discount next time)
+                            </span>
+                          )
                         )}
                       </p>
                       <p className="text-xs font-semibold flex-shrink-0">
-                        {formatPrice(itemUnitPrice(item, subscriptionDiscountPercent) * item.qty)}
+                        {formatPrice(itemUnitPrice(item, discountBySlug) * item.qty)}
                       </p>
                     </div>
                   ))}

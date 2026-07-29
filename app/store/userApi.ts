@@ -216,6 +216,54 @@ export const userApi = createApi({
     >({
       query: (reference) => `/payments/paystack/verify/${reference}`,
     }),
+    // "Subscription A" — the signed-in customer's own standing reorder
+    // discounts (see productSubscriptions.service.ts). Used at checkout so
+    // the price preview matches what the server will actually charge.
+    listMyProductSubscriptions: builder.query<
+      {
+        id: string;
+        discountPercent: number;
+        code: string;
+        product: { slug: string; name: string; image: string };
+      }[],
+      void
+    >({
+      query: () => "/subscriptions/mine",
+      transformResponse: (res: {
+        subscriptions: {
+          id: string;
+          discountPercent: number;
+          code: string;
+          product: { slug: string; name: string; image: string };
+        }[];
+      }) => res.subscriptions,
+    }),
+    // "Subscription B" — public, no auth needed: a live cost/discount
+    // preview while the customer is still choosing products and a term.
+    quoteSubscriptionPlan: builder.mutation<
+      {
+        quote: {
+          months: number;
+          discountPercent: number;
+          baseTotal: number;
+          discountedTotal: number;
+          items: { productId: string; slug: string; name: string; unitPrice: number; qtyPerMonth: number; totalQtyForTerm: number }[];
+        };
+      },
+      { term: "THREE_MONTH" | "SIX_MONTH" | "TWELVE_MONTH"; items: { slug: string; qtyPerMonth: number }[] }
+    >({
+      query: (body) => ({ url: "/subscriptions/plans/quote", method: "POST", body }),
+    }),
+    createSubscriptionPlan: builder.mutation<
+      { order: { id: string }; plan: { id: string } },
+      {
+        term: "THREE_MONTH" | "SIX_MONTH" | "TWELVE_MONTH";
+        items: { slug: string; qtyPerMonth: number }[];
+        shippingDetails: Record<string, string>;
+      }
+    >({
+      query: (body) => ({ url: "/subscriptions/plans", method: "POST", body }),
+    }),
     // Public single-key content lookup. The backend returns 404 when no
     // override exists for this key — that's expected, not an error, so
     // callers (useSectionContent) treat a failed/empty result as "use the
@@ -252,7 +300,16 @@ export const userApi = createApi({
       query: (body) => ({ url: "/newsletter/subscribe", method: "POST", body }),
     }),
     getPublicSettings: builder.query<
-      { settings: { usdToNgnRate: number; subscriptionDiscountPercent: number } },
+      {
+        settings: {
+          usdToNgnRate: number;
+          subscriptionDiscountPercent: number;
+          subscriptionB3MonthPercent: number;
+          subscriptionB6MonthPercent: number;
+          subscriptionB12MonthPercent: number;
+          subscriptionBFulfillmentMode: "immediate" | "recurring";
+        };
+      },
       void
     >({
       query: () => "/settings/public",
@@ -319,4 +376,7 @@ export const {
   useGetPublicSettingsQuery,
   useToggleSavedProductMutation,
   useListSavedProductsQuery,
+  useListMyProductSubscriptionsQuery,
+  useQuoteSubscriptionPlanMutation,
+  useCreateSubscriptionPlanMutation,
 } = userApi;

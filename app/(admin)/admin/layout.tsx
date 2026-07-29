@@ -18,6 +18,7 @@ import {
   Send,
   Settings,
   Megaphone,
+  Repeat,
 } from "lucide-react";
 import { useAdminAuth } from "../../store/useAdminAuth";
 
@@ -26,6 +27,7 @@ const navItems = [
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/content", label: "Content", icon: FileText },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
+  { href: "/admin/subscriptions", label: "Subscriptions", icon: Repeat },
   { href: "/admin/consultations", label: "Consultations", icon: CalendarHeart },
   { href: "/admin/wholesale", label: "Wholesale", icon: Building2 },
   { href: "/admin/influencers", label: "Influencers", icon: Megaphone },

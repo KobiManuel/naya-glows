@@ -351,22 +351,33 @@ export default function AdminProductsPage() {
                   </p>
                 ) : (
                   <div className="flex flex-col gap-2">
+                    <div className="grid grid-cols-[minmax(0,1fr)_7rem_2rem] gap-2 px-0.5">
+                      <span className="text-[10px] font-semibold uppercase tracking-wide text-[#16241a]/40">
+                        Name
+                      </span>
+                      <span className="text-[10px] font-semibold uppercase tracking-wide text-[#16241a]/40">
+                        Price (₦)
+                      </span>
+                      <span />
+                    </div>
                     {(form.variants ?? []).map((variant, i) => (
-                      <div key={i} className="flex items-center gap-2">
+                      <div key={i} className="grid grid-cols-[minmax(0,1fr)_7rem_2rem] gap-2 items-center">
                         <input
-                          placeholder="Name (e.g. Small)"
+                          aria-label="Size name"
+                          placeholder="e.g. Small"
                           value={variant.name}
                           onChange={(e) => updateVariantRow(i, { name: e.target.value })}
-                          className={`${inputClass} flex-1`}
+                          className={inputClass}
                         />
                         <input
+                          aria-label="Size price in Naira"
                           type="number"
                           step="1"
                           min="0"
-                          placeholder="Price (₦)"
+                          placeholder="e.g. 10000"
                           value={variant.price || ""}
                           onChange={(e) => updateVariantRow(i, { price: Number(e.target.value) })}
-                          className={`${inputClass} w-28`}
+                          className={inputClass}
                         />
                         <button
                           type="button"

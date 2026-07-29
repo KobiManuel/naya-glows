@@ -4,14 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, X, ShoppingBag } from "lucide-react";
 import { useCart, itemUnitPrice } from "../../store/cartSlice";
-import { useSettings } from "../../store/useSettings";
 import { useCurrencyDisplay } from "../../store/useCurrencyDisplay";
 import { FREE_SHIPPING_THRESHOLD_NGN, FLAT_SHIPPING_NGN } from "@/lib/products";
 import GlassCard from "../helpers/glass/GlassCard";
 
 export default function CartPage() {
-  const { items, updateQty, removeItem, subtotal } = useCart();
-  const { subscriptionDiscountPercent } = useSettings();
+  const { items, updateQty, removeItem, subtotal, discountBySlug } = useCart();
   const { format: formatPrice } = useCurrencyDisplay();
 
   return (
@@ -69,11 +67,17 @@ export default function CartPage() {
                         </p>
                       </Link>
                       <p className="text-sm text-[#16241a]/60 flex items-center gap-2">
-                        {formatPrice(itemUnitPrice(item, subscriptionDiscountPercent))}
-                        {item.isSubscription && (
+                        {formatPrice(itemUnitPrice(item, discountBySlug))}
+                        {discountBySlug.has(item.slug) ? (
                           <span className="text-[10px] font-semibold uppercase tracking-wide text-[#4f7957] bg-[#d4e8d0] px-2 py-0.5 rounded-full">
-                            Subscribed
+                            Reorder discount applied
                           </span>
+                        ) : (
+                          item.isSubscription && (
+                            <span className="text-[10px] font-semibold uppercase tracking-wide text-[#6a9a72] bg-[#eafbf0] px-2 py-0.5 rounded-full">
+                              Unlocks a discount next time
+                            </span>
+                          )
                         )}
                       </p>
                     </div>

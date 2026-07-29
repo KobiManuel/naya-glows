@@ -7,6 +7,7 @@ import { Send, Upload, X } from "lucide-react";
 import {
   useListEmailCampaignsQuery,
   useListNewsletterSubscribersQuery,
+  useListUsersQuery,
   useSendEmailCampaignMutation,
   useUploadImageMutation,
 } from "../../../store/adminApi";
@@ -15,16 +16,29 @@ import { getApiErrorMessage } from "../../../store/apiError";
 const inputClass =
   "w-full bg-white/70 border border-white/60 rounded-xl px-3.5 py-2.5 text-sm outline-none placeholder:text-[#16241a]/35 focus:border-[#8ab88e] transition-colors";
 
+type Audience = "subscribers" | "allUsers";
+
+const audienceLabels: Record<Audience, string> = {
+  subscribers: "Subscribers",
+  allUsers: "All Users",
+};
+
 export default function AdminEmailCampaignsPage() {
   const { data: campaigns, isLoading } = useListEmailCampaignsQuery();
   const { data: subscribers } = useListNewsletterSubscribersQuery();
+  const { data: users } = useListUsersQuery();
   const [sendCampaign, { isLoading: sending }] = useSendEmailCampaignMutation();
   const [uploadImage, { isLoading: uploading }] = useUploadImageMutation();
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [audience, setAudience] = useState<Audience>("subscribers");
 
-  const recipientCount = subscribers?.length ?? 0;
+  const recipientCounts: Record<Audience, number> = {
+    subscribers: subscribers?.length ?? 0,
+    allUsers: users?.length ?? 0,
+  };
+  const recipientCount = recipientCounts[audience];
 
   const handleUpload = async (file: File) => {
     try {
@@ -48,16 +62,18 @@ export default function AdminEmailCampaignsPage() {
         subject,
         message,
         imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
+        audience,
       }).unwrap();
+      const audienceLabel = audienceLabels[audience].toLowerCase();
       if (failedCount === 0) {
-        toast.success(`Campaign sent to ${sentCount} subscriber(s).`);
+        toast.success(`Campaign sent to ${sentCount} ${audienceLabel}.`);
       } else if (sentCount === 0) {
         toast.error(
-          `Campaign failed to send to all ${failedCount} subscriber(s) — check the email provider configuration.`,
+          `Campaign failed to send to all ${failedCount} ${audienceLabel} — check the email provider configuration.`,
         );
       } else {
         toast.error(
-          `Sent to ${sentCount} subscriber(s), but failed for ${failedCount} — check server logs.`,
+          `Sent to ${sentCount} ${audienceLabel}, but failed for ${failedCount} — check server logs.`,
         );
       }
       setSubject("");
@@ -72,11 +88,30 @@ export default function AdminEmailCampaignsPage() {
     <div>
       <h1 className="text-2xl font-light mb-1">Email Campaigns</h1>
       <p className="text-sm text-[#16241a]/50 mb-8">
-        Compose a message and send it to every newsletter subscriber.
+        Compose a message and send it to every newsletter subscriber, or every registered user.
       </p>
 
       <div className="bg-white/60 backdrop-blur-xl border border-white/60 rounded-2xl p-6 mb-8 max-w-2xl">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wide text-[#16241a]/50 mb-2">
+              Send To
+            </label>
+            <div className="flex items-center gap-1 bg-white/70 rounded-full p-1 w-fit">
+              {(Object.keys(audienceLabels) as Audience[]).map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setAudience(key)}
+                  className={`text-sm font-medium px-4 py-1.5 rounded-full transition-colors ${
+                    audience === key ? "bg-[#16241a] text-white" : "text-[#16241a]/60"
+                  }`}
+                >
+                  {audienceLabels[key]} ({recipientCounts[key]})
+                </button>
+              ))}
+            </div>
+          </div>
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wide text-[#16241a]/50 mb-2">
               Subject
@@ -155,8 +190,8 @@ export default function AdminEmailCampaignsPage() {
             {sending
               ? "Sending…"
               : recipientCount === 0
-                ? "No subscribers yet"
-                : `Send to ${recipientCount} subscriber(s)`}
+                ? `No ${audienceLabels[audience].toLowerCase()} yet`
+                : `Send to ${recipientCount} ${audienceLabels[audience].toLowerCase()}`}
           </button>
         </form>
       </div>
@@ -174,6 +209,7 @@ export default function AdminEmailCampaignsPage() {
             <thead>
               <tr className="text-left text-[#16241a]/45 border-b border-[#16241a]/10">
                 <th className="p-4 font-medium">Subject</th>
+                <th className="p-4 font-medium">Sent To</th>
                 <th className="p-4 font-medium">Recipients</th>
                 <th className="p-4 font-medium">Sent</th>
               </tr>
@@ -182,6 +218,7 @@ export default function AdminEmailCampaignsPage() {
               {campaigns.map((c) => (
                 <tr key={c.id} className="border-b border-[#16241a]/5 last:border-0">
                   <td className="p-4 font-medium">{c.subject}</td>
+                  <td className="p-4 text-[#16241a]/60">{audienceLabels[c.audience] ?? c.audience}</td>
                   <td className="p-4 text-[#16241a]/60">{c.recipientCount}</td>
                   <td className="p-4 text-[#16241a]/60">
                     {new Date(c.createdAt).toLocaleString()}
