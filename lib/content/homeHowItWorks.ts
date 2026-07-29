@@ -17,7 +17,7 @@ export const defaultHowItWorksContent: HowItWorksContent = {
   headingPart1: "How It Works:",
   headingPart2: "Just 3",
   headingPart3: "Simple Steps",
-  footerNote: "Free delivery on orders over $75. No subscription required.",
+  footerNote: "Free delivery on orders over ₦100,000. No subscription required.",
   steps: [
     {
       title: "Choose Your Product",

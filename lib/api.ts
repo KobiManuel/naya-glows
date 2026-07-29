@@ -11,6 +11,15 @@ async function request<T>(
   const { token, headers, ...rest } = options;
   const res = await fetch(`${API_URL}${path}`, {
     ...rest,
+    // Next.js caches a bare server-side fetch() indefinitely by default
+    // (and, for a route with no other dynamic API in use, prerenders the
+    // whole page statically at build time on top of that) — meaning any
+    // admin change (a price edit, restocking a product, a content update)
+    // would never show up until the next Vercel deploy. Every request this
+    // app makes is either public read data that must reflect the current
+    // DB, or an authenticated/mutating call — neither should ever be
+    // served from a stale cache.
+    cache: "no-store",
     headers: {
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
